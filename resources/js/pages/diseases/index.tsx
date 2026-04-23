@@ -1,9 +1,19 @@
 import { Head, Link } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import { Search, Bug, BookOpen } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+
+// Color palette
+const palette = {
+    sand: '#DDD8C4',
+    sage: '#A3C9A8',
+    leaf: '#84B59F',
+    teal: '#69A297',
+    deep: '#50808E',
+};
 
 interface Disease {
     id: number;
@@ -19,6 +29,25 @@ interface Disease {
 interface Props {
     diseases: Disease[];
 }
+
+const containerVariants = {
+    hidden: {},
+    visible: {
+        transition: {
+            staggerChildren: 0.08,
+        },
+    },
+};
+
+const cardVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.96 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: { duration: 0.4, ease: 'easeOut' },
+    },
+};
 
 export default function DiseasesIndex({ diseases }: Props) {
     const [search, setSearch] = useState('');
@@ -40,7 +69,12 @@ export default function DiseasesIndex({ diseases }: Props) {
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
                 {/* Header */}
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                    className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+                >
                     <div>
                         <h1 className="text-xl font-semibold tracking-tight">
                             Basis Pengetahuan Penyakit Padi
@@ -50,77 +84,124 @@ export default function DiseasesIndex({ diseases }: Props) {
                         </p>
                     </div>
                     <div className="relative w-full sm:w-72">
-                        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                        <Search
+                            className="absolute left-3 top-1/2 size-4 -translate-y-1/2"
+                            style={{ color: palette.teal }}
+                        />
                         <Input
                             placeholder="Cari penyakit..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="pl-9"
+                            className="pl-9 transition-colors focus-visible:ring-1"
+                            style={{
+                                borderColor: palette.sage,
+                                // @ts-expect-error CSS custom property
+                                '--tw-ring-color': palette.teal,
+                            }}
                         />
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Grid */}
-                {filtered.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {filtered.map((disease) => (
-                            <Link
-                                key={disease.id}
-                                href={`/diseases/${disease.slug}`}
-                                className="group"
-                            >
-                                <Card className="h-full transition-shadow duration-200 group-hover:shadow-md">
-                                    {disease.image && (
-                                        <div className="overflow-hidden rounded-t-xl">
-                                            <img
-                                                src={disease.image}
-                                                alt={disease.name}
-                                                className="h-40 w-full object-cover transition-transform duration-200 group-hover:scale-105"
-                                            />
-                                        </div>
-                                    )}
-                                    <CardHeader>
-                                        <div className="flex items-start justify-between gap-2">
-                                            <div className="min-w-0">
-                                                <CardTitle className="text-base">
-                                                    {disease.name}
-                                                </CardTitle>
-                                                {disease.latin_name && (
-                                                    <p className="mt-1 text-sm italic text-muted-foreground">
-                                                        {disease.latin_name}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <Badge variant="secondary" className="shrink-0">
-                                                <Bug className="size-3" />
-                                                {disease.detections_count} deteksi
-                                            </Badge>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p className="line-clamp-3 text-sm text-muted-foreground">
-                                            {disease.description}
-                                        </p>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <span className="text-sm font-medium text-primary group-hover:underline">
-                                            Lihat detail &rarr;
-                                        </span>
-                                    </CardFooter>
-                                </Card>
-                            </Link>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed py-16">
-                        <BookOpen className="size-10 text-muted-foreground/50" />
-                        <p className="text-sm text-muted-foreground">
-                            {search.trim()
-                                ? `Tidak ditemukan penyakit untuk "${search}"`
-                                : 'Belum ada data penyakit'}
-                        </p>
-                    </div>
-                )}
+                <AnimatePresence mode="wait">
+                    {filtered.length > 0 ? (
+                        <motion.div
+                            key="grid"
+                            variants={containerVariants}
+                            initial="hidden"
+                            animate="visible"
+                            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                            className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+                        >
+                            {filtered.map((disease) => (
+                                <motion.div
+                                    key={disease.id}
+                                    variants={cardVariants}
+                                    whileHover={{
+                                        scale: 1.03,
+                                        boxShadow: `0 8px 30px ${palette.teal}30`,
+                                        transition: { duration: 0.25 },
+                                    }}
+                                    className="rounded-xl"
+                                >
+                                    <Link
+                                        href={`/diseases/${disease.slug}`}
+                                        className="group block h-full"
+                                    >
+                                        <Card className="h-full overflow-hidden border transition-colors duration-200 hover:border-[var(--card-hover-border)]"
+                                            style={{
+                                                // @ts-expect-error CSS custom property
+                                                '--card-hover-border': palette.sage,
+                                            }}
+                                        >
+                                            {disease.image && (
+                                                <div className="overflow-hidden rounded-t-xl">
+                                                    <img
+                                                        src={disease.image}
+                                                        alt={disease.name}
+                                                        className="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                    />
+                                                </div>
+                                            )}
+                                            <CardHeader>
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <div className="min-w-0">
+                                                        <CardTitle className="text-base">
+                                                            {disease.name}
+                                                        </CardTitle>
+                                                        {disease.latin_name && (
+                                                            <p className="mt-1 text-sm italic text-muted-foreground">
+                                                                {disease.latin_name}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    <Badge
+                                                        variant="secondary"
+                                                        className="shrink-0 text-white"
+                                                        style={{ backgroundColor: palette.teal }}
+                                                    >
+                                                        <Bug className="size-3" />
+                                                        {disease.detections_count} deteksi
+                                                    </Badge>
+                                                </div>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <p className="line-clamp-3 text-sm text-muted-foreground">
+                                                    {disease.description}
+                                                </p>
+                                            </CardContent>
+                                            <CardFooter>
+                                                <span
+                                                    className="text-sm font-medium group-hover:underline"
+                                                    style={{ color: palette.deep }}
+                                                >
+                                                    Lihat detail &rarr;
+                                                </span>
+                                            </CardFooter>
+                                        </Card>
+                                    </Link>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="empty"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.3 }}
+                            className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed py-16"
+                            style={{ borderColor: palette.sand }}
+                        >
+                            <BookOpen className="size-10" style={{ color: `${palette.teal}80` }} />
+                            <p className="text-sm text-muted-foreground">
+                                {search.trim()
+                                    ? `Tidak ditemukan penyakit untuk "${search}"`
+                                    : 'Belum ada data penyakit'}
+                            </p>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </>
     );

@@ -1,4 +1,5 @@
 import { Head, router } from '@inertiajs/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
@@ -45,6 +46,81 @@ interface Props {
 }
 
 // ---------------------------------------------------------------------------
+// Color Palette
+// ---------------------------------------------------------------------------
+
+const palette = {
+    sand: '#DDD8C4',
+    sage: '#A3C9A8',
+    leaf: '#84B59F',
+    teal: '#69A297',
+    deep: '#50808E',
+} as const;
+
+// ---------------------------------------------------------------------------
+// Animation Variants
+// ---------------------------------------------------------------------------
+
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.04,
+        },
+    },
+};
+
+const symptomItemVariants = {
+    hidden: { opacity: 0, y: 16, scale: 0.97 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: { type: 'spring', stiffness: 300, damping: 24 },
+    },
+};
+
+const resultsContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.12,
+            delayChildren: 0.1,
+        },
+    },
+    exit: {
+        opacity: 0,
+        transition: { duration: 0.2 },
+    },
+};
+
+const resultCardVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.96 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: { type: 'spring', stiffness: 260, damping: 22 },
+    },
+    exit: {
+        opacity: 0,
+        y: -20,
+        transition: { duration: 0.2 },
+    },
+};
+
+const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: { type: 'spring', stiffness: 300, damping: 24 },
+    },
+};
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -73,12 +149,43 @@ function cfLabel(cf: number): string {
     return 'Tidak Yakin';
 }
 
-function cfColor(cf: number): string {
-    if (cf >= 80) return 'bg-green-500';
-    if (cf >= 60) return 'bg-emerald-500';
-    if (cf >= 40) return 'bg-yellow-500';
-    if (cf >= 20) return 'bg-orange-500';
-    return 'bg-red-500';
+function cfColorHex(cf: number): string {
+    if (cf >= 80) return palette.deep;
+    if (cf >= 60) return palette.teal;
+    if (cf >= 40) return palette.leaf;
+    if (cf >= 20) return palette.sage;
+    return palette.sand;
+}
+
+// ---------------------------------------------------------------------------
+// Animated CF Bar
+// ---------------------------------------------------------------------------
+
+function AnimatedCFBar({
+    cf,
+    height = 'h-3',
+}: {
+    cf: number;
+    height?: string;
+}) {
+    return (
+        <div
+            className={`${height} w-full overflow-hidden rounded-full`}
+            style={{ backgroundColor: `${palette.sand}40` }}
+        >
+            <motion.div
+                className={`${height} rounded-full`}
+                style={{ backgroundColor: cfColorHex(cf) }}
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min(cf, 100)}%` }}
+                transition={{
+                    duration: 0.8,
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                    delay: 0.2,
+                }}
+            />
+        </div>
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -251,8 +358,16 @@ export default function ExpertSystem({ symptoms, diseases }: Props) {
                 {/* --------------------------------------------------------- */}
                 {/* Header                                                    */}
                 {/* --------------------------------------------------------- */}
-                <div className="space-y-1">
-                    <h1 className="text-xl font-semibold tracking-tight">
+                <motion.div
+                    className="space-y-1"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                >
+                    <h1
+                        className="text-xl font-semibold tracking-tight"
+                        style={{ color: palette.deep }}
+                    >
                         Sistem Pakar Diagnosa Penyakit Padi
                     </h1>
                     <p className="text-sm text-muted-foreground">
@@ -260,597 +375,961 @@ export default function ExpertSystem({ symptoms, diseases }: Props) {
                         tekan tombol &ldquo;Diagnosa&rdquo; untuk mendapatkan
                         hasil analisis.
                     </p>
-                </div>
+                </motion.div>
 
                 {/* --------------------------------------------------------- */}
                 {/* VAR 4, 6, 7 — Environment Info                           */}
                 {/* --------------------------------------------------------- */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-base">
-                            Data Lingkungan
-                        </CardTitle>
-                        <CardDescription>
-                            Dikumpulkan otomatis dari perangkat Anda
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {envLoading ? (
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Spinner className="size-4" />
-                                <span>Mengambil data lingkungan...</span>
-                            </div>
-                        ) : envData ? (
-                            <div className="grid gap-4 sm:grid-cols-3">
-                                {/* Koordinat */}
-                                <div className="space-y-1">
-                                    <p className="text-xs font-medium text-muted-foreground">
-                                        Titik Koordinat
-                                    </p>
-                                    <p className="text-sm font-medium">
-                                        {envData.position
-                                            ? formatCoordinates(
-                                                  envData.position.latitude,
-                                                  envData.position.longitude,
-                                              )
-                                            : 'Tidak tersedia'}
-                                    </p>
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                >
+                    <Card
+                        className="overflow-hidden border-t-4"
+                        style={{ borderTopColor: palette.teal }}
+                    >
+                        <CardHeader>
+                            <CardTitle
+                                className="text-base"
+                                style={{ color: palette.deep }}
+                            >
+                                Data Lingkungan
+                            </CardTitle>
+                            <CardDescription>
+                                Dikumpulkan otomatis dari perangkat Anda
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {envLoading ? (
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <Spinner className="size-4" />
+                                    <span>Mengambil data lingkungan...</span>
                                 </div>
-
-                                {/* Suhu */}
-                                <div className="space-y-1">
-                                    <p className="text-xs font-medium text-muted-foreground">
-                                        Suhu &amp; Cuaca
-                                    </p>
-                                    <p className="text-sm font-medium">
-                                        {envData.weather
-                                            ? `${envData.weather.temperature}°C — ${envData.weather.description}`
-                                            : 'Tidak tersedia'}
-                                    </p>
-                                    {envData.weather && (
-                                        <p className="text-xs text-muted-foreground">
-                                            Kelembapan:{' '}
-                                            {envData.weather.humidity}%
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Koneksi */}
-                                <div className="space-y-1">
-                                    <p className="text-xs font-medium text-muted-foreground">
-                                        Status Koneksi
-                                    </p>
-                                    <Badge
-                                        variant={
-                                            envData.connectionStatus ===
-                                            'online'
-                                                ? 'default'
-                                                : 'destructive'
-                                        }
+                            ) : envData ? (
+                                <div className="grid gap-4 sm:grid-cols-3">
+                                    {/* Koordinat */}
+                                    <motion.div
+                                        className="space-y-1"
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.2 }}
                                     >
-                                        {envData.connectionStatus === 'online'
-                                            ? 'Online'
-                                            : 'Offline'}
-                                    </Badge>
-                                </div>
-                            </div>
-                        ) : (
-                            <p className="text-sm text-muted-foreground">
-                                Data lingkungan tidak tersedia.
-                            </p>
-                        )}
+                                        <p className="text-xs font-medium text-muted-foreground">
+                                            Titik Koordinat
+                                        </p>
+                                        <p className="text-sm font-medium">
+                                            {envData.position
+                                                ? formatCoordinates(
+                                                      envData.position.latitude,
+                                                      envData.position
+                                                          .longitude,
+                                                  )
+                                                : 'Tidak tersedia'}
+                                        </p>
+                                    </motion.div>
 
-                        {envData?.error && (
-                            <p className="mt-3 text-xs text-orange-600 dark:text-orange-400">
-                                {envData.error}
-                            </p>
-                        )}
-                    </CardContent>
-                </Card>
+                                    {/* Suhu */}
+                                    <motion.div
+                                        className="space-y-1"
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.3 }}
+                                    >
+                                        <p className="text-xs font-medium text-muted-foreground">
+                                            Suhu &amp; Cuaca
+                                        </p>
+                                        <p className="text-sm font-medium">
+                                            {envData.weather
+                                                ? `${envData.weather.temperature}°C — ${envData.weather.description}`
+                                                : 'Tidak tersedia'}
+                                        </p>
+                                        {envData.weather && (
+                                            <p className="text-xs text-muted-foreground">
+                                                Kelembapan:{' '}
+                                                {envData.weather.humidity}%
+                                            </p>
+                                        )}
+                                    </motion.div>
+
+                                    {/* Koneksi */}
+                                    <motion.div
+                                        className="space-y-1"
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.4 }}
+                                    >
+                                        <p className="text-xs font-medium text-muted-foreground">
+                                            Status Koneksi
+                                        </p>
+                                        <Badge
+                                            variant={
+                                                envData.connectionStatus ===
+                                                'online'
+                                                    ? 'default'
+                                                    : 'destructive'
+                                            }
+                                            style={
+                                                envData.connectionStatus ===
+                                                'online'
+                                                    ? {
+                                                          backgroundColor:
+                                                              palette.teal,
+                                                          color: '#fff',
+                                                      }
+                                                    : undefined
+                                            }
+                                        >
+                                            {envData.connectionStatus ===
+                                            'online'
+                                                ? 'Online'
+                                                : 'Offline'}
+                                        </Badge>
+                                    </motion.div>
+                                </div>
+                            ) : (
+                                <p className="text-sm text-muted-foreground">
+                                    Data lingkungan tidak tersedia.
+                                </p>
+                            )}
+
+                            {envData?.error && (
+                                <p className="mt-3 text-xs text-orange-600 dark:text-orange-400">
+                                    {envData.error}
+                                </p>
+                            )}
+                        </CardContent>
+                    </Card>
+                </motion.div>
 
                 {/* --------------------------------------------------------- */}
                 {/* Symptom Selection                                         */}
                 {/* --------------------------------------------------------- */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-base">
-                            Pilih Gejala
-                        </CardTitle>
-                        <CardDescription>
-                            Centang gejala yang terlihat pada tanaman padi Anda (
-                            {selectedIds.length} dipilih)
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid gap-3 sm:grid-cols-2">
-                            {symptoms.map((symptom) => {
-                                const checked = selectedIds.includes(
-                                    symptom.id,
-                                );
-                                return (
-                                    <label
-                                        key={symptom.id}
-                                        className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
-                                            checked
-                                                ? 'border-primary/50 bg-primary/5'
-                                                : 'border-transparent bg-muted/40 hover:bg-muted/70'
-                                        }`}
-                                    >
-                                        <Checkbox
-                                            checked={checked}
-                                            onCheckedChange={() =>
-                                                toggleSymptom(symptom.id)
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                    <Card
+                        className="overflow-hidden border-t-4"
+                        style={{ borderTopColor: palette.leaf }}
+                    >
+                        <CardHeader>
+                            <CardTitle
+                                className="text-base"
+                                style={{ color: palette.deep }}
+                            >
+                                Pilih Gejala
+                            </CardTitle>
+                            <CardDescription>
+                                Centang gejala yang terlihat pada tanaman padi
+                                Anda (
+                                <span
+                                    className="font-semibold"
+                                    style={{ color: palette.teal }}
+                                >
+                                    {selectedIds.length}
+                                </span>{' '}
+                                dipilih)
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <motion.div
+                                className="grid gap-3 sm:grid-cols-2"
+                                variants={containerVariants}
+                                initial="hidden"
+                                animate="visible"
+                            >
+                                {symptoms.map((symptom) => {
+                                    const checked = selectedIds.includes(
+                                        symptom.id,
+                                    );
+                                    return (
+                                        <motion.label
+                                            key={symptom.id}
+                                            variants={symptomItemVariants}
+                                            whileHover={{ scale: 1.015 }}
+                                            whileTap={{ scale: 0.985 }}
+                                            className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                                                checked
+                                                    ? 'border-transparent'
+                                                    : 'border-transparent hover:bg-muted/70'
+                                            }`}
+                                            style={
+                                                checked
+                                                    ? {
+                                                          borderColor: `${palette.sage}80`,
+                                                          backgroundColor: `${palette.sage}15`,
+                                                      }
+                                                    : {
+                                                          backgroundColor: `${palette.sand}20`,
+                                                      }
                                             }
-                                            className="mt-0.5"
-                                        />
-                                        <div className="flex-1 space-y-0.5">
-                                            <div className="flex items-center gap-2">
-                                                <Badge
-                                                    variant="outline"
-                                                    className="font-mono text-[10px]"
-                                                >
-                                                    {symptom.code}
-                                                </Badge>
-                                                <span className="text-sm font-medium leading-tight">
-                                                    {symptom.name}
-                                                </span>
+                                        >
+                                            <Checkbox
+                                                checked={checked}
+                                                onCheckedChange={() =>
+                                                    toggleSymptom(symptom.id)
+                                                }
+                                                className="mt-0.5"
+                                            />
+                                            <div className="flex-1 space-y-0.5">
+                                                <div className="flex items-center gap-2">
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="font-mono text-[10px]"
+                                                        style={{
+                                                            borderColor:
+                                                                palette.teal,
+                                                            color: palette.deep,
+                                                        }}
+                                                    >
+                                                        {symptom.code}
+                                                    </Badge>
+                                                    <span className="text-sm font-medium leading-tight">
+                                                        {symptom.name}
+                                                    </span>
+                                                </div>
+                                                {symptom.description && (
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {symptom.description}
+                                                    </p>
+                                                )}
                                             </div>
-                                            {symptom.description && (
-                                                <p className="text-xs text-muted-foreground">
-                                                    {symptom.description}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </label>
-                                );
-                            })}
-                        </div>
-                    </CardContent>
-                    <CardFooter className="flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="text-xs text-muted-foreground">
-                            {selectedIds.length === 0
-                                ? 'Pilih minimal 1 gejala untuk memulai diagnosa.'
-                                : `${selectedIds.length} gejala dipilih.`}
-                        </p>
-                        <Button
-                            onClick={handleDiagnose}
-                            disabled={
-                                selectedIds.length === 0 || diagnosing
-                            }
-                            size="lg"
-                        >
-                            {diagnosing && <Spinner className="size-4" />}
-                            Diagnosa
-                        </Button>
-                    </CardFooter>
-                </Card>
+                                        </motion.label>
+                                    );
+                                })}
+                            </motion.div>
+                        </CardContent>
+                        <CardFooter className="flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <p className="text-xs text-muted-foreground">
+                                {selectedIds.length === 0
+                                    ? 'Pilih minimal 1 gejala untuk memulai diagnosa.'
+                                    : `${selectedIds.length} gejala dipilih.`}
+                            </p>
+                            <motion.div
+                                whileHover={{ scale: 1.03 }}
+                                whileTap={{ scale: 0.97 }}
+                            >
+                                <Button
+                                    onClick={handleDiagnose}
+                                    disabled={
+                                        selectedIds.length === 0 || diagnosing
+                                    }
+                                    size="lg"
+                                    style={{
+                                        backgroundColor:
+                                            selectedIds.length === 0 ||
+                                            diagnosing
+                                                ? undefined
+                                                : palette.deep,
+                                    }}
+                                >
+                                    {diagnosing && (
+                                        <Spinner className="size-4" />
+                                    )}
+                                    Diagnosa
+                                </Button>
+                            </motion.div>
+                        </CardFooter>
+                    </Card>
+                </motion.div>
 
                 {/* --------------------------------------------------------- */}
                 {/* Results                                                   */}
                 {/* --------------------------------------------------------- */}
-                {results !== null && (
-                    <div ref={resultsRef} className="flex flex-col gap-6">
-                        {filteredResults.length === 0 ? (
-                            <Alert>
-                                <AlertTitle>
-                                    Tidak Ditemukan Penyakit
-                                </AlertTitle>
-                                <AlertDescription>
-                                    Gejala yang dipilih tidak cocok dengan
-                                    penyakit manapun dalam basis pengetahuan.
-                                    Coba pilih gejala lain atau konsultasikan
-                                    dengan ahli pertanian.
-                                </AlertDescription>
-                            </Alert>
-                        ) : (
-                            <>
-                                {/* -- Top Result ----------------------------- */}
-                                {topResult && topDisease && (
-                                    <Card className="border-primary/30">
-                                        <CardHeader>
-                                            <div className="flex flex-wrap items-center gap-2">
-                                                <CardTitle className="text-lg">
-                                                    Hasil Diagnosa Utama
-                                                </CardTitle>
-                                                {serverValidated && (
-                                                    <Badge variant="secondary">
-                                                        Tervalidasi Server
-                                                    </Badge>
-                                                )}
-                                            </div>
-                                            <CardDescription>
-                                                Penyakit dengan tingkat
-                                                kepastian tertinggi
-                                            </CardDescription>
-                                        </CardHeader>
-                                        <CardContent className="space-y-5">
-                                            {/* Disease name + CF */}
-                                            <div className="space-y-2">
-                                                <div className="flex flex-wrap items-baseline gap-2">
-                                                    <h3 className="text-xl font-bold">
-                                                        {topResult.disease.name}
-                                                    </h3>
-                                                    {topResult.disease
-                                                        .latin_name && (
-                                                        <span className="text-sm italic text-muted-foreground">
-                                                            (
-                                                            {
-                                                                topResult
-                                                                    .disease
-                                                                    .latin_name
-                                                            }
-                                                            )
-                                                        </span>
-                                                    )}
-                                                </div>
-
-                                                {/* CF bar */}
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center justify-between text-sm">
-                                                        <span className="font-medium">
-                                                            Certainty Factor
-                                                        </span>
-                                                        <span className="font-semibold">
-                                                            {topResult.certaintyFactor.toFixed(
-                                                                2,
-                                                            )}
-                                                            % &mdash;{' '}
-                                                            {cfLabel(
-                                                                topResult.certaintyFactor,
-                                                            )}
-                                                        </span>
-                                                    </div>
-                                                    <div className="h-3 w-full overflow-hidden rounded-full bg-muted">
-                                                        <div
-                                                            className={`h-full rounded-full transition-all duration-500 ${cfColor(topResult.certaintyFactor)}`}
+                <AnimatePresence mode="wait">
+                    {results !== null && (
+                        <motion.div
+                            ref={resultsRef}
+                            className="flex flex-col gap-6"
+                            variants={resultsContainerVariants}
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit"
+                        >
+                            {filteredResults.length === 0 ? (
+                                <motion.div variants={resultCardVariants}>
+                                    <Alert>
+                                        <AlertTitle>
+                                            Tidak Ditemukan Penyakit
+                                        </AlertTitle>
+                                        <AlertDescription>
+                                            Gejala yang dipilih tidak cocok
+                                            dengan penyakit manapun dalam basis
+                                            pengetahuan. Coba pilih gejala lain
+                                            atau konsultasikan dengan ahli
+                                            pertanian.
+                                        </AlertDescription>
+                                    </Alert>
+                                </motion.div>
+                            ) : (
+                                <>
+                                    {/* -- Top Result ----------------------------- */}
+                                    {topResult && topDisease && (
+                                        <motion.div
+                                            variants={resultCardVariants}
+                                        >
+                                            <Card
+                                                className="overflow-hidden border-l-4"
+                                                style={{
+                                                    borderLeftColor:
+                                                        palette.deep,
+                                                }}
+                                            >
+                                                <CardHeader>
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        <CardTitle
+                                                            className="text-lg"
                                                             style={{
-                                                                width: `${Math.min(topResult.certaintyFactor, 100)}%`,
+                                                                color: palette.deep,
                                                             }}
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                <p className="text-sm text-muted-foreground">
-                                                    Gejala cocok:{' '}
-                                                    {topResult.matchingSymptoms}{' '}
-                                                    dari{' '}
-                                                    {topResult.totalSymptoms}{' '}
-                                                    gejala
-                                                </p>
-                                            </div>
-
-                                            {/* Description */}
-                                            <div className="space-y-1">
-                                                <h4 className="text-sm font-semibold">
-                                                    Deskripsi
-                                                </h4>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {topResult.disease
-                                                        .description}
-                                                </p>
-                                            </div>
-
-                                            {/* Cause */}
-                                            <div className="space-y-1">
-                                                <h4 className="text-sm font-semibold">
-                                                    Penyebab
-                                                </h4>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {topResult.disease.cause}
-                                                </p>
-                                            </div>
-
-                                            {/* Matched symptoms */}
-                                            <div className="space-y-2">
-                                                <h4 className="text-sm font-semibold">
-                                                    Gejala yang Cocok
-                                                </h4>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {topResult.matchedSymptomDetails.map(
-                                                        ({ symptom, weight }) => (
-                                                            <Badge
-                                                                key={symptom.id}
-                                                                variant="outline"
-                                                                className="gap-1.5"
+                                                        >
+                                                            Hasil Diagnosa Utama
+                                                        </CardTitle>
+                                                        {serverValidated && (
+                                                            <motion.div
+                                                                initial={{
+                                                                    opacity: 0,
+                                                                    scale: 0.5,
+                                                                }}
+                                                                animate={{
+                                                                    opacity: 1,
+                                                                    scale: 1,
+                                                                }}
+                                                                transition={{
+                                                                    type: 'spring',
+                                                                    stiffness: 400,
+                                                                    damping: 15,
+                                                                }}
                                                             >
-                                                                <span className="font-mono text-[10px]">
-                                                                    {symptom.code}
-                                                                </span>
-                                                                {symptom.name}
-                                                                <span className="text-muted-foreground">
-                                                                    (
-                                                                    {(
-                                                                        weight *
-                                                                        100
-                                                                    ).toFixed(
-                                                                        0,
-                                                                    )}
-                                                                    %)
-                                                                </span>
-                                                            </Badge>
-                                                        ),
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            {/* Treatments */}
-                                            {topDisease.treatments.length >
-                                                0 && (
-                                                <div className="space-y-3">
-                                                    <h4 className="text-sm font-semibold">
-                                                        Penanganan &amp; Dosis
-                                                    </h4>
-                                                    <div className="grid gap-3">
-                                                        {topDisease.treatments
-                                                            .sort(
-                                                                (a, b) =>
-                                                                    a.priority -
-                                                                    b.priority,
-                                                            )
-                                                            .map(
-                                                                (treatment) => (
-                                                                    <div
-                                                                        key={
-                                                                            treatment.id
-                                                                        }
-                                                                        className="rounded-lg border bg-muted/30 p-3"
-                                                                    >
-                                                                        <div className="mb-1.5 flex items-center gap-2">
-                                                                            <Badge
-                                                                                variant={
-                                                                                    TREATMENT_TYPE_VARIANTS[
-                                                                                        treatment
-                                                                                            .type
-                                                                                    ]
-                                                                                }
-                                                                                className="text-[10px]"
-                                                                            >
-                                                                                {
-                                                                                    TREATMENT_TYPE_LABELS[
-                                                                                        treatment
-                                                                                            .type
-                                                                                    ]
-                                                                                }
-                                                                            </Badge>
-                                                                        </div>
-                                                                        <p className="text-sm">
-                                                                            {
-                                                                                treatment.description
-                                                                            }
-                                                                        </p>
-                                                                        {treatment.dosage && (
-                                                                            <p className="mt-1 text-xs font-medium text-muted-foreground">
-                                                                                Dosis:{' '}
-                                                                                {
-                                                                                    treatment.dosage
-                                                                                }
-                                                                                {treatment.dosage_unit
-                                                                                    ? ` ${treatment.dosage_unit}`
-                                                                                    : ''}
-                                                                            </p>
-                                                                        )}
-                                                                    </div>
-                                                                ),
-                                                            )}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </CardContent>
-                                    </Card>
-                                )}
-
-                                {/* -- All ranked results ---------------------- */}
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="text-base">
-                                            Semua Kemungkinan Penyakit
-                                        </CardTitle>
-                                        <CardDescription>
-                                            Diurutkan berdasarkan Certainty
-                                            Factor tertinggi
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="space-y-3">
-                                            {filteredResults.map(
-                                                (result, index) => (
-                                                    <div
-                                                        key={result.disease.id}
-                                                        className={`rounded-lg border p-3 ${
-                                                            index === 0
-                                                                ? 'border-primary/30 bg-primary/5'
-                                                                : ''
-                                                        }`}
-                                                    >
-                                                        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="flex size-6 items-center justify-center rounded-full bg-muted text-xs font-bold">
-                                                                    {index + 1}
-                                                                </span>
-                                                                <span className="text-sm font-semibold">
-                                                                    {
-                                                                        result
-                                                                            .disease
-                                                                            .name
-                                                                    }
-                                                                </span>
-                                                                {result.disease
-                                                                    .latin_name && (
-                                                                    <span className="text-xs italic text-muted-foreground">
-                                                                        (
-                                                                        {
-                                                                            result
-                                                                                .disease
-                                                                                .latin_name
-                                                                        }
-                                                                        )
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                            <div className="flex items-center gap-2">
                                                                 <Badge
-                                                                    variant={
-                                                                        result.certaintyFactor >=
-                                                                        60
-                                                                            ? 'default'
-                                                                            : result.certaintyFactor >=
-                                                                                  30
-                                                                              ? 'secondary'
-                                                                              : 'outline'
-                                                                    }
+                                                                    variant="secondary"
+                                                                    style={{
+                                                                        backgroundColor: `${palette.sage}30`,
+                                                                        color: palette.deep,
+                                                                    }}
                                                                 >
-                                                                    {result.certaintyFactor.toFixed(
-                                                                        2,
-                                                                    )}
-                                                                    %
+                                                                    Tervalidasi
+                                                                    Server
                                                                 </Badge>
-                                                                <span className="text-xs text-muted-foreground">
-                                                                    {cfLabel(
-                                                                        result.certaintyFactor,
-                                                                    )}
+                                                            </motion.div>
+                                                        )}
+                                                    </div>
+                                                    <CardDescription>
+                                                        Penyakit dengan tingkat
+                                                        kepastian tertinggi
+                                                    </CardDescription>
+                                                </CardHeader>
+                                                <CardContent className="space-y-5">
+                                                    {/* Disease name + CF */}
+                                                    <div className="space-y-2">
+                                                        <div className="flex flex-wrap items-baseline gap-2">
+                                                            <h3
+                                                                className="text-xl font-bold"
+                                                                style={{
+                                                                    color: palette.deep,
+                                                                }}
+                                                            >
+                                                                {
+                                                                    topResult
+                                                                        .disease
+                                                                        .name
+                                                                }
+                                                            </h3>
+                                                            {topResult.disease
+                                                                .latin_name && (
+                                                                <span className="text-sm italic text-muted-foreground">
+                                                                    (
+                                                                    {
+                                                                        topResult
+                                                                            .disease
+                                                                            .latin_name
+                                                                    }
+                                                                    )
                                                                 </span>
-                                                            </div>
+                                                            )}
                                                         </div>
 
-                                                        {/* CF progress bar */}
-                                                        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-                                                            <div
-                                                                className={`h-full rounded-full transition-all duration-500 ${cfColor(result.certaintyFactor)}`}
-                                                                style={{
-                                                                    width: `${Math.min(result.certaintyFactor, 100)}%`,
-                                                                }}
+                                                        {/* CF bar */}
+                                                        <div className="space-y-1">
+                                                            <div className="flex items-center justify-between text-sm">
+                                                                <span
+                                                                    className="font-medium"
+                                                                    style={{
+                                                                        color: palette.teal,
+                                                                    }}
+                                                                >
+                                                                    Certainty
+                                                                    Factor
+                                                                </span>
+                                                                <span className="font-semibold">
+                                                                    {topResult.certaintyFactor.toFixed(
+                                                                        2,
+                                                                    )}
+                                                                    % &mdash;{' '}
+                                                                    {cfLabel(
+                                                                        topResult.certaintyFactor,
+                                                                    )}
+                                                                </span>
+                                                            </div>
+                                                            <AnimatedCFBar
+                                                                cf={
+                                                                    topResult.certaintyFactor
+                                                                }
                                                             />
                                                         </div>
 
-                                                        <p className="mt-1.5 text-xs text-muted-foreground">
+                                                        <p className="text-sm text-muted-foreground">
                                                             Gejala cocok:{' '}
                                                             {
-                                                                result.matchingSymptoms
+                                                                topResult.matchingSymptoms
                                                             }{' '}
                                                             dari{' '}
                                                             {
-                                                                result.totalSymptoms
-                                                            }
+                                                                topResult.totalSymptoms
+                                                            }{' '}
+                                                            gejala
                                                         </p>
                                                     </div>
-                                                ),
-                                            )}
-                                        </div>
-                                    </CardContent>
-                                </Card>
 
-                                {/* -- 9 Variables Summary --------------------- */}
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="text-base">
-                                            Ringkasan 9 Variabel
-                                        </CardTitle>
-                                        <CardDescription>
-                                            Data lengkap yang digunakan dalam
-                                            proses diagnosa
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                            {/* VAR 1: Gejala */}
-                                            <VariableItem
-                                                label="VAR 1 — Gejala Terpilih"
-                                                value={`${selectedIds.length} gejala`}
-                                            />
-                                            {/* VAR 2: Penyakit Terdeteksi */}
-                                            <VariableItem
-                                                label="VAR 2 — Penyakit Terdeteksi"
-                                                value={
-                                                    topResult?.disease.name ??
-                                                    '-'
-                                                }
-                                            />
-                                            {/* VAR 3: Certainty Factor */}
-                                            <VariableItem
-                                                label="VAR 3 — Certainty Factor"
-                                                value={
-                                                    topResult
-                                                        ? `${topResult.certaintyFactor.toFixed(2)}%`
-                                                        : '-'
-                                                }
-                                            />
-                                            {/* VAR 4: Suhu */}
-                                            <VariableItem
-                                                label="VAR 4 — Suhu"
-                                                value={
-                                                    envData?.weather
-                                                        ? `${envData.weather.temperature}°C`
-                                                        : 'Tidak tersedia'
-                                                }
-                                            />
-                                            {/* VAR 5: Kelembapan */}
-                                            <VariableItem
-                                                label="VAR 5 — Kelembapan"
-                                                value={
-                                                    envData?.weather
-                                                        ? `${envData.weather.humidity}%`
-                                                        : 'Tidak tersedia'
-                                                }
-                                            />
-                                            {/* VAR 6: Koordinat */}
-                                            <VariableItem
-                                                label="VAR 6 — Titik Koordinat"
-                                                value={
-                                                    envData?.position
-                                                        ? formatCoordinates(
-                                                              envData.position
-                                                                  .latitude,
-                                                              envData.position
-                                                                  .longitude,
-                                                          )
-                                                        : 'Tidak tersedia'
-                                                }
-                                            />
-                                            {/* VAR 7: Koneksi */}
-                                            <VariableItem
-                                                label="VAR 7 — Status Koneksi"
-                                                value={
-                                                    envData?.connectionStatus ===
-                                                    'online'
-                                                        ? 'Online'
-                                                        : 'Offline'
-                                                }
-                                            />
-                                            {/* VAR 8: Jumlah Penyakit Kandidat */}
-                                            <VariableItem
-                                                label="VAR 8 — Kandidat Penyakit"
-                                                value={`${filteredResults.length} penyakit`}
-                                            />
-                                            {/* VAR 9: Validasi Server */}
-                                            <VariableItem
-                                                label="VAR 9 — Validasi Server"
-                                                value={
-                                                    serverValidated
-                                                        ? 'Tervalidasi'
-                                                        : 'Belum divalidasi'
-                                                }
-                                            />
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                                    {/* Description */}
+                                                    <motion.div
+                                                        className="space-y-1"
+                                                        variants={fadeInUp}
+                                                    >
+                                                        <h4
+                                                            className="text-sm font-semibold"
+                                                            style={{
+                                                                color: palette.teal,
+                                                            }}
+                                                        >
+                                                            Deskripsi
+                                                        </h4>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {
+                                                                topResult
+                                                                    .disease
+                                                                    .description
+                                                            }
+                                                        </p>
+                                                    </motion.div>
 
-                                {/* -- Save Button ----------------------------- */}
-                                <div className="flex justify-end">
-                                    <Button
-                                        onClick={handleSave}
-                                        disabled={saving}
-                                        size="lg"
+                                                    {/* Cause */}
+                                                    <motion.div
+                                                        className="space-y-1"
+                                                        variants={fadeInUp}
+                                                    >
+                                                        <h4
+                                                            className="text-sm font-semibold"
+                                                            style={{
+                                                                color: palette.teal,
+                                                            }}
+                                                        >
+                                                            Penyebab
+                                                        </h4>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {
+                                                                topResult
+                                                                    .disease
+                                                                    .cause
+                                                            }
+                                                        </p>
+                                                    </motion.div>
+
+                                                    {/* Matched symptoms */}
+                                                    <motion.div
+                                                        className="space-y-2"
+                                                        variants={fadeInUp}
+                                                    >
+                                                        <h4
+                                                            className="text-sm font-semibold"
+                                                            style={{
+                                                                color: palette.teal,
+                                                            }}
+                                                        >
+                                                            Gejala yang Cocok
+                                                        </h4>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {topResult.matchedSymptomDetails.map(
+                                                                (
+                                                                    {
+                                                                        symptom,
+                                                                        weight,
+                                                                    },
+                                                                    i,
+                                                                ) => (
+                                                                    <motion.div
+                                                                        key={
+                                                                            symptom.id
+                                                                        }
+                                                                        initial={{
+                                                                            opacity: 0,
+                                                                            scale: 0.8,
+                                                                        }}
+                                                                        animate={{
+                                                                            opacity: 1,
+                                                                            scale: 1,
+                                                                        }}
+                                                                        transition={{
+                                                                            delay:
+                                                                                0.3 +
+                                                                                i *
+                                                                                    0.05,
+                                                                            type: 'spring',
+                                                                            stiffness: 300,
+                                                                            damping: 20,
+                                                                        }}
+                                                                    >
+                                                                        <Badge
+                                                                            variant="outline"
+                                                                            className="gap-1.5"
+                                                                            style={{
+                                                                                borderColor: `${palette.leaf}80`,
+                                                                                backgroundColor: `${palette.leaf}10`,
+                                                                            }}
+                                                                        >
+                                                                            <span className="font-mono text-[10px]">
+                                                                                {
+                                                                                    symptom.code
+                                                                                }
+                                                                            </span>
+                                                                            {
+                                                                                symptom.name
+                                                                            }
+                                                                            <span className="text-muted-foreground">
+                                                                                (
+                                                                                {(
+                                                                                    weight *
+                                                                                    100
+                                                                                ).toFixed(
+                                                                                    0,
+                                                                                )}
+                                                                                %)
+                                                                            </span>
+                                                                        </Badge>
+                                                                    </motion.div>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                    </motion.div>
+
+                                                    {/* Treatments */}
+                                                    {topDisease.treatments
+                                                        .length > 0 && (
+                                                        <motion.div
+                                                            className="space-y-3"
+                                                            variants={fadeInUp}
+                                                        >
+                                                            <h4
+                                                                className="text-sm font-semibold"
+                                                                style={{
+                                                                    color: palette.teal,
+                                                                }}
+                                                            >
+                                                                Penanganan &amp;
+                                                                Dosis
+                                                            </h4>
+                                                            <div className="grid gap-3">
+                                                                {topDisease.treatments
+                                                                    .sort(
+                                                                        (
+                                                                            a,
+                                                                            b,
+                                                                        ) =>
+                                                                            a.priority -
+                                                                            b.priority,
+                                                                    )
+                                                                    .map(
+                                                                        (
+                                                                            treatment,
+                                                                            i,
+                                                                        ) => (
+                                                                            <motion.div
+                                                                                key={
+                                                                                    treatment.id
+                                                                                }
+                                                                                className="rounded-lg border p-3"
+                                                                                style={{
+                                                                                    backgroundColor: `${palette.sand}15`,
+                                                                                }}
+                                                                                initial={{
+                                                                                    opacity: 0,
+                                                                                    x: -20,
+                                                                                }}
+                                                                                animate={{
+                                                                                    opacity: 1,
+                                                                                    x: 0,
+                                                                                }}
+                                                                                transition={{
+                                                                                    delay:
+                                                                                        0.4 +
+                                                                                        i *
+                                                                                            0.08,
+                                                                                }}
+                                                                            >
+                                                                                <div className="mb-1.5 flex items-center gap-2">
+                                                                                    <Badge
+                                                                                        variant={
+                                                                                            TREATMENT_TYPE_VARIANTS[
+                                                                                                treatment
+                                                                                                    .type
+                                                                                            ]
+                                                                                        }
+                                                                                        className="text-[10px]"
+                                                                                    >
+                                                                                        {
+                                                                                            TREATMENT_TYPE_LABELS[
+                                                                                                treatment
+                                                                                                    .type
+                                                                                            ]
+                                                                                        }
+                                                                                    </Badge>
+                                                                                </div>
+                                                                                <p className="text-sm">
+                                                                                    {
+                                                                                        treatment.description
+                                                                                    }
+                                                                                </p>
+                                                                                {treatment.dosage && (
+                                                                                    <p className="mt-1 text-xs font-medium text-muted-foreground">
+                                                                                        Dosis:{' '}
+                                                                                        {
+                                                                                            treatment.dosage
+                                                                                        }
+                                                                                        {treatment.dosage_unit
+                                                                                            ? ` ${treatment.dosage_unit}`
+                                                                                            : ''}
+                                                                                    </p>
+                                                                                )}
+                                                                            </motion.div>
+                                                                        ),
+                                                                    )}
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </CardContent>
+                                            </Card>
+                                        </motion.div>
+                                    )}
+
+                                    {/* -- All ranked results ---------------------- */}
+                                    <motion.div variants={resultCardVariants}>
+                                        <Card
+                                            className="overflow-hidden border-t-4"
+                                            style={{
+                                                borderTopColor: palette.sage,
+                                            }}
+                                        >
+                                            <CardHeader>
+                                                <CardTitle
+                                                    className="text-base"
+                                                    style={{
+                                                        color: palette.deep,
+                                                    }}
+                                                >
+                                                    Semua Kemungkinan Penyakit
+                                                </CardTitle>
+                                                <CardDescription>
+                                                    Diurutkan berdasarkan
+                                                    Certainty Factor tertinggi
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="space-y-3">
+                                                    {filteredResults.map(
+                                                        (result, index) => (
+                                                            <motion.div
+                                                                key={
+                                                                    result
+                                                                        .disease
+                                                                        .id
+                                                                }
+                                                                className={`rounded-lg border p-3 ${
+                                                                    index === 0
+                                                                        ? 'border-transparent'
+                                                                        : ''
+                                                                }`}
+                                                                style={
+                                                                    index === 0
+                                                                        ? {
+                                                                              borderColor: `${palette.teal}50`,
+                                                                              backgroundColor: `${palette.teal}08`,
+                                                                          }
+                                                                        : undefined
+                                                                }
+                                                                initial={{
+                                                                    opacity: 0,
+                                                                    y: 20,
+                                                                }}
+                                                                animate={{
+                                                                    opacity: 1,
+                                                                    y: 0,
+                                                                }}
+                                                                transition={{
+                                                                    delay:
+                                                                        0.1 +
+                                                                        index *
+                                                                            0.08,
+                                                                    type: 'spring',
+                                                                    stiffness: 260,
+                                                                    damping: 20,
+                                                                }}
+                                                            >
+                                                                <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span
+                                                                            className="flex size-6 items-center justify-center rounded-full text-xs font-bold text-white"
+                                                                            style={{
+                                                                                backgroundColor:
+                                                                                    index ===
+                                                                                    0
+                                                                                        ? palette.deep
+                                                                                        : index ===
+                                                                                            1
+                                                                                          ? palette.teal
+                                                                                          : palette.leaf,
+                                                                            }}
+                                                                        >
+                                                                            {index +
+                                                                                1}
+                                                                        </span>
+                                                                        <span className="text-sm font-semibold">
+                                                                            {
+                                                                                result
+                                                                                    .disease
+                                                                                    .name
+                                                                            }
+                                                                        </span>
+                                                                        {result
+                                                                            .disease
+                                                                            .latin_name && (
+                                                                            <span className="text-xs italic text-muted-foreground">
+                                                                                (
+                                                                                {
+                                                                                    result
+                                                                                        .disease
+                                                                                        .latin_name
+                                                                                }
+                                                                                )
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <Badge
+                                                                            variant={
+                                                                                result.certaintyFactor >=
+                                                                                60
+                                                                                    ? 'default'
+                                                                                    : result.certaintyFactor >=
+                                                                                        30
+                                                                                      ? 'secondary'
+                                                                                      : 'outline'
+                                                                            }
+                                                                            style={
+                                                                                result.certaintyFactor >=
+                                                                                60
+                                                                                    ? {
+                                                                                          backgroundColor:
+                                                                                              palette.deep,
+                                                                                          color: '#fff',
+                                                                                      }
+                                                                                    : result.certaintyFactor >=
+                                                                                        30
+                                                                                      ? {
+                                                                                            backgroundColor: `${palette.sage}40`,
+                                                                                            color: palette.deep,
+                                                                                        }
+                                                                                      : undefined
+                                                                            }
+                                                                        >
+                                                                            {result.certaintyFactor.toFixed(
+                                                                                2,
+                                                                            )}
+                                                                            %
+                                                                        </Badge>
+                                                                        <span className="text-xs text-muted-foreground">
+                                                                            {cfLabel(
+                                                                                result.certaintyFactor,
+                                                                            )}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* CF progress bar */}
+                                                                <AnimatedCFBar
+                                                                    cf={
+                                                                        result.certaintyFactor
+                                                                    }
+                                                                    height="h-2"
+                                                                />
+
+                                                                <p className="mt-1.5 text-xs text-muted-foreground">
+                                                                    Gejala
+                                                                    cocok:{' '}
+                                                                    {
+                                                                        result.matchingSymptoms
+                                                                    }{' '}
+                                                                    dari{' '}
+                                                                    {
+                                                                        result.totalSymptoms
+                                                                    }
+                                                                </p>
+                                                            </motion.div>
+                                                        ),
+                                                    )}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </motion.div>
+
+                                    {/* -- 9 Variables Summary --------------------- */}
+                                    <motion.div variants={resultCardVariants}>
+                                        <Card
+                                            className="overflow-hidden border-t-4"
+                                            style={{
+                                                borderTopColor: palette.sand,
+                                            }}
+                                        >
+                                            <CardHeader>
+                                                <CardTitle
+                                                    className="text-base"
+                                                    style={{
+                                                        color: palette.deep,
+                                                    }}
+                                                >
+                                                    Ringkasan 9 Variabel
+                                                </CardTitle>
+                                                <CardDescription>
+                                                    Data lengkap yang digunakan
+                                                    dalam proses diagnosa
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <motion.div
+                                                    className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+                                                    variants={
+                                                        containerVariants
+                                                    }
+                                                    initial="hidden"
+                                                    animate="visible"
+                                                >
+                                                    {/* VAR 1: Gejala */}
+                                                    <VariableItem
+                                                        label="VAR 1 — Gejala Terpilih"
+                                                        value={`${selectedIds.length} gejala`}
+                                                    />
+                                                    {/* VAR 2: Penyakit Terdeteksi */}
+                                                    <VariableItem
+                                                        label="VAR 2 — Penyakit Terdeteksi"
+                                                        value={
+                                                            topResult?.disease
+                                                                .name ?? '-'
+                                                        }
+                                                    />
+                                                    {/* VAR 3: Certainty Factor */}
+                                                    <VariableItem
+                                                        label="VAR 3 — Certainty Factor"
+                                                        value={
+                                                            topResult
+                                                                ? `${topResult.certaintyFactor.toFixed(2)}%`
+                                                                : '-'
+                                                        }
+                                                    />
+                                                    {/* VAR 4: Suhu */}
+                                                    <VariableItem
+                                                        label="VAR 4 — Suhu"
+                                                        value={
+                                                            envData?.weather
+                                                                ? `${envData.weather.temperature}°C`
+                                                                : 'Tidak tersedia'
+                                                        }
+                                                    />
+                                                    {/* VAR 5: Kelembapan */}
+                                                    <VariableItem
+                                                        label="VAR 5 — Kelembapan"
+                                                        value={
+                                                            envData?.weather
+                                                                ? `${envData.weather.humidity}%`
+                                                                : 'Tidak tersedia'
+                                                        }
+                                                    />
+                                                    {/* VAR 6: Koordinat */}
+                                                    <VariableItem
+                                                        label="VAR 6 — Titik Koordinat"
+                                                        value={
+                                                            envData?.position
+                                                                ? formatCoordinates(
+                                                                      envData
+                                                                          .position
+                                                                          .latitude,
+                                                                      envData
+                                                                          .position
+                                                                          .longitude,
+                                                                  )
+                                                                : 'Tidak tersedia'
+                                                        }
+                                                    />
+                                                    {/* VAR 7: Koneksi */}
+                                                    <VariableItem
+                                                        label="VAR 7 — Status Koneksi"
+                                                        value={
+                                                            envData?.connectionStatus ===
+                                                            'online'
+                                                                ? 'Online'
+                                                                : 'Offline'
+                                                        }
+                                                    />
+                                                    {/* VAR 8: Jumlah Penyakit Kandidat */}
+                                                    <VariableItem
+                                                        label="VAR 8 — Kandidat Penyakit"
+                                                        value={`${filteredResults.length} penyakit`}
+                                                    />
+                                                    {/* VAR 9: Validasi Server */}
+                                                    <VariableItem
+                                                        label="VAR 9 — Validasi Server"
+                                                        value={
+                                                            serverValidated
+                                                                ? 'Tervalidasi'
+                                                                : 'Belum divalidasi'
+                                                        }
+                                                    />
+                                                </motion.div>
+                                            </CardContent>
+                                        </Card>
+                                    </motion.div>
+
+                                    {/* -- Save Button ----------------------------- */}
+                                    <motion.div
+                                        className="flex justify-end"
+                                        variants={resultCardVariants}
                                     >
-                                        {saving && (
-                                            <Spinner className="size-4" />
-                                        )}
-                                        Simpan Hasil
-                                    </Button>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                )}
+                                        <motion.div
+                                            whileHover={{ scale: 1.03 }}
+                                            whileTap={{ scale: 0.97 }}
+                                        >
+                                            <Button
+                                                onClick={handleSave}
+                                                disabled={saving}
+                                                size="lg"
+                                                style={{
+                                                    backgroundColor: saving
+                                                        ? undefined
+                                                        : palette.teal,
+                                                }}
+                                            >
+                                                {saving && (
+                                                    <Spinner className="size-4" />
+                                                )}
+                                                Simpan Hasil
+                                            </Button>
+                                        </motion.div>
+                                    </motion.div>
+                                </>
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </>
     );
@@ -862,10 +1341,23 @@ export default function ExpertSystem({ symptoms, diseases }: Props) {
 
 function VariableItem({ label, value }: { label: string; value: string }) {
     return (
-        <div className="rounded-lg border bg-muted/30 p-3">
-            <p className="text-xs font-medium text-muted-foreground">{label}</p>
+        <motion.div
+            className="rounded-lg border p-3"
+            style={{ backgroundColor: `${palette.sand}15` }}
+            variants={symptomItemVariants}
+            whileHover={{
+                scale: 1.02,
+                backgroundColor: `${palette.sage}18`,
+            }}
+        >
+            <p
+                className="text-xs font-medium"
+                style={{ color: palette.teal }}
+            >
+                {label}
+            </p>
             <p className="mt-0.5 text-sm font-semibold">{value}</p>
-        </div>
+        </motion.div>
     );
 }
 
