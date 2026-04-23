@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
+import { Leaf } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
-import AppLogoIcon from '@/components/app-logo-icon';
 import {
     Card,
     CardContent,
@@ -24,11 +24,12 @@ export default function AuthCardLayout({
             <div className="flex w-full max-w-md flex-col gap-6">
                 <Link
                     href={home()}
-                    className="flex items-center gap-2 self-center font-medium"
+                    className="flex flex-col items-center gap-2 self-center font-medium"
                 >
-                    <div className="flex h-9 w-9 items-center justify-center">
-                        <AppLogoIcon className="size-9 fill-current text-black dark:text-white" />
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#50808E] to-[#69A297] shadow-lg shadow-[#50808E]/25">
+                        <Leaf className="h-7 w-7 text-white" />
                     </div>
+                    <span className="text-xl font-bold tracking-tight">Mapan</span>
                 </Link>
 
                 <div className="flex flex-col gap-6">
