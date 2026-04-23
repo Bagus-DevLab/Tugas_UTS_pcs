@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\DetectionManagementController;
+use App\Http\Controllers\Admin\DiseaseManagementController;
+use App\Http\Controllers\Admin\SymptomManagementController;
+use App\Http\Controllers\Admin\TreatmentManagementController;
+use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DetectionController;
 use App\Http\Controllers\DiseaseController;
@@ -27,12 +32,53 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('expert-system/diagnose', [ExpertSystemController::class, 'diagnose'])->middleware('throttle:20,1')->name('expert-system.diagnose');
     Route::post('expert-system', [ExpertSystemController::class, 'store'])->middleware('throttle:10,1')->name('expert-system.store');
 
+    // Knowledge Base (Diseases) - read-only for all users
+    Route::get('diseases', [DiseaseController::class, 'index'])->name('diseases.index');
+    Route::get('diseases/{disease:slug}', [DiseaseController::class, 'show'])->name('diseases.show');
+
     // Weather API Proxy (hides API key from frontend)
     Route::get('api/weather', [WeatherController::class, 'show'])->middleware('throttle:30,1')->name('api.weather');
 
-    // Knowledge Base (Diseases)
-    Route::get('diseases', [DiseaseController::class, 'index'])->name('diseases.index');
-    Route::get('diseases/{disease:slug}', [DiseaseController::class, 'show'])->name('diseases.show');
+    // ===================================================================
+    // Admin routes (admin + super_admin)
+    // ===================================================================
+    Route::middleware(['role:super_admin,admin'])->prefix('admin')->name('admin.')->group(function () {
+        // Disease Management (CRUD)
+        Route::get('diseases', [DiseaseManagementController::class, 'index'])->name('diseases.index');
+        Route::get('diseases/create', [DiseaseManagementController::class, 'create'])->name('diseases.create');
+        Route::post('diseases', [DiseaseManagementController::class, 'store'])->name('diseases.store');
+        Route::get('diseases/{disease}/edit', [DiseaseManagementController::class, 'edit'])->name('diseases.edit');
+        Route::put('diseases/{disease}', [DiseaseManagementController::class, 'update'])->name('diseases.update');
+        Route::delete('diseases/{disease}', [DiseaseManagementController::class, 'destroy'])->name('diseases.destroy');
+
+        // Symptom Management (CRUD)
+        Route::get('symptoms', [SymptomManagementController::class, 'index'])->name('symptoms.index');
+        Route::post('symptoms', [SymptomManagementController::class, 'store'])->name('symptoms.store');
+        Route::put('symptoms/{symptom}', [SymptomManagementController::class, 'update'])->name('symptoms.update');
+        Route::delete('symptoms/{symptom}', [SymptomManagementController::class, 'destroy'])->name('symptoms.destroy');
+
+        // Treatment Management (CRUD)
+        Route::get('treatments', [TreatmentManagementController::class, 'index'])->name('treatments.index');
+        Route::post('treatments', [TreatmentManagementController::class, 'store'])->name('treatments.store');
+        Route::put('treatments/{treatment}', [TreatmentManagementController::class, 'update'])->name('treatments.update');
+        Route::delete('treatments/{treatment}', [TreatmentManagementController::class, 'destroy'])->name('treatments.destroy');
+
+        // All Detections (view all users' detections)
+        Route::get('detections', [DetectionManagementController::class, 'index'])->name('detections.index');
+        Route::get('detections/{detection}', [DetectionManagementController::class, 'show'])->name('detections.show');
+        Route::delete('detections/{detection}', [DetectionManagementController::class, 'destroy'])->name('detections.destroy');
+    });
+
+    // ===================================================================
+    // Super Admin only routes
+    // ===================================================================
+    Route::middleware(['role:super_admin'])->prefix('admin')->name('admin.')->group(function () {
+        // User Management
+        Route::get('users', [UserManagementController::class, 'index'])->name('users.index');
+        Route::get('users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
+        Route::put('users/{user}', [UserManagementController::class, 'update'])->name('users.update');
+        Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
+    });
 });
 
 require __DIR__.'/settings.php';

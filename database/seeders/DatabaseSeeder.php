@@ -13,11 +13,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Create default users with different roles
+        User::factory()->create([
+            'name' => 'Super Admin',
+            'email' => 'superadmin@mapan.test',
+            'role' => User::ROLE_SUPER_ADMIN,
+        ]);
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin',
+            'email' => 'admin@mapan.test',
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        User::factory()->create([
+            'name' => 'User',
+            'email' => 'user@mapan.test',
+            'role' => User::ROLE_USER,
         ]);
 
         $this->call([
