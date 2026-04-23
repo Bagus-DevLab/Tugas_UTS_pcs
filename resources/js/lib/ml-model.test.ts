@@ -3,15 +3,21 @@ import { getTopPrediction, CLASS_LABELS  } from './ml-model';
 import type {Prediction} from './ml-model';
 
 describe('CLASS_LABELS', () => {
-    it('has 5 classes', () => {
-        expect(CLASS_LABELS).toHaveLength(5);
+    it('has 11 classes', () => {
+        expect(CLASS_LABELS).toHaveLength(11);
     });
 
     it('contains all expected disease classes', () => {
         expect(CLASS_LABELS).toContain('Bacterial Leaf Blight');
+        expect(CLASS_LABELS).toContain('Bacterial Leaf Streak');
+        expect(CLASS_LABELS).toContain('Bacterial Panicle Blight');
         expect(CLASS_LABELS).toContain('Blast');
         expect(CLASS_LABELS).toContain('Brown Spot');
+        expect(CLASS_LABELS).toContain('Dead Heart');
+        expect(CLASS_LABELS).toContain('Downy Mildew');
         expect(CLASS_LABELS).toContain('Healthy');
+        expect(CLASS_LABELS).toContain('Hispa');
+        expect(CLASS_LABELS).toContain('Leaf Smut');
         expect(CLASS_LABELS).toContain('Tungro');
     });
 

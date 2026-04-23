@@ -3,6 +3,7 @@ tensorflowjs>=4.0.0
 numpy
 Pillow
 matplotlib
+seaborn
 scikit-learn
 kagglehub
 opencv-python>=4.8.0

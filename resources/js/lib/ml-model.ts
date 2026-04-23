@@ -2,9 +2,15 @@ import * as tf from '@tensorflow/tfjs';
 
 export const CLASS_LABELS = [
     'Bacterial Leaf Blight',
+    'Bacterial Leaf Streak',
+    'Bacterial Panicle Blight',
     'Blast',
     'Brown Spot',
+    'Dead Heart',
+    'Downy Mildew',
     'Healthy',
+    'Hispa',
+    'Leaf Smut',
     'Tungro',
 ] as const;
 

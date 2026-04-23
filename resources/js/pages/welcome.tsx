@@ -110,7 +110,13 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
         { name: 'Blast', latin: 'Pyricularia oryzae', color: P.deep },
         { name: 'Brown Spot', latin: 'Bipolaris oryzae', color: P.leaf },
         { name: 'Tungro', latin: 'Rice Tungro Virus', color: P.teal },
-        { name: 'BLB', latin: 'Xanthomonas oryzae', color: P.sage },
+        { name: 'BLB', latin: 'Xanthomonas oryzae pv. oryzae', color: P.sage },
+        { name: 'Hispa', latin: 'Dicladispa armigera', color: P.deep },
+        { name: 'Dead Heart', latin: 'Scirpophaga incertulas', color: P.teal },
+        { name: 'Downy Mildew', latin: 'Sclerophthora macrospora', color: P.leaf },
+        { name: 'Leaf Streak', latin: 'X. oryzae pv. oryzicola', color: P.sage },
+        { name: 'Panicle Blight', latin: 'Burkholderia glumae', color: P.deep },
+        { name: 'Leaf Smut', latin: 'Entyloma oryzae', color: P.teal },
         { name: 'Healthy', latin: 'Tanaman Sehat', color: P.sand },
     ];
 
@@ -295,8 +301,8 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                     className="mt-12 flex gap-8"
                                 >
                                     {[
-                                        { value: 5, suffix: '', label: 'Kelas Penyakit' },
-                                        { value: 20, suffix: '+', label: 'Gejala Terdeteksi' },
+                                        { value: 11, suffix: '', label: 'Kelas Penyakit' },
+                                        { value: 47, suffix: '', label: 'Gejala Terdeteksi' },
                                         { value: 9, suffix: '', label: 'Variabel Data' },
                                     ].map((stat, i) => (
                                         <div key={i}>
@@ -400,7 +406,7 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                     >
                                         <div className="flex items-center gap-2">
                                             <div className="h-2 w-2 rounded-full bg-[#84B59F]" />
-                                            <p className="text-xs font-bold text-[#50808E]">5 Kelas Penyakit</p>
+                                            <p className="text-xs font-bold text-[#50808E]">11 Kelas Penyakit</p>
                                         </div>
                                     </motion.div>
 
@@ -563,9 +569,9 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                 {/* ============================================================ */}
                 <section className="py-28">
                     <div className="mx-auto max-w-6xl px-6">
-                        <SectionHeader badge="Klasifikasi" title="5 Kelas Penyakit yang Dideteksi" />
+                        <SectionHeader badge="Klasifikasi" title="11 Kelas Penyakit yang Dideteksi" />
 
-                        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+                        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                             {diseases.map((disease, i) => (
                                 <motion.div
                                     key={disease.name}
