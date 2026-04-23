@@ -31,8 +31,13 @@ yarn-error.log
 ml/venv/
 ml/model/
 ml/dataset/
+ml/test/
+ml/val/
+ml/smartfarmingimage/
+ml/label_progress.json
 __pycache__/
 *.pyc
 
 # TF.js model files (generated, large binary)
 /public/models/rice-disease/*.bin
+
