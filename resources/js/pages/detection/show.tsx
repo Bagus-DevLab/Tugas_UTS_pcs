@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
+import { motion } from 'framer-motion';
 import { ArrowLeft, ExternalLink, MapPin, Thermometer, Clock, Wifi, WifiOff, Image as ImageIcon, FlaskConical, Pill, Activity } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -72,6 +72,7 @@ interface Props {
 
 function formatDateTime(dateString: string): string {
     const date = new Date(dateString);
+
     return date.toLocaleDateString('id-ID', {
         weekday: 'long',
         day: '2-digit',
@@ -84,13 +85,22 @@ function formatDateTime(dateString: string): string {
 }
 
 function formatDuration(ms: number | null): string {
-    if (ms === null) return '-';
-    if (ms < 1000) return `${ms} ms`;
+    if (ms === null) {
+return '-';
+}
+
+    if (ms < 1000) {
+return `${ms} ms`;
+}
+
     return `${(ms / 1000).toFixed(2)} detik`;
 }
 
 function formatConfidencePercent(confidence: number | null): number {
-    if (confidence === null) return 0;
+    if (confidence === null) {
+return 0;
+}
+
     return Math.round(Number(confidence) * 10) / 10;
 }
 
@@ -591,6 +601,7 @@ export default function DetectionShow({ detection }: Props) {
                                     {sortedPredictions.map(([label, score], index) => {
                                         const percent = Math.round(score * 100 * 10) / 10;
                                         const isTop = score === maxPrediction;
+
                                         return (
                                             <motion.div
                                                 key={label}

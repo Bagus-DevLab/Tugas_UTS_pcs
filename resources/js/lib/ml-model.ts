@@ -22,7 +22,9 @@ let isLoading = false;
  * Load the TensorFlow.js model from public/models/rice-disease/
  */
 export async function loadModel(): Promise<tf.LayersModel> {
-    if (model) return model;
+    if (model) {
+return model;
+}
 
     if (isLoading) {
         // Wait for existing load to complete
@@ -32,6 +34,7 @@ export async function loadModel(): Promise<tf.LayersModel> {
                     clearInterval(interval);
                     resolve(model);
                 }
+
                 if (!isLoading && !model) {
                     clearInterval(interval);
                     reject(new Error('Model loading failed'));
@@ -45,9 +48,11 @@ export async function loadModel(): Promise<tf.LayersModel> {
     try {
         model = await tf.loadLayersModel('/models/rice-disease/model.json');
         isLoading = false;
+
         return model;
     } catch (error) {
         isLoading = false;
+
         throw new Error(
             `Gagal memuat model ML. Pastikan file model tersedia di /models/rice-disease/. Error: ${error}`
         );

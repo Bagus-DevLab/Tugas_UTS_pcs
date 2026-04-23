@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
-import { useMemo, useState } from 'react';
-import { Search, Bug, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Bug, BookOpen } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -53,8 +53,12 @@ export default function DiseasesIndex({ diseases }: Props) {
     const [search, setSearch] = useState('');
 
     const filtered = useMemo(() => {
-        if (!search.trim()) return diseases;
+        if (!search.trim()) {
+return diseases;
+}
+
         const q = search.toLowerCase();
+
         return diseases.filter(
             (d) =>
                 d.name.toLowerCase().includes(q) ||

@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
-import { useMemo, useState } from 'react';
-import { ArrowLeft, FlaskConical, Leaf, Shield, Sprout, Pill } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, FlaskConical, Leaf, Shield, Sprout, Pill } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -79,21 +79,30 @@ export default function DiseaseShow({ disease }: Props) {
 
     const groupedTreatments = useMemo(() => {
         const groups: Record<string, Treatment[]> = {};
+
         for (const t of disease.treatments) {
-            if (!groups[t.type]) groups[t.type] = [];
+            if (!groups[t.type]) {
+groups[t.type] = [];
+}
+
             groups[t.type].push(t);
         }
+
         // Sort each group by priority
         for (const key of Object.keys(groups)) {
             groups[key].sort((a, b) => a.priority - b.priority);
         }
+
         return groups;
     }, [disease.treatments]);
 
     const availableTypes = Object.keys(groupedTreatments);
 
     const displayedTreatments = useMemo(() => {
-        if (activeTab === 'all') return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
+        if (activeTab === 'all') {
+return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
+}
+
         return groupedTreatments[activeTab] ?? [];
     }, [activeTab, disease.treatments, groupedTreatments]);
 
@@ -318,8 +327,13 @@ export default function DiseaseShow({ disease }: Props) {
                                         </button>
                                         {availableTypes.map((type) => {
                                             const config = treatmentTypes[type];
-                                            if (!config) return null;
+
+                                            if (!config) {
+return null;
+}
+
                                             const Icon = config.icon;
+
                                             return (
                                                 <button
                                                     key={type}
@@ -350,6 +364,7 @@ export default function DiseaseShow({ disease }: Props) {
                                     >
                                         {displayedTreatments.map((treatment, idx) => {
                                             const config = treatmentTypes[treatment.type];
+
                                             return (
                                                 <motion.div
                                                     key={treatment.id}

@@ -101,6 +101,7 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                     {statData.map((stat, i) => {
                         const meta = STAT_CARDS_META[i];
                         const Icon = meta.icon;
+
                         return (
                             <motion.div key={stat.label} variants={cardVariants}>
                                 <Card className="relative overflow-hidden">

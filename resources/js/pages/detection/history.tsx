@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Filter, ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Filter, ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -62,6 +62,7 @@ interface Props {
 
 function formatDate(dateString: string): string {
     const date = new Date(dateString);
+
     return date.toLocaleDateString('id-ID', {
         day: '2-digit',
         month: 'short',
@@ -72,21 +73,16 @@ function formatDate(dateString: string): string {
 }
 
 function formatConfidence(confidence: number | null): string {
-    if (confidence === null) return '-';
+    if (confidence === null) {
+return '-';
+}
+
     return `${Number(confidence).toFixed(1)}%`;
 }
 
 function getMethodLabel(method: string): string {
     return method === 'image' ? 'Image' : 'Expert System';
 }
-
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: { staggerChildren: 0.04 },
-    },
-};
 
 const rowVariants = {
     hidden: { opacity: 0, x: -20 },

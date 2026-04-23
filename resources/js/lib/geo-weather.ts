@@ -32,6 +32,7 @@ export function getCurrentPosition(): Promise<GeoPosition> {
     return new Promise((resolve, reject) => {
         if (!navigator.geolocation) {
             reject(new Error('Geolocation tidak didukung oleh browser ini.'));
+
             return;
         }
 
@@ -145,6 +146,7 @@ export async function gatherEnvironmentData(): Promise<EnvironmentData> {
 export function formatCoordinates(lat: number, lon: number): string {
     const latDir = lat >= 0 ? 'N' : 'S';
     const lonDir = lon >= 0 ? 'E' : 'W';
+
     return `${Math.abs(lat).toFixed(6)}° ${latDir}, ${Math.abs(lon).toFixed(6)}° ${lonDir}`;
 }
 

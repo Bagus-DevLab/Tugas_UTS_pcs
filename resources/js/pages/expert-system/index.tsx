@@ -2,20 +2,6 @@ import { Head, router } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import {
-    diagnose,
-    filterByThreshold,
-    getTopDiagnosis,
-    type DiagnosisResult,
-    type DiseaseData,
-    type SymptomData,
-    type TreatmentData,
-} from '@/lib/expert-system';
-import {
-    formatCoordinates,
-    gatherEnvironmentData,
-    type EnvironmentData,
-} from '@/lib/geo-weather';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -30,6 +16,22 @@ import {
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Spinner } from '@/components/ui/spinner';
+import {
+    diagnose,
+    filterByThreshold,
+    getTopDiagnosis
+    
+    
+    
+    
+} from '@/lib/expert-system';
+import type {DiagnosisResult, DiseaseData, SymptomData, TreatmentData} from '@/lib/expert-system';
+import {
+    formatCoordinates,
+    gatherEnvironmentData
+    
+} from '@/lib/geo-weather';
+import type {EnvironmentData} from '@/lib/geo-weather';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -142,18 +144,42 @@ const TREATMENT_TYPE_VARIANTS: Record<
 };
 
 function cfLabel(cf: number): string {
-    if (cf >= 80) return 'Sangat Yakin';
-    if (cf >= 60) return 'Yakin';
-    if (cf >= 40) return 'Cukup Yakin';
-    if (cf >= 20) return 'Kurang Yakin';
+    if (cf >= 80) {
+return 'Sangat Yakin';
+}
+
+    if (cf >= 60) {
+return 'Yakin';
+}
+
+    if (cf >= 40) {
+return 'Cukup Yakin';
+}
+
+    if (cf >= 20) {
+return 'Kurang Yakin';
+}
+
     return 'Tidak Yakin';
 }
 
 function cfColorHex(cf: number): string {
-    if (cf >= 80) return palette.deep;
-    if (cf >= 60) return palette.teal;
-    if (cf >= 40) return palette.leaf;
-    if (cf >= 20) return palette.sage;
+    if (cf >= 80) {
+return palette.deep;
+}
+
+    if (cf >= 60) {
+return palette.teal;
+}
+
+    if (cf >= 40) {
+return palette.leaf;
+}
+
+    if (cf >= 20) {
+return palette.sage;
+}
+
     return palette.sand;
 }
 
@@ -207,23 +233,27 @@ export default function ExpertSystem({ symptoms, diseases }: Props) {
     // -- Environment data (auto-fetch on mount) ------------------------------
     useEffect(() => {
         let cancelled = false;
-        setEnvLoading(true);
 
         gatherEnvironmentData()
             .then((data) => {
-                if (!cancelled) setEnvData(data);
+                if (!cancelled) {
+setEnvData(data);
+}
             })
             .catch(() => {
-                if (!cancelled)
-                    setEnvData({
+                if (!cancelled) {
+setEnvData({
                         position: null,
                         weather: null,
                         connectionStatus: 'offline',
                         error: 'Gagal mengambil data lingkungan.',
                     });
+}
             })
             .finally(() => {
-                if (!cancelled) setEnvLoading(false);
+                if (!cancelled) {
+setEnvLoading(false);
+}
             });
 
         return () => {
@@ -250,13 +280,18 @@ export default function ExpertSystem({ symptoms, diseases }: Props) {
     );
 
     const topDisease = useMemo(() => {
-        if (!topResult) return null;
+        if (!topResult) {
+return null;
+}
+
         return diseases.find((d) => d.id === topResult.disease.id) ?? null;
     }, [topResult, diseases]);
 
     // -- Diagnose ------------------------------------------------------------
     const handleDiagnose = useCallback(async () => {
-        if (selectedIds.length === 0) return;
+        if (selectedIds.length === 0) {
+return;
+}
 
         setDiagnosing(true);
         setResults(null);
@@ -315,7 +350,9 @@ export default function ExpertSystem({ symptoms, diseases }: Props) {
 
     // -- Save ----------------------------------------------------------------
     const handleSave = useCallback(() => {
-        if (!results || results.length === 0 || !topResult) return;
+        if (!results || results.length === 0 || !topResult) {
+return;
+}
 
         setSaving(true);
 
@@ -544,6 +581,7 @@ export default function ExpertSystem({ symptoms, diseases }: Props) {
                                     const checked = selectedIds.includes(
                                         symptom.id,
                                     );
+
                                     return (
                                         <motion.label
                                             key={symptom.id}

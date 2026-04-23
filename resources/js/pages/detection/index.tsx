@@ -1,17 +1,5 @@
 import { Head, router } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useCallback, useEffect, useRef, useState } from 'react';
-
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Spinner } from '@/components/ui/spinner';
-import type { DiseaseData, TreatmentData } from '@/lib/expert-system';
-import { formatCoordinates, gatherEnvironmentData, getGoogleMapsUrl, type EnvironmentData } from '@/lib/geo-weather';
-import { CLASS_LABELS, getTopPrediction, loadModel, predict, type Prediction } from '@/lib/ml-model';
-import { dashboard } from '@/routes';
-
 import {
     AlertCircle,
     Camera,
@@ -30,6 +18,20 @@ import {
     WifiOff,
     X,
 } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Spinner } from '@/components/ui/spinner';
+import type { DiseaseData, TreatmentData } from '@/lib/expert-system';
+import { formatCoordinates, gatherEnvironmentData, getGoogleMapsUrl  } from '@/lib/geo-weather';
+import type {EnvironmentData} from '@/lib/geo-weather';
+import { getTopPrediction, loadModel, predict  } from '@/lib/ml-model';
+import type {Prediction} from '@/lib/ml-model';
+import { dashboard } from '@/routes';
+
 
 // ---------------------------------------------------------------------------
 // Color palette constants
@@ -51,18 +53,6 @@ const fadeInUp = {
     initial: { opacity: 0, y: 24 },
     animate: { opacity: 1, y: 0 },
     exit: { opacity: 0, y: -16 },
-};
-
-const fadeIn = {
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0 },
-};
-
-const scaleIn = {
-    initial: { opacity: 0, scale: 0.95 },
-    animate: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.95 },
 };
 
 const staggerContainer = {
@@ -136,27 +126,15 @@ function formatTimestamp(iso: string): string {
     });
 }
 
-function getTreatmentText(treatments: TreatmentData[]): string {
-    if (!treatments.length) return 'Tidak ada rekomendasi tersedia.';
-    const sorted = [...treatments].sort((a, b) => a.priority - b.priority);
-    return sorted.map((t) => `${t.description}`).join('; ');
-}
-
-function getDosageText(treatments: TreatmentData[]): string {
-    const withDosage = treatments.filter((t) => t.dosage);
-    if (!withDosage.length) return '-';
-    return withDosage.map((t) => `${t.dosage}${t.dosage_unit ? ' ' + t.dosage_unit : ''}`).join('; ');
-}
-
-function confidenceColor(confidence: number): string {
-    if (confidence >= 80) return PALETTE.sage;
-    if (confidence >= 50) return '#d4a843';
-    return '#c45c5c';
-}
-
 function confidenceTextClass(confidence: number): string {
-    if (confidence >= 80) return 'text-green-600 dark:text-green-400';
-    if (confidence >= 50) return 'text-yellow-600 dark:text-yellow-400';
+    if (confidence >= 80) {
+return 'text-green-600 dark:text-green-400';
+}
+
+    if (confidence >= 50) {
+return 'text-yellow-600 dark:text-yellow-400';
+}
+
     return 'text-red-600 dark:text-red-400';
 }
 
@@ -208,7 +186,6 @@ export default function DetectionIndex({ diseases }: Props) {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Analysis
-    const [analyzing, setAnalyzing] = useState(false);
     const [modelError, setModelError] = useState<string | null>(null);
     const [scanResult, setScanResult] = useState<ScanResult | null>(null);
 
@@ -231,6 +208,7 @@ export default function DetectionIndex({ diseases }: Props) {
         const handleOffline = () => setConnectionStatus('offline');
         window.addEventListener('online', handleOnline);
         window.addEventListener('offline', handleOffline);
+
         return () => {
             window.removeEventListener('online', handleOnline);
             window.removeEventListener('offline', handleOffline);
@@ -240,20 +218,27 @@ export default function DetectionIndex({ diseases }: Props) {
     // Gather environment data on mount
     useEffect(() => {
         let cancelled = false;
-        setEnvLoading(true);
         gatherEnvironmentData()
             .then((data) => {
                 if (!cancelled) {
                     setEnvData(data);
-                    if (data.error) setEnvError(data.error);
+
+                    if (data.error) {
+setEnvError(data.error);
+}
                 }
             })
             .catch((err) => {
-                if (!cancelled) setEnvError(err instanceof Error ? err.message : 'Gagal mengambil data lingkungan');
+                if (!cancelled) {
+setEnvError(err instanceof Error ? err.message : 'Gagal mengambil data lingkungan');
+}
             })
             .finally(() => {
-                if (!cancelled) setEnvLoading(false);
+                if (!cancelled) {
+setEnvLoading(false);
+}
             });
+
         return () => {
             cancelled = true;
         };
@@ -262,7 +247,9 @@ export default function DetectionIndex({ diseases }: Props) {
     // Cleanup preview URL
     useEffect(() => {
         return () => {
-            if (previewUrl) URL.revokeObjectURL(previewUrl);
+            if (previewUrl) {
+URL.revokeObjectURL(previewUrl);
+}
         };
     }, [previewUrl]);
 
@@ -271,7 +258,10 @@ export default function DetectionIndex({ diseases }: Props) {
     // -----------------------------------------------------------------------
 
     const handleFileSelect = useCallback((file: File) => {
-        if (!file.type.startsWith('image/')) return;
+        if (!file.type.startsWith('image/')) {
+return;
+}
+
         setSelectedFile(file);
         const url = URL.createObjectURL(file);
         setPreviewUrl(url);
@@ -283,7 +273,10 @@ export default function DetectionIndex({ diseases }: Props) {
     const handleInputChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const file = e.target.files?.[0];
-            if (file) handleFileSelect(file);
+
+            if (file) {
+handleFileSelect(file);
+}
         },
         [handleFileSelect],
     );
@@ -293,7 +286,10 @@ export default function DetectionIndex({ diseases }: Props) {
             e.preventDefault();
             setIsDragging(false);
             const file = e.dataTransfer.files?.[0];
-            if (file) handleFileSelect(file);
+
+            if (file) {
+handleFileSelect(file);
+}
         },
         [handleFileSelect],
     );
@@ -311,11 +307,18 @@ export default function DetectionIndex({ diseases }: Props) {
     const resetAll = useCallback(() => {
         setStep('upload');
         setSelectedFile(null);
-        if (previewUrl) URL.revokeObjectURL(previewUrl);
+
+        if (previewUrl) {
+URL.revokeObjectURL(previewUrl);
+}
+
         setPreviewUrl(null);
         setScanResult(null);
         setModelError(null);
-        if (fileInputRef.current) fileInputRef.current.value = '';
+
+        if (fileInputRef.current) {
+fileInputRef.current.value = '';
+}
     }, [previewUrl]);
 
     // -----------------------------------------------------------------------
@@ -323,10 +326,11 @@ export default function DetectionIndex({ diseases }: Props) {
     // -----------------------------------------------------------------------
 
     const runAnalysis = useCallback(async () => {
-        if (!selectedFile || !previewUrl) return;
+        if (!selectedFile || !previewUrl) {
+return;
+}
 
         setStep('analyzing');
-        setAnalyzing(true);
         setModelError(null);
 
         const startTime = performance.now();
@@ -373,7 +377,7 @@ export default function DetectionIndex({ diseases }: Props) {
             setModelError(message);
             setStep('preview');
         } finally {
-            setAnalyzing(false);
+            // step is already set to 'results' or 'preview' above
         }
     }, [selectedFile, previewUrl, diseases]);
 
@@ -382,7 +386,9 @@ export default function DetectionIndex({ diseases }: Props) {
     // -----------------------------------------------------------------------
 
     const handleSave = useCallback(() => {
-        if (!scanResult || !envData) return;
+        if (!scanResult || !envData) {
+return;
+}
 
         setSaving(true);
 

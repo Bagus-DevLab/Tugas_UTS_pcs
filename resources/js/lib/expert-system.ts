@@ -65,7 +65,9 @@ export function diagnose(
 
     for (const disease of diseases) {
         // Skip "Healthy" disease in diagnosis
-        if (disease.slug === 'healthy') continue;
+        if (disease.slug === 'healthy') {
+continue;
+}
 
         const diseaseSymptoms = disease.symptoms ?? [];
         const diseaseSymptomIds = diseaseSymptoms.map((s) => s.id);
@@ -75,7 +77,9 @@ export function diagnose(
             diseaseSymptomIds.includes(id)
         );
 
-        if (matchingSymptomIds.length === 0) continue;
+        if (matchingSymptomIds.length === 0) {
+continue;
+}
 
         // Calculate Certainty Factor using combination formula
         // CF_combine(CF1, CF2) = CF1 + CF2 * (1 - CF1)
@@ -84,7 +88,10 @@ export function diagnose(
 
         for (const symptomId of matchingSymptomIds) {
             const symptom = diseaseSymptoms.find((s) => s.id === symptomId);
-            if (!symptom) continue;
+
+            if (!symptom) {
+continue;
+}
 
             const weight = symptom.pivot.weight;
             matchedSymptomDetails.push({ symptom, weight });
