@@ -52,16 +52,25 @@ return model;
     isLoading = true;
 
     try {
-        model = await tf.loadLayersModel('/models/rice-disease/model.json');
+        model = await tf.loadLayersModel('/models/rice-disease/model.json', {
+            strict: false,
+        });
         isLoading = false;
 
         return model;
     } catch (error) {
         isLoading = false;
 
-        throw new Error(
-            `Gagal memuat model ML. Pastikan file model tersedia di /models/rice-disease/. Error: ${error}`
-        );
+        const msg = error instanceof Error ? error.message : String(error);
+
+        // Check if it's a 404 (model files not found)
+        if (msg.includes('404') || msg.includes('not found') || msg.includes('Failed to fetch')) {
+            throw new Error(
+                'Model ML belum tersedia. Silakan train model terlebih dahulu.'
+            );
+        }
+
+        throw new Error(`Gagal memuat model ML: ${msg}`);
     }
 }
 
