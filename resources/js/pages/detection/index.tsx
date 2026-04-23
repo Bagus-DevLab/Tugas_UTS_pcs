@@ -387,24 +387,48 @@ return;
 
     const handleSave = useCallback(() => {
         if (!scanResult || !envData) {
-return;
-}
+            return;
+        }
 
         setSaving(true);
 
         const formData = new FormData();
-        formData.append('image', scanResult.imageFile);
-        formData.append('disease_label', scanResult.topPrediction.label);
-        formData.append('confidence', String(scanResult.topPrediction.confidence));
-        formData.append('temperature', String(envData.weather?.temperature ?? ''));
-        formData.append('scan_timestamp', scanResult.scanTimestamp);
-        formData.append('scan_duration_ms', String(scanResult.scanDurationMs));
-        formData.append('latitude', String(envData.position?.latitude ?? ''));
-        formData.append('longitude', String(envData.position?.longitude ?? ''));
-        formData.append('connection_status', connectionStatus);
-        formData.append('disease_id', String(scanResult.disease?.id ?? ''));
 
-        // Include all predictions as JSON
+        // Required field
+        formData.append('method', 'image');
+
+        // Image file
+        formData.append('image', scanResult.imageFile);
+
+        // Label & confidence (field names must match backend validation)
+        formData.append('label', scanResult.topPrediction.label);
+        formData.append('confidence', String(scanResult.topPrediction.confidence));
+
+        // Timestamp & duration
+        formData.append('scanned_at', scanResult.scanTimestamp);
+        formData.append('scan_duration_ms', String(scanResult.scanDurationMs));
+
+        // Connection status
+        formData.append('connection_status', connectionStatus);
+
+        // Optional fields - only append if value exists
+        if (envData.weather?.temperature != null) {
+            formData.append('temperature', String(envData.weather.temperature));
+        }
+
+        if (envData.position?.latitude != null) {
+            formData.append('latitude', String(envData.position.latitude));
+        }
+
+        if (envData.position?.longitude != null) {
+            formData.append('longitude', String(envData.position.longitude));
+        }
+
+        if (scanResult.disease?.id) {
+            formData.append('disease_id', String(scanResult.disease.id));
+        }
+
+        // All predictions as JSON
         formData.append('predictions', JSON.stringify(scanResult.predictions));
 
         router.post('/detection', formData, {

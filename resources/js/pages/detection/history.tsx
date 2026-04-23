@@ -301,7 +301,7 @@ export default function DetectionHistory({ detections, filters }: Props) {
                                                 <TableCell>
                                                     {detection.temperature !== null ? (
                                                         <span className="font-mono text-sm">
-                                                            {detection.temperature.toFixed(1)}°C
+                                                            {Number(detection.temperature).toFixed(1)}°C
                                                         </span>
                                                     ) : (
                                                         <span className="text-muted-foreground">-</span>

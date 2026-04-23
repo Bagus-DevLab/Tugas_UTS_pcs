@@ -340,7 +340,7 @@ export default function DetectionShow({ detection }: Props) {
                                             animate={{ opacity: 1, scale: 1 }}
                                             transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
                                         >
-                                            {detection.temperature.toFixed(1)}
+                                            {Number(detection.temperature).toFixed(1)}
                                         </motion.span>
                                         <span className="text-lg text-muted-foreground">°C</span>
                                     </div>
@@ -389,13 +389,13 @@ export default function DetectionShow({ detection }: Props) {
                                             <div className="flex items-center gap-2 text-sm">
                                                 <span className="text-muted-foreground">Lat:</span>
                                                 <span className="font-mono font-medium" style={{ color: palette.deep }}>
-                                                    {detection.latitude.toFixed(6)}
+                                                    {Number(detection.latitude).toFixed(6)}
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-2 text-sm">
                                                 <span className="text-muted-foreground">Long:</span>
                                                 <span className="font-mono font-medium" style={{ color: palette.deep }}>
-                                                    {detection.longitude.toFixed(6)}
+                                                    {Number(detection.longitude).toFixed(6)}
                                                 </span>
                                             </div>
                                         </div>

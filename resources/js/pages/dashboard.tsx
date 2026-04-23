@@ -320,7 +320,7 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                                                                           : 'destructive'
                                                                 }
                                                             >
-                                                                {detection.confidence.toFixed(1)}%
+                                                                {Number(detection.confidence).toFixed(1)}%
                                                             </Badge>
                                                         ) : (
                                                             <span className="text-muted-foreground">-</span>

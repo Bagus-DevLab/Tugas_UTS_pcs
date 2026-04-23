@@ -23,7 +23,7 @@ class DetectionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:10240',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240',
             'disease_id' => 'nullable|exists:diseases,id',
             'method' => 'required|in:image,expert_system',
             'label' => 'nullable|string|max:255',
