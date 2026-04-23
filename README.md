@@ -1,6 +1,6 @@
 # Mapan - Sistem Pakar Deteksi Penyakit Tanaman Padi
 
-Sistem Pakar Deteksi Penyakit Tanaman Padi Berbasis On-Device Machine Learning. Aplikasi web yang menggabungkan klasifikasi citra menggunakan TensorFlow.js (berjalan langsung di browser) dengan sistem pakar berbasis Forward Chaining dan Certainty Factor.
+Sistem Pakar Deteksi Penyakit Tanaman Padi Berbasis On-Device Machine Learning. Aplikasi web yang menggabungkan klasifikasi citra menggunakan ONNX Runtime Web (berjalan langsung di browser) dengan sistem pakar berbasis Forward Chaining dan Certainty Factor.
 
 ## Tech Stack
 
@@ -8,9 +8,9 @@ Sistem Pakar Deteksi Penyakit Tanaman Padi Berbasis On-Device Machine Learning. 
 |-------|-----------|
 | Backend | Laravel 13, PHP 8.3 |
 | Frontend | React 19, TypeScript, Inertia.js |
-| Styling | Tailwind CSS v4, shadcn/ui, Framer Motion |
-| ML (Browser) | TensorFlow.js, MobileNetV2 |
-| ML (Training) | Python, TensorFlow/Keras |
+| Styling | Tailwind CSS v4, shadcn/ui (31 komponen), Framer Motion |
+| ML (Browser) | ONNX Runtime Web, MobileNetV2 |
+| ML (Training) | Python, TensorFlow/Keras, tf2onnx |
 | Database | SQLite |
 | Weather API | OpenWeatherMap (via backend proxy) |
 | CI/CD | GitHub Actions |
@@ -19,11 +19,11 @@ Sistem Pakar Deteksi Penyakit Tanaman Padi Berbasis On-Device Machine Learning. 
 
 ### Deteksi Penyakit via Citra (On-Device ML)
 - Upload atau ambil foto daun padi
-- Model MobileNetV2 berjalan langsung di browser (TensorFlow.js)
-- Klasifikasi 5 kelas: Blast, Brown Spot, Tungro, Bacterial Leaf Blight, Healthy
+- Model MobileNetV2 berjalan langsung di browser (ONNX Runtime Web)
+- Klasifikasi 11 kelas penyakit + sehat
 
 ### Sistem Pakar (Rule-Based)
-- Input gejala secara manual (20 gejala, kode G01-G20)
+- Input gejala secara manual (47 gejala, kode G01-G47)
 - Metode Forward Chaining + Certainty Factor
 - Diagnosis penyakit dengan skor kepastian
 
@@ -33,7 +33,7 @@ Setiap deteksi mencatat 9 variabel:
 
 | No | Variabel | Satuan | Sumber |
 |----|----------|--------|--------|
-| 1 | Citra Daun | JPEG/PNG | Upload / kamera |
+| 1 | Citra Daun | JPEG/PNG/WebP | Upload / kamera |
 | 2 | Label Penyakit | Teks | Output ML / Sistem Pakar |
 | 3 | Tingkat Akurasi | Persen (%) | Confidence ML / CF score |
 | 4 | Suhu | Derajat Celsius (°C) | OpenWeatherMap API (via backend proxy) |
@@ -44,12 +44,17 @@ Setiap deteksi mencatat 9 variabel:
 | 9 | Dosis | ml/L, kg/ha, gram/L | Knowledge base |
 
 ### Fitur Lainnya
-- Dashboard dengan statistik dan grafik distribusi penyakit
+- Dashboard dengan statistik, grafik distribusi (Tabs, HoverCard, Progress bar)
 - Knowledge base lengkap (penyakit, gejala, penanganan, dosis)
 - Riwayat deteksi dengan filter dan pagination
 - Dark mode
 - Responsive (mobile-friendly)
 - Animasi UI dengan Framer Motion
+- Password strength indicator pada registrasi
+
+### shadcn/ui Components (31 komponen)
+
+Komponen yang digunakan: Alert, Avatar, Badge, Breadcrumb, Button, Card, Checkbox, Collapsible, Dialog, Dropdown Menu, Hover Card, Icon, Input, Input OTP, Label, Navigation Menu, Placeholder Pattern, Progress, Scroll Area, Select, Separator, Sheet, Sidebar, Skeleton, Sonner (Toast), Spinner, Table, Tabs, Toggle, Toggle Group, Tooltip.
 
 ## Role & Hak Akses
 
@@ -90,11 +95,11 @@ Sistem memiliki 3 role dengan hak akses bertingkat:
 | Rate Limiting | `throttle` middleware pada semua POST routes (10-30 req/menit) |
 | Input Validation | Validasi server-side pada semua controller (type, range, format) |
 | API Key Protection | OpenWeatherMap API key disimpan server-side, di-proxy via `WeatherController` |
-| File Upload | Validasi tipe file (`image\|mimes:jpeg,png,jpg`), max 10MB |
+| File Upload | Validasi tipe file (`image\|mimes:jpeg,png,jpg,webp`), max 10MB |
 | SQL Injection | Eloquent ORM dengan parameterized queries |
 | XSS | React auto-escaping, tidak ada `dangerouslySetInnerHTML` di halaman aplikasi |
 | Mass Assignment | `$fillable` whitelist pada semua model, `user_id` di-set eksplisit |
-| Password | Bcrypt 12 rounds, hashed cast pada model |
+| Password | Bcrypt 12 rounds, hashed cast pada model, strength indicator pada registrasi |
 | Self-Protection | Super Admin tidak bisa mengubah role sendiri atau menghapus akun sendiri |
 
 ## Prasyarat
@@ -162,7 +167,7 @@ Buka http://localhost:8000
 php artisan test
 ```
 
-106 tests mencakup:
+144 tests mencakup:
 
 | Test File | Cakupan |
 |-----------|---------|
@@ -173,11 +178,16 @@ php artisan test
 | `DashboardControllerTest` | Statistik, empty state, isolasi user, auth |
 | `DetectionControllerTest` | CRUD, validasi, history, filter, auth, isolasi user, image upload |
 | `ExpertSystemControllerTest` | Diagnosa, CF calculation, validasi, store, auth |
-| `DiseaseControllerTest` | Index, detail, auth |
-| `SeederTest` | 5 penyakit, 20 gejala, relasi+bobot, treatments+dosis |
+| `DiseaseControllerTest` | Index, detail, auth, detection count scoping |
+| `SeederTest` | 11 penyakit, 47 gejala, relasi+bobot, treatments+dosis |
 | `RoleMiddlewareTest` | Akses per role (super_admin, admin, user), unauthenticated |
+| `WeatherControllerTest` | API proxy, validasi, error handling, auth |
 | `Admin/DiseaseManagementTest` | CRUD penyakit, authorization, validasi |
+| `Admin/SymptomManagementTest` | CRUD gejala, unique code, cascade delete |
+| `Admin/TreatmentManagementTest` | CRUD penanganan, dosage validation, type enum |
+| `Admin/DetectionManagementTest` | View all, filter, search, delete, authorization |
 | `Admin/UserManagementTest` | CRUD user, edit role, self-protection, validasi |
+| `Unit/UserRoleTest` | Role constants, helper methods, default role |
 
 ### Frontend Tests (Vitest)
 
@@ -185,13 +195,14 @@ php artisan test
 npm test
 ```
 
-29 tests mencakup:
+38 tests mencakup:
 
 | Test File | Cakupan |
 |-----------|---------|
 | `expert-system.test.ts` | diagnose(), CF combination formula, filtering, edge cases |
+| `expert-system-advanced.test.ts` | Shared symptoms, CF commutativity, weight edge cases |
 | `geo-weather.test.ts` | formatCoordinates(), getGoogleMapsUrl(), getConnectionStatus() |
-| `ml-model.test.ts` | CLASS_LABELS, getTopPrediction() |
+| `ml-model.test.ts` | CLASS_LABELS (11 kelas), getTopPrediction() |
 
 ### Menjalankan Semua Tests
 
@@ -220,8 +231,8 @@ Memastikan semua fitur berjalan setelah perubahan code:
 
 | Job | Tool | Fungsi |
 |-----|------|--------|
-| `backend` | Pest PHP | 106 tests di PHP 8.3, 8.4, 8.5 (matrix) |
-| `frontend` | Vitest | 29 tests (tanpa PHP dependency) |
+| `backend` | Pest PHP | 144 tests di PHP 8.3, 8.4, 8.5 (matrix) |
+| `frontend` | Vitest | 38 tests (tanpa PHP dependency) |
 
 ## Training Model ML
 
@@ -239,28 +250,61 @@ source venv/bin/activate   # Linux/Mac
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Setup Kaggle API (untuk download dataset otomatis)
-# - Login ke https://www.kaggle.com
-# - Settings > API > Create New Token
-# - Simpan kaggle.json ke ~/.kaggle/
+# 4. Labeling dataset (jika belum dilabel)
+python label_dataset.py
 
-# 5. Training model (~10 menit GPU / ~1-3 jam CPU)
+# 5. Split dataset ke train/val/test
+python split_dataset.py
+
+# 6. Training model (~10 menit GPU / ~1-3 jam CPU)
 python train_model.py
 
-# 6. Konversi ke TensorFlow.js
+# 7. Konversi ke ONNX format
 python convert_to_tfjs.py
 
-# 7. Deaktifkan venv
+# 8. Deaktifkan venv
 deactivate
 ```
 
 Hasil training:
 - `ml/model/rice_disease_model.h5` - Model Keras
+- `ml/model/rice_disease.onnx` - Model ONNX
 - `ml/model/training_history.png` - Grafik training
 - `ml/model/confusion_matrix.png` - Confusion matrix
-- `public/models/rice-disease/model.json` - Model TF.js (untuk browser)
+- `public/models/rice-disease/model.onnx` - Model ONNX (untuk browser)
 
 > Tanpa model, fitur deteksi citra tetap bisa diakses tetapi akan menampilkan pesan error. Fitur Sistem Pakar (input gejala manual) tetap berfungsi tanpa model.
+
+### ML Pipeline
+
+```
+Dataset (foto berlabel)
+    │
+    ├── label_dataset.py     # Tool labeling interaktif
+    ├── clean_dataset.py     # Hapus foto corrupt
+    ├── split_dataset.py     # Split train/val/test (80/10/10)
+    │
+    ▼
+Training (MobileNetV2 Transfer Learning)
+    │
+    ├── train_model.py       # 2-phase training (head + fine-tune)
+    │
+    ▼
+Konversi
+    │
+    ├── convert_to_tfjs.py   # Keras → ONNX → browser
+    │
+    ▼
+Browser (ONNX Runtime Web via WASM)
+```
+
+### Catatan: Keras 3 vs TF.js
+
+Project ini menggunakan **ONNX Runtime Web** sebagai pengganti TensorFlow.js karena:
+- TensorFlow 2.16+ menggunakan Keras 3 yang memiliki format serialisasi model berbeda
+- TF.js `loadLayersModel` tidak kompatibel dengan topology Keras 3
+- ONNX format menyimpan computational graph yang sudah final (tidak perlu reconstruction)
+- `tf2onnx` converter sudah mature dan output-nya diverifikasi match 100% dengan Keras
 
 ## Struktur Project
 
@@ -271,77 +315,63 @@ Hasil training:
 ├── app/
 │   ├── Http/
 │   │   ├── Controllers/
-│   │   │   ├── Admin/
-│   │   │   │   ├── DiseaseManagementController.php
-│   │   │   │   ├── SymptomManagementController.php
-│   │   │   │   ├── TreatmentManagementController.php
-│   │   │   │   ├── DetectionManagementController.php
-│   │   │   │   └── UserManagementController.php    # Super Admin only
+│   │   │   ├── Admin/            # 5 admin controllers
 │   │   │   ├── DashboardController.php
 │   │   │   ├── DetectionController.php
 │   │   │   ├── DiseaseController.php
 │   │   │   ├── ExpertSystemController.php
 │   │   │   └── WeatherController.php
 │   │   └── Middleware/
-│   │       └── CheckRole.php         # Role-based access control
-│   └── Models/
-│       ├── Detection.php
-│       ├── Disease.php
-│       ├── Symptom.php
-│       ├── Treatment.php
-│       └── User.php                  # role field + helper methods
+│   │       └── CheckRole.php
+│   └── Models/                   # 5 models (User, Disease, Symptom, Treatment, Detection)
 ├── database/
-│   ├── migrations/                   # 6 migration files (termasuk add_role)
-│   └── seeders/                      # Knowledge base + 3 default users
+│   ├── migrations/               # 6 migration files
+│   └── seeders/                  # Knowledge base (11 penyakit) + 3 default users
 ├── ml/
-│   ├── train_model.py
-│   ├── convert_to_tfjs.py
+│   ├── train_model.py            # Training script (MobileNetV2, 11 kelas)
+│   ├── convert_to_tfjs.py        # Keras 3 → ONNX converter
+│   ├── split_dataset.py          # Dataset splitter (train/val/test)
+│   ├── label_dataset.py          # Interactive labeling tool
+│   ├── clean_dataset.py          # Remove corrupt images
 │   └── requirements.txt
-├── public/models/                     # TF.js model files (setelah training)
+├── public/models/                 # ONNX model file (setelah training)
 ├── resources/js/
+│   ├── components/ui/            # 31 shadcn/ui components
 │   ├── lib/
-│   │   ├── ml-model.ts
-│   │   ├── expert-system.ts
-│   │   └── geo-weather.ts
+│   │   ├── ml-model.ts           # ONNX Runtime Web loader & inference
+│   │   ├── expert-system.ts      # Forward Chaining + CF engine
+│   │   └── geo-weather.ts        # Geolocation + Weather (via backend proxy)
 │   └── pages/
-│       ├── welcome.tsx                # Landing page
-│       ├── dashboard.tsx
-│       ├── detection/                 # Deteksi citra + history + detail
-│       ├── expert-system/             # Sistem pakar
-│       ├── diseases/                  # Knowledge base (read-only)
-│       └── admin/                     # Admin panel
-│           ├── diseases/              # CRUD penyakit (admin+)
-│           ├── symptoms/              # CRUD gejala (admin+)
-│           ├── treatments/            # CRUD penanganan (admin+)
-│           ├── detections/            # Semua deteksi user (admin+)
-│           └── users/                 # Kelola user (super_admin only)
+│       ├── welcome.tsx            # Landing page (animated)
+│       ├── dashboard.tsx          # Dashboard (Tabs, HoverCard, Progress, Table)
+│       ├── auth/                  # Login (Alert, Tooltip) + Register (Progress strength)
+│       ├── detection/             # Deteksi citra + history + detail
+│       ├── expert-system/         # Sistem pakar
+│       ├── diseases/              # Knowledge base
+│       └── admin/                 # Admin panel (5 sections)
 ├── tests/
-│   ├── Feature/
-│   │   ├── Models/
-│   │   ├── Admin/
-│   │   │   ├── DiseaseManagementTest.php
-│   │   │   └── UserManagementTest.php
-│   │   ├── RoleMiddlewareTest.php
-│   │   ├── DashboardControllerTest.php
-│   │   ├── DetectionControllerTest.php
-│   │   ├── ExpertSystemControllerTest.php
-│   │   ├── DiseaseControllerTest.php
-│   │   └── SeederTest.php
+│   ├── Feature/                  # 144 backend tests
 │   └── Unit/
 ├── routes/web.php
-└── vitest.config.ts
+└── vitest.config.ts              # Frontend test config
 ```
 
 ## Knowledge Base
 
-### Penyakit yang Dideteksi
+### Penyakit yang Dideteksi (11 Kelas)
 
-| Penyakit | Nama Latin | Jumlah Gejala |
-|----------|-----------|---------------|
+| Penyakit | Nama Latin | Gejala |
+|----------|-----------|:------:|
 | Blast | Pyricularia oryzae | 5 |
 | Brown Spot | Bipolaris oryzae | 5 |
 | Tungro | Rice Tungro Virus (RTBV + RTSV) | 6 |
 | Bacterial Leaf Blight | Xanthomonas oryzae pv. oryzae | 5 |
+| Hispa | Dicladispa armigera | 5 |
+| Dead Heart | Scirpophaga incertulas | 5 |
+| Downy Mildew | Sclerophthora macrospora | 5 |
+| Bacterial Leaf Streak | Xanthomonas oryzae pv. oryzicola | 4 |
+| Bacterial Panicle Blight | Burkholderia glumae | 5 |
+| Leaf Smut | Entyloma oryzae | 4 |
 | Healthy | - | 0 |
 
 ### Metode Sistem Pakar
