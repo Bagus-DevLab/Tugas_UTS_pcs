@@ -51,14 +51,41 @@ Setiap deteksi mencatat 9 variabel:
 - Responsive (mobile-friendly)
 - Animasi UI dengan Framer Motion
 
-## Keamanan
+## Role & Hak Akses
 
-Implementasi keamanan yang diterapkan:
+Sistem memiliki 3 role dengan hak akses bertingkat:
+
+| Fitur | Super Admin | Admin | User |
+|-------|:----------:|:-----:|:----:|
+| Dashboard, Deteksi ML, Sistem Pakar | v | v | v |
+| Knowledge Base (lihat) | v | v | v |
+| Riwayat Deteksi (pribadi) | v | v | v |
+| **Kelola Penyakit** (CRUD) | v | v | - |
+| **Kelola Gejala** (CRUD) | v | v | - |
+| **Kelola Penanganan** (CRUD) | v | v | - |
+| **Lihat Semua Deteksi** user | v | v | - |
+| **Kelola User** (edit role, hapus) | v | - | - |
+
+### Sidebar Navigation per Role
+
+- **User**: Dashboard, Deteksi Penyakit, Sistem Pakar, Knowledge Base, Riwayat Deteksi
+- **Admin**: semua menu User + Kelola Penyakit, Kelola Gejala, Kelola Penanganan, Semua Deteksi
+- **Super Admin**: semua menu Admin + Kelola User
+
+### Implementasi
+
+- Kolom `role` pada tabel `users` (enum: `super_admin`, `admin`, `user`)
+- Middleware `CheckRole` untuk proteksi route berdasarkan role
+- Helper methods pada model User: `isSuperAdmin()`, `isAdmin()`, `isAtLeastAdmin()`
+- Route groups: `/admin/*` (admin + super_admin), `/admin/users/*` (super_admin only)
+- Sidebar dinamis berdasarkan `auth.user.role` dari Inertia shared props
+
+## Keamanan
 
 | Aspek | Implementasi |
 |-------|-------------|
 | Authentication | Laravel Fortify + 2FA, semua route dilindungi `auth` + `verified` middleware |
-| Authorization | Isolasi data per user (IDOR protection), `user_id` tidak mass-assignable |
+| Authorization | 3-tier role system (super_admin, admin, user) + isolasi data per user |
 | CSRF | Otomatis via Laravel `web` middleware + Inertia.js |
 | Rate Limiting | `throttle` middleware pada semua POST routes (10-30 req/menit) |
 | Input Validation | Validasi server-side pada semua controller (type, range, format) |
@@ -68,6 +95,7 @@ Implementasi keamanan yang diterapkan:
 | XSS | React auto-escaping, tidak ada `dangerouslySetInnerHTML` di halaman aplikasi |
 | Mass Assignment | `$fillable` whitelist pada semua model, `user_id` di-set eksplisit |
 | Password | Bcrypt 12 rounds, hashed cast pada model |
+| Self-Protection | Super Admin tidak bisa mengubah role sendiri atau menghapus akun sendiri |
 
 ## Prasyarat
 
@@ -118,9 +146,13 @@ npm run dev
 
 Buka http://localhost:8000
 
-**Akun default:**
-- Email: `test@example.com`
-- Password: `password`
+### Akun Default
+
+| Role | Email | Password |
+|------|-------|----------|
+| Super Admin | `superadmin@mapan.test` | `password` |
+| Admin | `admin@mapan.test` | `password` |
+| User | `user@mapan.test` | `password` |
 
 ## Testing
 
@@ -130,7 +162,7 @@ Buka http://localhost:8000
 php artisan test
 ```
 
-89 tests mencakup:
+106 tests mencakup:
 
 | Test File | Cakupan |
 |-----------|---------|
@@ -141,7 +173,11 @@ php artisan test
 | `DashboardControllerTest` | Statistik, empty state, isolasi user, auth |
 | `DetectionControllerTest` | CRUD, validasi, history, filter, auth, isolasi user, image upload |
 | `ExpertSystemControllerTest` | Diagnosa, CF calculation, validasi, store, auth |
+| `DiseaseControllerTest` | Index, detail, auth |
 | `SeederTest` | 5 penyakit, 20 gejala, relasi+bobot, treatments+dosis |
+| `RoleMiddlewareTest` | Akses per role (super_admin, admin, user), unauthenticated |
+| `Admin/DiseaseManagementTest` | CRUD penyakit, authorization, validasi |
+| `Admin/UserManagementTest` | CRUD user, edit role, self-protection, validasi |
 
 ### Frontend Tests (Vitest)
 
@@ -184,7 +220,7 @@ Memastikan semua fitur berjalan setelah perubahan code:
 
 | Job | Tool | Fungsi |
 |-----|------|--------|
-| `backend` | Pest PHP | 89 tests di PHP 8.3, 8.4, 8.5 (matrix) |
+| `backend` | Pest PHP | 106 tests di PHP 8.3, 8.4, 8.5 (matrix) |
 | `frontend` | Vitest | 29 tests (tanpa PHP dependency) |
 
 ## Training Model ML
@@ -230,42 +266,62 @@ Hasil training:
 
 ```
 ├── .github/workflows/
-│   ├── lint.yml              # CI: code quality checks
-│   └── tests.yml             # CI: automated testing
+│   ├── lint.yml                  # CI: code quality checks
+│   └── tests.yml                 # CI: automated testing
 ├── app/
-│   ├── Http/Controllers/
-│   │   ├── DashboardController.php
-│   │   ├── DetectionController.php
-│   │   ├── DiseaseController.php
-│   │   ├── ExpertSystemController.php
-│   │   └── WeatherController.php   # Backend proxy untuk Weather API
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Admin/
+│   │   │   │   ├── DiseaseManagementController.php
+│   │   │   │   ├── SymptomManagementController.php
+│   │   │   │   ├── TreatmentManagementController.php
+│   │   │   │   ├── DetectionManagementController.php
+│   │   │   │   └── UserManagementController.php    # Super Admin only
+│   │   │   ├── DashboardController.php
+│   │   │   ├── DetectionController.php
+│   │   │   ├── DiseaseController.php
+│   │   │   ├── ExpertSystemController.php
+│   │   │   └── WeatherController.php
+│   │   └── Middleware/
+│   │       └── CheckRole.php         # Role-based access control
 │   └── Models/
 │       ├── Detection.php
 │       ├── Disease.php
 │       ├── Symptom.php
-│       └── Treatment.php
+│       ├── Treatment.php
+│       └── User.php                  # role field + helper methods
 ├── database/
-│   ├── migrations/           # 5 migration files
-│   └── seeders/              # Knowledge base seeders
+│   ├── migrations/                   # 6 migration files (termasuk add_role)
+│   └── seeders/                      # Knowledge base + 3 default users
 ├── ml/
-│   ├── train_model.py        # Training script (MobileNetV2)
-│   ├── convert_to_tfjs.py    # Konversi ke TF.js
+│   ├── train_model.py
+│   ├── convert_to_tfjs.py
 │   └── requirements.txt
-├── public/models/             # TF.js model files (setelah training)
+├── public/models/                     # TF.js model files (setelah training)
 ├── resources/js/
 │   ├── lib/
-│   │   ├── ml-model.ts       # TF.js loader & inference
-│   │   ├── expert-system.ts  # Forward Chaining + CF engine
-│   │   └── geo-weather.ts    # Geolocation + Weather (via backend proxy)
+│   │   ├── ml-model.ts
+│   │   ├── expert-system.ts
+│   │   └── geo-weather.ts
 │   └── pages/
-│       ├── welcome.tsx        # Landing page
-│       ├── dashboard.tsx      # Dashboard + statistik
-│       ├── detection/         # Deteksi citra + history + detail
-│       ├── expert-system/     # Sistem pakar
-│       └── diseases/          # Knowledge base
+│       ├── welcome.tsx                # Landing page
+│       ├── dashboard.tsx
+│       ├── detection/                 # Deteksi citra + history + detail
+│       ├── expert-system/             # Sistem pakar
+│       ├── diseases/                  # Knowledge base (read-only)
+│       └── admin/                     # Admin panel
+│           ├── diseases/              # CRUD penyakit (admin+)
+│           ├── symptoms/              # CRUD gejala (admin+)
+│           ├── treatments/            # CRUD penanganan (admin+)
+│           ├── detections/            # Semua deteksi user (admin+)
+│           └── users/                 # Kelola user (super_admin only)
 ├── tests/
 │   ├── Feature/
-│   │   ├── Models/            # Model unit tests
+│   │   ├── Models/
+│   │   ├── Admin/
+│   │   │   ├── DiseaseManagementTest.php
+│   │   │   └── UserManagementTest.php
+│   │   ├── RoleMiddlewareTest.php
 │   │   ├── DashboardControllerTest.php
 │   │   ├── DetectionControllerTest.php
 │   │   ├── ExpertSystemControllerTest.php
@@ -273,7 +329,7 @@ Hasil training:
 │   │   └── SeederTest.php
 │   └── Unit/
 ├── routes/web.php
-└── vitest.config.ts           # Frontend test config (terpisah dari vite.config.ts)
+└── vitest.config.ts
 ```
 
 ## Knowledge Base
