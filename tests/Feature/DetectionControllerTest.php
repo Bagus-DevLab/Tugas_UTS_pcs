@@ -101,9 +101,7 @@ it('validates confidence range', function () {
 it('shows detection history page', function () {
     $user = User::factory()->create();
 
-    Detection::create([
-        'user_id' => $user->id,
-        'method' => 'image',
+    makeDetection($user, [
         'label' => 'Blast',
         'confidence' => 92.5,
     ]);
@@ -120,8 +118,8 @@ it('shows detection history page', function () {
 it('filters history by method', function () {
     $user = User::factory()->create();
 
-    Detection::create(['user_id' => $user->id, 'method' => 'image', 'label' => 'Blast']);
-    Detection::create(['user_id' => $user->id, 'method' => 'expert_system', 'label' => 'Tungro']);
+    makeDetection($user, ['method' => 'image', 'label' => 'Blast']);
+    makeDetection($user, ['method' => 'expert_system', 'label' => 'Tungro']);
 
     $response = $this->actingAs($user)->get('/detection/history?method=image');
 
@@ -135,9 +133,7 @@ it('filters history by method', function () {
 it('shows detection detail page', function () {
     $user = User::factory()->create();
 
-    $detection = Detection::create([
-        'user_id' => $user->id,
-        'method' => 'image',
+    $detection = makeDetection($user, [
         'label' => 'Blast',
         'confidence' => 92.5,
     ]);
@@ -156,9 +152,7 @@ it('prevents viewing other users detections', function () {
     $user1 = User::factory()->create();
     $user2 = User::factory()->create();
 
-    $detection = Detection::create([
-        'user_id' => $user1->id,
-        'method' => 'image',
+    $detection = makeDetection($user1, [
         'label' => 'Blast',
     ]);
 

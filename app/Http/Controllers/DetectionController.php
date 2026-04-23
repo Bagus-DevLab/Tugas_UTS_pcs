@@ -45,8 +45,7 @@ class DetectionController extends Controller
             $imagePath = $request->file('image')->store('detections', 'public');
         }
 
-        $detection = Detection::create([
-            'user_id' => Auth::id(),
+        $detection = new Detection([
             'disease_id' => $validated['disease_id'] ?? null,
             'method' => $validated['method'],
             'image_path' => $imagePath,
@@ -62,6 +61,8 @@ class DetectionController extends Controller
             'selected_symptoms' => isset($validated['selected_symptoms']) ? json_decode($validated['selected_symptoms'], true) : null,
             'notes' => $validated['notes'] ?? null,
         ]);
+        $detection->user_id = Auth::id();
+        $detection->save();
 
         return redirect()->route('detection.show', $detection)
             ->with('success', 'Hasil deteksi berhasil disimpan.');
@@ -69,20 +70,26 @@ class DetectionController extends Controller
 
     public function history(Request $request)
     {
+        $request->validate([
+            'method' => 'nullable|in:image,expert_system',
+            'date_from' => 'nullable|date',
+            'date_to' => 'nullable|date|after_or_equal:date_from',
+        ]);
+
         $query = Detection::where('user_id', Auth::id())
             ->with('disease:id,name,slug');
 
         // Filter by method
         if ($request->filled('method')) {
-            $query->where('method', $request->method);
+            $query->where('method', $request->input('method'));
         }
 
         // Filter by date range
         if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
+            $query->whereDate('created_at', '>=', $request->input('date_from'));
         }
         if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
+            $query->whereDate('created_at', '<=', $request->input('date_to'));
         }
 
         $detections = $query->latest()->paginate(10)->withQueryString();

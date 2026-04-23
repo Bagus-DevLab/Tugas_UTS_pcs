@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Detection;
 use App\Models\Disease;
 use App\Models\User;
 
@@ -12,10 +11,8 @@ it('shows dashboard with stats', function () {
         'description' => 'Test', 'cause' => 'Test',
     ]);
 
-    Detection::create([
-        'user_id' => $user->id,
+    makeDetection($user, [
         'disease_id' => $disease->id,
-        'method' => 'image',
         'label' => 'Blast',
         'confidence' => 92.5,
     ]);
@@ -51,9 +48,9 @@ it('only shows current user detections', function () {
     $user1 = User::factory()->create();
     $user2 = User::factory()->create();
 
-    Detection::create(['user_id' => $user1->id, 'method' => 'image', 'label' => 'Blast', 'confidence' => 90]);
-    Detection::create(['user_id' => $user1->id, 'method' => 'image', 'label' => 'Blast', 'confidence' => 85]);
-    Detection::create(['user_id' => $user2->id, 'method' => 'image', 'label' => 'Tungro', 'confidence' => 80]);
+    makeDetection($user1, ['label' => 'Blast', 'confidence' => 90]);
+    makeDetection($user1, ['label' => 'Blast', 'confidence' => 85]);
+    makeDetection($user2, ['label' => 'Tungro', 'confidence' => 80]);
 
     $response = $this->actingAs($user1)->get('/dashboard');
 

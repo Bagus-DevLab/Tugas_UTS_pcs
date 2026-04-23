@@ -11,7 +11,6 @@ class Detection extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
         'disease_id',
         'method',
         'image_path',

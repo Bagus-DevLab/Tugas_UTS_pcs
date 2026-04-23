@@ -97,8 +97,7 @@ class ExpertSystemController extends Controller
             'notes' => 'nullable|string|max:1000',
         ]);
 
-        $detection = Detection::create([
-            'user_id' => Auth::id(),
+        $detection = new Detection([
             'disease_id' => $validated['disease_id'] ?? null,
             'method' => 'expert_system',
             'label' => $validated['label'] ?? null,
@@ -112,6 +111,8 @@ class ExpertSystemController extends Controller
             'selected_symptoms' => isset($validated['selected_symptoms']) ? json_decode($validated['selected_symptoms'], true) : null,
             'notes' => $validated['notes'] ?? null,
         ]);
+        $detection->user_id = Auth::id();
+        $detection->save();
 
         return redirect()->route('detection.show', $detection)
             ->with('success', 'Hasil diagnosis berhasil disimpan.');

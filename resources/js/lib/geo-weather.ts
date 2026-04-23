@@ -69,34 +69,25 @@ export function getCurrentPosition(): Promise<GeoPosition> {
 }
 
 /**
- * Get temperature from OpenWeatherMap API
+ * Get temperature via backend proxy (API key stays server-side)
  *
- * Note: You need to set VITE_OPENWEATHERMAP_API_KEY in your .env file
+ * Note: Set OPENWEATHERMAP_API_KEY in your .env file (not VITE_ prefix)
  */
 export async function getTemperature(lat: number, lon: number): Promise<WeatherData> {
-    const apiKey = import.meta.env.VITE_OPENWEATHERMAP_API_KEY;
-
-    if (!apiKey) {
-        throw new Error(
-            'OpenWeatherMap API key tidak ditemukan. Tambahkan VITE_OPENWEATHERMAP_API_KEY di file .env'
-        );
-    }
-
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
-
-    const response = await fetch(url);
+    const response = await fetch(`/api/weather?lat=${lat}&lon=${lon}`, {
+        headers: {
+            Accept: 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'same-origin',
+    });
 
     if (!response.ok) {
-        throw new Error(`Gagal mengambil data cuaca: ${response.statusText}`);
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.error ?? `Gagal mengambil data cuaca: ${response.statusText}`);
     }
 
-    const data = await response.json();
-
-    return {
-        temperature: Math.round(data.main.temp * 10) / 10, // 1 decimal
-        description: data.weather?.[0]?.description ?? '',
-        humidity: data.main.humidity,
-    };
+    return await response.json();
 }
 
 /**

@@ -76,13 +76,14 @@ it('has many detections', function () {
         'cause' => 'Test',
     ]);
 
-    Detection::create([
-        'user_id' => $user->id,
+    $detection = new Detection([
         'disease_id' => $disease->id,
         'method' => 'image',
         'label' => 'Blast',
         'confidence' => 92.5,
     ]);
+    $detection->user_id = $user->id;
+    $detection->save();
 
     expect($disease->detections)->toHaveCount(1);
 });

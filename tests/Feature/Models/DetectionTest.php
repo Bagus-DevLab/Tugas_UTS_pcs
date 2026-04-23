@@ -3,6 +3,7 @@
 use App\Models\Detection;
 use App\Models\Disease;
 use App\Models\User;
+
 it('can create a detection with all 9 variables', function () {
     $user = User::factory()->create();
     $disease = Disease::create([
@@ -10,8 +11,7 @@ it('can create a detection with all 9 variables', function () {
         'description' => 'Test', 'cause' => 'Test',
     ]);
 
-    $detection = Detection::create([
-        'user_id' => $user->id,
+    $detection = makeDetection($user, [
         'disease_id' => $disease->id,
         'method' => 'image',
         'image_path' => 'detections/test.jpg',       // VAR 1: Citra Daun
@@ -46,8 +46,7 @@ it('can create an expert system detection', function () {
         'description' => 'Test', 'cause' => 'Test',
     ]);
 
-    $detection = Detection::create([
-        'user_id' => $user->id,
+    $detection = makeDetection($user, [
         'disease_id' => $disease->id,
         'method' => 'expert_system',
         'label' => 'Blast',
@@ -65,9 +64,7 @@ it('can create an expert system detection', function () {
 it('belongs to a user', function () {
     $user = User::factory()->create();
 
-    $detection = Detection::create([
-        'user_id' => $user->id,
-        'method' => 'image',
+    $detection = makeDetection($user, [
         'label' => 'Healthy',
         'confidence' => 95.0,
     ]);
@@ -82,10 +79,8 @@ it('belongs to a disease', function () {
         'description' => 'Test', 'cause' => 'Test',
     ]);
 
-    $detection = Detection::create([
-        'user_id' => $user->id,
+    $detection = makeDetection($user, [
         'disease_id' => $disease->id,
-        'method' => 'image',
         'label' => 'Blast',
     ]);
 
@@ -95,9 +90,7 @@ it('belongs to a disease', function () {
 it('can have null disease (unknown)', function () {
     $user = User::factory()->create();
 
-    $detection = Detection::create([
-        'user_id' => $user->id,
-        'method' => 'image',
+    $detection = makeDetection($user, [
         'label' => 'Unknown',
     ]);
 
@@ -107,9 +100,7 @@ it('can have null disease (unknown)', function () {
 it('casts predictions and selected_symptoms as arrays', function () {
     $user = User::factory()->create();
 
-    $detection = Detection::create([
-        'user_id' => $user->id,
-        'method' => 'image',
+    $detection = makeDetection($user, [
         'predictions' => ['Blast' => 80, 'Healthy' => 20],
         'selected_symptoms' => [1, 5, 10],
     ]);
@@ -119,4 +110,17 @@ it('casts predictions and selected_symptoms as arrays', function () {
     expect($fresh->predictions)->toBeArray()
         ->and($fresh->selected_symptoms)->toBeArray()
         ->and($fresh->predictions['Blast'])->toBe(80);
+});
+
+it('does not allow mass assignment of user_id', function () {
+    $user = User::factory()->create();
+
+    // Verify user_id is not in the fillable array
+    $detection = new Detection();
+    expect($detection->isFillable('user_id'))->toBeFalse();
+
+    // Verify fill() ignores user_id
+    $detection->fill(['user_id' => $user->id, 'method' => 'image']);
+    expect($detection->user_id)->toBeNull()
+        ->and($detection->method)->toBe('image');
 });

@@ -44,7 +44,17 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * Create a Detection with user_id set explicitly.
+ * user_id is not mass-assignable for security (defense-in-depth).
+ */
+function makeDetection(\App\Models\User $user, array $attributes = []): \App\Models\Detection
 {
-    // ..
+    $detection = new \App\Models\Detection(array_merge([
+        'method' => 'image',
+    ], $attributes));
+    $detection->user_id = $user->id;
+    $detection->save();
+
+    return $detection;
 }
