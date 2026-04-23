@@ -31,6 +31,7 @@ yarn-error.log
 ml/venv/
 ml/model/
 ml/dataset/
+ml/dataset_split/
 ml/test/
 ml/val/
 ml/smartfarmingimage/
