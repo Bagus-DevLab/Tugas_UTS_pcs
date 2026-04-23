@@ -18,8 +18,7 @@ it('shows detection index page', function () {
         );
 });
 
-it('can store a detection result with image', function () {
-    Storage::fake('public');
+it('can store a detection result without image', function () {
     $user = User::factory()->create();
     $disease = Disease::create([
         'name' => 'Blast', 'slug' => 'blast',
@@ -27,7 +26,6 @@ it('can store a detection result with image', function () {
     ]);
 
     $response = $this->actingAs($user)->post('/detection', [
-        'image' => UploadedFile::fake()->image('leaf.jpg', 224, 224),
         'disease_id' => $disease->id,
         'method' => 'image',
         'label' => 'Blast',
@@ -49,8 +47,25 @@ it('can store a detection result with image', function () {
         ->and($detection->label)->toBe('Blast')
         ->and((float) $detection->confidence)->toBe(92.50)
         ->and($detection->method)->toBe('image')
-        ->and($detection->image_path)->not->toBeNull();
+        ->and($detection->scan_duration_ms)->toBe(1250)
+        ->and($detection->connection_status)->toBe('online');
+});
 
+it('can store a detection result with image upload', function () {
+    Storage::fake('public');
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->post('/detection', [
+        'image' => UploadedFile::fake()->create('leaf.jpg', 100, 'image/jpeg'),
+        'method' => 'image',
+        'label' => 'Blast',
+        'confidence' => 90.0,
+    ]);
+
+    $response->assertRedirect();
+
+    $detection = Detection::first();
+    expect($detection->image_path)->not->toBeNull();
     Storage::disk('public')->assertExists($detection->image_path);
 });
 

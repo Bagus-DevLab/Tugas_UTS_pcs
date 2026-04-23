@@ -43,8 +43,41 @@ describe('getGoogleMapsUrl', () => {
 });
 
 describe('getConnectionStatus', () => {
-    it('returns online or offline string', () => {
+    it('returns online when navigator.onLine is true', () => {
+        // Mock navigator for Node environment
+        const originalNavigator = globalThis.navigator;
+        Object.defineProperty(globalThis, 'navigator', {
+            value: { onLine: true },
+            writable: true,
+            configurable: true,
+        });
+
         const status = getConnectionStatus();
-        expect(['online', 'offline']).toContain(status);
+        expect(status).toBe('online');
+
+        // Restore
+        Object.defineProperty(globalThis, 'navigator', {
+            value: originalNavigator,
+            writable: true,
+            configurable: true,
+        });
+    });
+
+    it('returns offline when navigator.onLine is false', () => {
+        const originalNavigator = globalThis.navigator;
+        Object.defineProperty(globalThis, 'navigator', {
+            value: { onLine: false },
+            writable: true,
+            configurable: true,
+        });
+
+        const status = getConnectionStatus();
+        expect(status).toBe('offline');
+
+        Object.defineProperty(globalThis, 'navigator', {
+            value: originalNavigator,
+            writable: true,
+            configurable: true,
+        });
     });
 });

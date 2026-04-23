@@ -5,10 +5,6 @@ use App\Models\Symptom;
 use App\Models\Treatment;
 use App\Models\Detection;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-uses(RefreshDatabase::class);
-
 it('can create a disease', function () {
     $disease = Disease::create([
         'name' => 'Blast',
@@ -40,7 +36,7 @@ it('has many symptoms through pivot', function () {
     $disease->symptoms()->attach($symptom->id, ['weight' => 0.95]);
 
     expect($disease->symptoms)->toHaveCount(1)
-        ->and($disease->symptoms->first()->pivot->weight)->toBe('0.95');
+        ->and((float) $disease->symptoms->first()->pivot->weight)->toBe(0.95);
 });
 
 it('has many treatments', function () {

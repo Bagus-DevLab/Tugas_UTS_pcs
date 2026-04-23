@@ -2,10 +2,6 @@
 
 use App\Models\Disease;
 use App\Models\Symptom;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-uses(RefreshDatabase::class);
-
 it('can create a symptom', function () {
     $symptom = Symptom::create([
         'code' => 'G01',
@@ -40,5 +36,5 @@ it('belongs to many diseases through pivot', function () {
     $symptom->diseases()->attach($disease2->id, ['weight' => 0.60]);
 
     expect($symptom->diseases)->toHaveCount(2)
-        ->and($symptom->diseases->first()->pivot->weight)->toBe('0.95');
+        ->and((float) $symptom->diseases->first()->pivot->weight)->toBe(0.95);
 });

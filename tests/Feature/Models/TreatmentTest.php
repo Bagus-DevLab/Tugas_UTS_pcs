@@ -2,10 +2,6 @@
 
 use App\Models\Disease;
 use App\Models\Treatment;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-uses(RefreshDatabase::class);
-
 it('can create a treatment with dosage', function () {
     $disease = Disease::create([
         'name' => 'Blast', 'slug' => 'blast',

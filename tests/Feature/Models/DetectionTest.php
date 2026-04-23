@@ -3,10 +3,6 @@
 use App\Models\Detection;
 use App\Models\Disease;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-uses(RefreshDatabase::class);
-
 it('can create a detection with all 9 variables', function () {
     $user = User::factory()->create();
     $disease = Disease::create([
