@@ -13,6 +13,7 @@ Sistem Pakar Deteksi Penyakit Tanaman Padi Berbasis On-Device Machine Learning. 
 | ML (Training) | Python, TensorFlow/Keras |
 | Database | SQLite |
 | Weather API | OpenWeatherMap |
+| CI/CD | GitHub Actions |
 
 ## Fitur
 
@@ -48,6 +49,7 @@ Setiap deteksi mencatat 9 variabel:
 - Riwayat deteksi dengan filter dan pagination
 - Dark mode
 - Responsive (mobile-friendly)
+- Animasi UI dengan Framer Motion
 
 ## Prasyarat
 
@@ -102,6 +104,71 @@ Buka http://localhost:8000
 - Email: `test@example.com`
 - Password: `password`
 
+## Testing
+
+### Backend Tests (Pest PHP)
+
+```bash
+php artisan test
+```
+
+88 tests mencakup:
+
+| Test File | Cakupan |
+|-----------|---------|
+| `Models/DiseaseTest` | Create, relasi symptoms/treatments/detections |
+| `Models/SymptomTest` | Create, unique constraint, relasi diseases |
+| `Models/TreatmentTest` | Create dengan/tanpa dosis, relasi disease |
+| `Models/DetectionTest` | 9 variabel, expert system, relasi user/disease, JSON casts |
+| `DashboardControllerTest` | Statistik, empty state, isolasi user, auth |
+| `DetectionControllerTest` | CRUD, validasi, history, filter, auth, isolasi user |
+| `ExpertSystemControllerTest` | Diagnosa, CF calculation, validasi, store, auth |
+| `SeederTest` | 5 penyakit, 20 gejala, relasi+bobot, treatments+dosis |
+
+### Frontend Tests (Vitest)
+
+```bash
+npm test
+```
+
+29 tests mencakup:
+
+| Test File | Cakupan |
+|-----------|---------|
+| `expert-system.test.ts` | diagnose(), CF combination formula, filtering, edge cases |
+| `geo-weather.test.ts` | formatCoordinates(), getGoogleMapsUrl(), getConnectionStatus() |
+| `ml-model.test.ts` | CLASS_LABELS, getTopPrediction() |
+
+### Menjalankan Semua Tests
+
+```bash
+# Backend + Frontend
+php artisan test && npm test
+```
+
+## CI/CD (GitHub Actions)
+
+Project ini memiliki 2 workflow yang berjalan otomatis pada setiap push/PR ke branch `main`, `master`, `develop`:
+
+### `lint.yml` - Code Quality
+
+Memastikan semua code mengikuti style guide:
+
+| Step | Tool | Fungsi |
+|------|------|--------|
+| Run Pint | Laravel Pint | Code style PHP |
+| Format Frontend | Prettier | Format TypeScript/React |
+| Lint Frontend | ESLint | Cek error & bad patterns |
+
+### `tests.yml` - Automated Testing
+
+Memastikan semua fitur berjalan setelah perubahan code:
+
+| Job | Tool | Fungsi |
+|-----|------|--------|
+| `backend` | Pest PHP | 88 tests di PHP 8.3, 8.4, 8.5 (matrix) |
+| `frontend` | Vitest | 29 tests (tanpa PHP dependency) |
+
 ## Training Model ML
 
 Model ML perlu di-training terlebih dahulu agar fitur deteksi citra berfungsi.
@@ -144,6 +211,9 @@ Hasil training:
 ## Struktur Project
 
 ```
+├── .github/workflows/
+│   ├── lint.yml              # CI: code quality checks
+│   └── tests.yml             # CI: automated testing
 ├── app/
 │   ├── Http/Controllers/
 │   │   ├── DashboardController.php
@@ -156,25 +226,35 @@ Hasil training:
 │       ├── Symptom.php
 │       └── Treatment.php
 ├── database/
-│   ├── migrations/          # 5 migration files
-│   └── seeders/             # Knowledge base seeders
+│   ├── migrations/           # 5 migration files
+│   └── seeders/              # Knowledge base seeders
 ├── ml/
-│   ├── train_model.py       # Training script (MobileNetV2)
-│   ├── convert_to_tfjs.py   # Konversi ke TF.js
+│   ├── train_model.py        # Training script (MobileNetV2)
+│   ├── convert_to_tfjs.py    # Konversi ke TF.js
 │   └── requirements.txt
-├── public/models/            # TF.js model files (setelah training)
+├── public/models/             # TF.js model files (setelah training)
 ├── resources/js/
 │   ├── lib/
-│   │   ├── ml-model.ts      # TF.js loader & inference
+│   │   ├── ml-model.ts       # TF.js loader & inference
 │   │   ├── expert-system.ts  # Forward Chaining + CF engine
-│   │   └── geo-weather.ts   # Geolocation + Weather API
+│   │   └── geo-weather.ts    # Geolocation + Weather API
 │   └── pages/
-│       ├── welcome.tsx       # Landing page
-│       ├── dashboard.tsx     # Dashboard + statistik
-│       ├── detection/        # Deteksi citra + history + detail
-│       ├── expert-system/    # Sistem pakar
-│       └── diseases/         # Knowledge base
-└── routes/web.php
+│       ├── welcome.tsx        # Landing page
+│       ├── dashboard.tsx      # Dashboard + statistik
+│       ├── detection/         # Deteksi citra + history + detail
+│       ├── expert-system/     # Sistem pakar
+│       └── diseases/          # Knowledge base
+├── tests/
+│   ├── Feature/
+│   │   ├── Models/            # Model unit tests
+│   │   ├── DashboardControllerTest.php
+│   │   ├── DetectionControllerTest.php
+│   │   ├── ExpertSystemControllerTest.php
+│   │   ├── DiseaseControllerTest.php
+│   │   └── SeederTest.php
+│   └── Unit/
+├── routes/web.php
+└── vitest.config.ts           # Frontend test config (terpisah dari vite.config.ts)
 ```
 
 ## Knowledge Base
