@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { getTopPrediction, CLASS_LABELS, type Prediction } from './ml-model';
+import { getTopPrediction, CLASS_LABELS  } from './ml-model';
+import type {Prediction} from './ml-model';
 
 describe('CLASS_LABELS', () => {
     it('has 5 classes', () => {

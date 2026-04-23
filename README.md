@@ -1,4 +1,4 @@
-# PadiScan - Sistem Pakar Deteksi Penyakit Tanaman Padi
+# Mapan - Sistem Pakar Deteksi Penyakit Tanaman Padi
 
 Sistem Pakar Deteksi Penyakit Tanaman Padi Berbasis On-Device Machine Learning. Aplikasi web yang menggabungkan klasifikasi citra menggunakan TensorFlow.js (berjalan langsung di browser) dengan sistem pakar berbasis Forward Chaining dan Certainty Factor.
 
@@ -12,7 +12,7 @@ Sistem Pakar Deteksi Penyakit Tanaman Padi Berbasis On-Device Machine Learning. 
 | ML (Browser) | TensorFlow.js, MobileNetV2 |
 | ML (Training) | Python, TensorFlow/Keras |
 | Database | SQLite |
-| Weather API | OpenWeatherMap |
+| Weather API | OpenWeatherMap (via backend proxy) |
 | CI/CD | GitHub Actions |
 
 ## Fitur
@@ -36,7 +36,7 @@ Setiap deteksi mencatat 9 variabel:
 | 1 | Citra Daun | JPEG/PNG | Upload / kamera |
 | 2 | Label Penyakit | Teks | Output ML / Sistem Pakar |
 | 3 | Tingkat Akurasi | Persen (%) | Confidence ML / CF score |
-| 4 | Suhu | Derajat Celsius (°C) | OpenWeatherMap API |
+| 4 | Suhu | Derajat Celsius (°C) | OpenWeatherMap API (via backend proxy) |
 | 5 | Waktu Pemindaian | Datetime + ms | Timestamp + durasi proses |
 | 6 | Titik Koordinat | Lat, Long | Browser Geolocation API |
 | 7 | Status Koneksi | Online / Offline | navigator.onLine |
@@ -50,6 +50,24 @@ Setiap deteksi mencatat 9 variabel:
 - Dark mode
 - Responsive (mobile-friendly)
 - Animasi UI dengan Framer Motion
+
+## Keamanan
+
+Implementasi keamanan yang diterapkan:
+
+| Aspek | Implementasi |
+|-------|-------------|
+| Authentication | Laravel Fortify + 2FA, semua route dilindungi `auth` + `verified` middleware |
+| Authorization | Isolasi data per user (IDOR protection), `user_id` tidak mass-assignable |
+| CSRF | Otomatis via Laravel `web` middleware + Inertia.js |
+| Rate Limiting | `throttle` middleware pada semua POST routes (10-30 req/menit) |
+| Input Validation | Validasi server-side pada semua controller (type, range, format) |
+| API Key Protection | OpenWeatherMap API key disimpan server-side, di-proxy via `WeatherController` |
+| File Upload | Validasi tipe file (`image\|mimes:jpeg,png,jpg`), max 10MB |
+| SQL Injection | Eloquent ORM dengan parameterized queries |
+| XSS | React auto-escaping, tidak ada `dangerouslySetInnerHTML` di halaman aplikasi |
+| Mass Assignment | `$fillable` whitelist pada semua model, `user_id` di-set eksplisit |
+| Password | Bcrypt 12 rounds, hashed cast pada model |
 
 ## Prasyarat
 
@@ -79,7 +97,7 @@ php artisan key:generate
 # 5. Tambahkan API key OpenWeatherMap di .env
 # Daftar gratis di https://openweathermap.org/api
 # Lalu isi:
-# VITE_OPENWEATHERMAP_API_KEY=your_api_key_here
+# OPENWEATHERMAP_API_KEY=your_api_key_here
 
 # 6. Jalankan migrasi dan seeder
 php artisan migrate:fresh --seed
@@ -112,16 +130,16 @@ Buka http://localhost:8000
 php artisan test
 ```
 
-88 tests mencakup:
+89 tests mencakup:
 
 | Test File | Cakupan |
 |-----------|---------|
 | `Models/DiseaseTest` | Create, relasi symptoms/treatments/detections |
 | `Models/SymptomTest` | Create, unique constraint, relasi diseases |
 | `Models/TreatmentTest` | Create dengan/tanpa dosis, relasi disease |
-| `Models/DetectionTest` | 9 variabel, expert system, relasi user/disease, JSON casts |
+| `Models/DetectionTest` | 9 variabel, expert system, relasi, JSON casts, mass assignment protection |
 | `DashboardControllerTest` | Statistik, empty state, isolasi user, auth |
-| `DetectionControllerTest` | CRUD, validasi, history, filter, auth, isolasi user |
+| `DetectionControllerTest` | CRUD, validasi, history, filter, auth, isolasi user, image upload |
 | `ExpertSystemControllerTest` | Diagnosa, CF calculation, validasi, store, auth |
 | `SeederTest` | 5 penyakit, 20 gejala, relasi+bobot, treatments+dosis |
 
@@ -166,7 +184,7 @@ Memastikan semua fitur berjalan setelah perubahan code:
 
 | Job | Tool | Fungsi |
 |-----|------|--------|
-| `backend` | Pest PHP | 88 tests di PHP 8.3, 8.4, 8.5 (matrix) |
+| `backend` | Pest PHP | 89 tests di PHP 8.3, 8.4, 8.5 (matrix) |
 | `frontend` | Vitest | 29 tests (tanpa PHP dependency) |
 
 ## Training Model ML
@@ -219,7 +237,8 @@ Hasil training:
 │   │   ├── DashboardController.php
 │   │   ├── DetectionController.php
 │   │   ├── DiseaseController.php
-│   │   └── ExpertSystemController.php
+│   │   ├── ExpertSystemController.php
+│   │   └── WeatherController.php   # Backend proxy untuk Weather API
 │   └── Models/
 │       ├── Detection.php
 │       ├── Disease.php
@@ -237,7 +256,7 @@ Hasil training:
 │   ├── lib/
 │   │   ├── ml-model.ts       # TF.js loader & inference
 │   │   ├── expert-system.ts  # Forward Chaining + CF engine
-│   │   └── geo-weather.ts    # Geolocation + Weather API
+│   │   └── geo-weather.ts    # Geolocation + Weather (via backend proxy)
 │   └── pages/
 │       ├── welcome.tsx        # Landing page
 │       ├── dashboard.tsx      # Dashboard + statistik

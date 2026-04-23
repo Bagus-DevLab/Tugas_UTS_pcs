@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { diagnose, getTopDiagnosis, filterByThreshold, type DiseaseData, type SymptomData } from './expert-system';
+import { diagnose, getTopDiagnosis, filterByThreshold   } from './expert-system';
+import type {DiseaseData, SymptomData} from './expert-system';
 
 // Helper to create test data
 function createSymptom(id: number, code: string, name: string): SymptomData {

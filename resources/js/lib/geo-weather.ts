@@ -84,6 +84,7 @@ export async function getTemperature(lat: number, lon: number): Promise<WeatherD
 
     if (!response.ok) {
         const body = await response.json().catch(() => null);
+
         throw new Error(body?.error ?? `Gagal mengambil data cuaca: ${response.statusText}`);
     }
 
