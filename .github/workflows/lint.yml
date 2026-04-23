@@ -41,6 +41,8 @@ jobs:
 
       - name: Lint Frontend
         run: npm run lint
+        env:
+          LARAVEL_BYPASS_ENV_CHECK: 1
 
       # - name: Commit Changes
       #   uses: stefanzweifel/git-auto-commit-action@v7
