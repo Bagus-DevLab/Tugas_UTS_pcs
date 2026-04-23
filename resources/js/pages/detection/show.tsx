@@ -91,7 +91,7 @@ function formatDuration(ms: number | null): string {
 
 function formatConfidencePercent(confidence: number | null): number {
     if (confidence === null) return 0;
-    return Math.round(confidence * 100 * 10) / 10;
+    return Math.round(Number(confidence) * 10) / 10;
 }
 
 function getTreatmentTypeLabel(type: string): string {

@@ -73,7 +73,7 @@ function formatDate(dateString: string): string {
 
 function formatConfidence(confidence: number | null): string {
     if (confidence === null) return '-';
-    return `${(confidence * 100).toFixed(1)}%`;
+    return `${Number(confidence).toFixed(1)}%`;
 }
 
 function getMethodLabel(method: string): string {
@@ -438,10 +438,11 @@ export default function DetectionHistory({ detections, filters }: Props) {
                                                 href={link.url}
                                                 preserveState
                                                 preserveScroll
-                                                dangerouslySetInnerHTML={{ __html: link.label }}
-                                            />
+                                            >
+                                                {link.label.replace(/&laquo;/g, '\u00AB').replace(/&raquo;/g, '\u00BB')}
+                                            </Link>
                                         ) : (
-                                            <span dangerouslySetInnerHTML={{ __html: link.label }} />
+                                            <span>{link.label.replace(/&laquo;/g, '\u00AB').replace(/&raquo;/g, '\u00BB')}</span>
                                         )}
                                     </Button>
                                 );

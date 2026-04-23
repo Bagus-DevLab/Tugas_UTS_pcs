@@ -1057,12 +1057,13 @@ export default function DetectionIndex({ diseases }: Props) {
                             >
                                 <Button
                                     onClick={handleSave}
-                                    disabled={saving}
+                                    disabled={saving || !envData}
                                     style={{ backgroundColor: PALETTE.deep }}
-                                    className="text-white hover:opacity-90"
+                                    className="text-white hover:opacity-90 disabled:opacity-50"
+                                    title={!envData ? 'Menunggu data lingkungan...' : undefined}
                                 >
                                     {saving ? <Spinner className="size-4" /> : <Save className="size-4" />}
-                                    {saving ? 'Menyimpan...' : 'Simpan Hasil'}
+                                    {saving ? 'Menyimpan...' : !envData ? 'Menunggu data...' : 'Simpan Hasil'}
                                 </Button>
                                 <Button variant="outline" onClick={resetAll}>
                                     <ScanLine className="size-4" />
