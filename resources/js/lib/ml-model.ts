@@ -52,22 +52,39 @@ return model;
     isLoading = true;
 
     try {
+        console.log('[ML] Loading model from /models/rice-disease/model.json ...');
+
+        // First verify model.json is accessible
+        const resp = await fetch('/models/rice-disease/model.json');
+        if (!resp.ok) {
+            isLoading = false;
+            throw new Error('Model ML belum tersedia. Silakan train model terlebih dahulu.');
+        }
+
         model = await tf.loadLayersModel('/models/rice-disease/model.json', {
             strict: false,
         });
+        console.log('[ML] Model loaded successfully. Input shape:', model.inputs[0]?.shape, 'Output shape:', model.outputs[0]?.shape);
         isLoading = false;
 
         return model;
     } catch (error) {
         isLoading = false;
 
+        // Log full error for debugging
+        console.error('[ML] Model loading failed:', error);
+        if (error instanceof Error && error.stack) {
+            console.error('[ML] Stack:', error.stack);
+        }
+
         const msg = error instanceof Error ? error.message : String(error);
 
-        // Check if it's a 404 (model files not found)
         if (msg.includes('404') || msg.includes('not found') || msg.includes('Failed to fetch')) {
-            throw new Error(
-                'Model ML belum tersedia. Silakan train model terlebih dahulu.'
-            );
+            throw new Error('Model ML belum tersedia. Silakan train model terlebih dahulu.');
+        }
+
+        if (!msg || msg.trim() === '') {
+            throw new Error('Gagal memuat model ML. Kemungkinan format model tidak kompatibel dengan TensorFlow.js. Cek console browser untuk detail.');
         }
 
         throw new Error(`Gagal memuat model ML: ${msg}`);

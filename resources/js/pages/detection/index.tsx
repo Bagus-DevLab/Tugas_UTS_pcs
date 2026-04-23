@@ -515,9 +515,7 @@ return;
                                 <AlertCircle className="size-4" />
                                 <AlertTitle>Gagal Analisis</AlertTitle>
                                 <AlertDescription>
-                                    {modelError.includes('model')
-                                        ? 'Model ML belum tersedia. Silakan train model terlebih dahulu.'
-                                        : modelError}
+                                    {modelError}
                                 </AlertDescription>
                             </Alert>
                         </motion.div>
