@@ -10,6 +10,8 @@
         "format:check": "prettier --check resources/",
         "lint": "eslint . --fix",
         "lint:check": "eslint .",
+        "test": "vitest run",
+        "test:watch": "vitest",
         "types:check": "tsc --noEmit"
     },
     "devDependencies": {
@@ -26,7 +28,8 @@
         "eslint-plugin-react-hooks": "^7.0.0",
         "prettier": "^3.4.2",
         "prettier-plugin-tailwindcss": "^0.6.11",
-        "typescript-eslint": "^8.23.0"
+        "typescript-eslint": "^8.23.0",
+        "vitest": "^4.1.5"
     },
     "dependencies": {
         "@headlessui/react": "^2.2.0",
