@@ -7,6 +7,7 @@ use App\Models\Disease;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class DetectionController extends Controller
@@ -39,10 +40,12 @@ class DetectionController extends Controller
             'notes' => 'nullable|string|max:1000',
         ]);
 
-        // Handle image upload
+        // Handle image upload - organize by disease label for easy re-training
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('detections', 'public');
+            $label = $validated['label'] ?? 'Unknown';
+            $folder = 'detections/' . Str::slug($label);
+            $imagePath = $request->file('image')->store($folder, 'public');
         }
 
         $detection = new Detection([
