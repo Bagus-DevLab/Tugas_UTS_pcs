@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 """
-Convert trained Keras 3 model to TensorFlow.js layers-model format.
+Convert Keras 3 model to TensorFlow.js layers-model format.
 
-Handles Keras 3 topology format differences:
-- batch_shape -> batch_input_shape
-- module field removal
-- Config key normalization for TF.js compatibility
+Comprehensive Keras 3 -> TF.js topology transformer.
+Uses whitelist approach: only keeps fields TF.js understands.
 
 Usage:
     python convert_to_tfjs.py
@@ -22,208 +20,257 @@ SCRIPT_DIR = Path(__file__).parent
 MODEL_PATH = SCRIPT_DIR / 'model' / 'rice_disease_model.h5'
 OUTPUT_DIR = SCRIPT_DIR.parent / 'public' / 'models' / 'rice-disease'
 
+# ============================================================
+# TF.js compatible config fields per layer class (whitelist)
+# ============================================================
+
+# Fields that ALL layers can have
+COMMON_FIELDS = {'name', 'trainable', 'dtype'}
+
+# Per-class allowed config fields
+LAYER_FIELDS = {
+    'InputLayer': {'batch_input_shape', 'sparse', 'ragged'},
+    'Conv2D': {
+        'filters', 'kernel_size', 'strides', 'padding', 'data_format',
+        'dilation_rate', 'groups', 'activation', 'use_bias',
+        'kernel_initializer', 'bias_initializer',
+        'kernel_regularizer', 'bias_regularizer',
+        'activity_regularizer', 'kernel_constraint', 'bias_constraint',
+    },
+    'DepthwiseConv2D': {
+        'kernel_size', 'strides', 'padding', 'data_format',
+        'dilation_rate', 'depth_multiplier', 'activation', 'use_bias',
+        'depthwise_initializer', 'bias_initializer',
+        'depthwise_regularizer', 'bias_regularizer',
+        'activity_regularizer', 'depthwise_constraint', 'bias_constraint',
+    },
+    'BatchNormalization': {
+        'axis', 'momentum', 'epsilon', 'center', 'scale',
+        'beta_initializer', 'gamma_initializer',
+        'moving_mean_initializer', 'moving_variance_initializer',
+        'beta_regularizer', 'gamma_regularizer',
+        'beta_constraint', 'gamma_constraint',
+    },
+    'Dense': {
+        'units', 'activation', 'use_bias',
+        'kernel_initializer', 'bias_initializer',
+        'kernel_regularizer', 'bias_regularizer',
+        'activity_regularizer', 'kernel_constraint', 'bias_constraint',
+    },
+    'Dropout': {'rate'},
+    'ReLU': {'max_value', 'negative_slope', 'threshold'},
+    'Add': set(),
+    'Multiply': set(),
+    'Concatenate': {'axis'},
+    'GlobalAveragePooling2D': {'data_format', 'keepdims'},
+    'GlobalMaxPooling2D': {'data_format', 'keepdims'},
+    'MaxPooling2D': {'pool_size', 'strides', 'padding', 'data_format'},
+    'AveragePooling2D': {'pool_size', 'strides', 'padding', 'data_format'},
+    'Flatten': {'data_format'},
+    'Reshape': {'target_shape'},
+    'ZeroPadding2D': {'padding', 'data_format'},
+    'Activation': {'activation'},
+    'Softmax': {'axis'},
+}
+
+
+def fix_initializer(val):
+    """Ensure initializer is in TF.js format."""
+    if val is None:
+        return None
+    if isinstance(val, str):
+        return {'class_name': val, 'config': {}}
+    if isinstance(val, dict) and 'class_name' in val:
+        cfg = val.get('config', {})
+        # Remove Keras 3 fields from initializer config
+        cfg.pop('module', None)
+        cfg.pop('registered_name', None)
+        # seed=null is fine for TF.js
+        return {'class_name': val['class_name'], 'config': cfg}
+    return val
+
+
+def fix_layer(layer: dict) -> dict:
+    """Transform a single layer to TF.js compatible format."""
+    cls = layer.get('class_name', '')
+    old_config = layer.get('config', {})
+
+    # Remove Keras 3 top-level fields
+    layer.pop('module', None)
+    layer.pop('registered_name', None)
+    layer.pop('build_config', None)
+
+    # Fix InputLayer: batch_shape -> batch_input_shape
+    if cls == 'InputLayer':
+        if 'batch_shape' in old_config:
+            old_config['batch_input_shape'] = old_config.pop('batch_shape')
+        old_config.pop('optional', None)
+
+    # Build clean config: whitelist for known classes, keep all for unknown
+    if cls not in LAYER_FIELDS:
+        # Unknown layer class - keep all config but still fix dtype/initializers
+        print(f"  WARNING: Unknown layer class '{cls}', keeping all config fields")
+        new_config = dict(old_config)
+    else:
+        allowed = COMMON_FIELDS | LAYER_FIELDS[cls]
+        new_config = {}
+        for key in allowed:
+            if key in old_config:
+                new_config[key] = old_config[key]
+
+    # Fix dtype if it's a DTypePolicy object
+    if 'dtype' in new_config and isinstance(new_config['dtype'], dict):
+        new_config['dtype'] = new_config['dtype'].get('config', {}).get('name', 'float32')
+
+    # Fix initializer objects
+    for key in list(new_config.keys()):
+        if key.endswith('_initializer'):
+            new_config[key] = fix_initializer(new_config[key])
+
+    # Fix inbound_nodes
+    inbound = layer.get('inbound_nodes', [])
+    layer['inbound_nodes'] = fix_inbound_nodes(inbound)
+
+    layer['config'] = new_config
+    return layer
+
 
 def fix_inbound_nodes(nodes: list) -> list:
-    """Convert Keras 3 inbound_nodes format to Keras 2 / TF.js format.
+    """Convert Keras 3 inbound_nodes to TF.js format.
 
-    Keras 3: [{"args": [{"class_name": "__keras_tensor__", "config": {"keras_history": ["layer", 0, 0]}}], "kwargs": {}}]
-    TF.js:   [[["layer", 0, 0, {}]]]
+    Keras 3: [{"args": [{"class_name": "__keras_tensor__", "config": {"keras_history": [...]}}], "kwargs": {}}]
+    TF.js:   [[["layer_name", node_idx, tensor_idx, {}]]]
     """
     if not nodes:
-        return nodes
+        return []
 
     converted = []
     for node in nodes:
         if isinstance(node, dict) and 'args' in node:
-            # Keras 3 format
             args = node.get('args', [])
-            kwargs = node.get('kwargs', {})
-            # Remove non-serializable kwargs
-            clean_kwargs = {k: v for k, v in kwargs.items() if v is not None}
-
             node_data = []
+
             for arg in args:
                 if isinstance(arg, dict) and arg.get('class_name') == '__keras_tensor__':
-                    history = arg['config'].get('keras_history', [])
-                    if len(history) >= 3:
-                        node_data.append([history[0], history[1], history[2], clean_kwargs])
+                    h = arg['config'].get('keras_history', [])
+                    if len(h) >= 3:
+                        node_data.append([h[0], h[1], h[2], {}])
                 elif isinstance(arg, list):
-                    # Multiple inputs (e.g., Add layer)
-                    for sub_arg in arg:
-                        if isinstance(sub_arg, dict) and sub_arg.get('class_name') == '__keras_tensor__':
-                            history = sub_arg['config'].get('keras_history', [])
-                            if len(history) >= 3:
-                                node_data.append([history[0], history[1], history[2], {}])
+                    for sub in arg:
+                        if isinstance(sub, dict) and sub.get('class_name') == '__keras_tensor__':
+                            h = sub['config'].get('keras_history', [])
+                            if len(h) >= 3:
+                                node_data.append([h[0], h[1], h[2], {}])
 
             if node_data:
                 converted.append(node_data)
         elif isinstance(node, list):
-            # Already in Keras 2 format
             converted.append(node)
 
     return converted
 
 
-def fix_layer_config(layer: dict) -> dict:
-    """Fix a single layer config for TF.js compatibility."""
-    # Remove Keras 3 specific fields
-    layer.pop('module', None)
-    layer.pop('registered_name', None)
-
-    config = layer.get('config', {})
-
-    # InputLayer: batch_shape -> batch_input_shape
-    if layer.get('class_name') == 'InputLayer':
-        if 'batch_shape' in config and 'batch_input_shape' not in config:
-            config['batch_input_shape'] = config.pop('batch_shape')
-        config.pop('optional', None)
-
-    # Fix dtype: DTypePolicy object -> simple string
-    if 'dtype' in config and isinstance(config['dtype'], dict):
-        policy = config['dtype']
-        config['dtype'] = policy.get('config', {}).get('name', 'float32')
-
-    # Fix kernel_initializer, bias_initializer etc. that may have 'module' field
-    for key in list(config.keys()):
-        val = config[key]
-        if isinstance(val, dict):
-            val.pop('module', None)
-            val.pop('registered_name', None)
-            # Recursively fix nested config dicts
-            if 'config' in val and isinstance(val['config'], dict):
-                for subkey in list(val['config'].keys()):
-                    subval = val['config'][subkey]
-                    if isinstance(subval, dict):
-                        subval.pop('module', None)
-                        subval.pop('registered_name', None)
-
-    # Fix inbound_nodes from Keras 3 to Keras 2 format
-    if 'inbound_nodes' in layer:
-        layer['inbound_nodes'] = fix_inbound_nodes(layer['inbound_nodes'])
-
-    # Fix nested layer configs
-    if 'layer' in config and isinstance(config['layer'], dict):
-        config['layer'] = fix_layer_config(config['layer'])
-
-    # Remove Keras 3 build_config
-    config.pop('build_config', None)
-
-    layer['config'] = config
-    return layer
-
-
 def fix_topology(topology: dict) -> dict:
-    """Transform Keras 3 model topology to TF.js compatible format."""
-    # Fix all layers
-    if 'config' in topology and 'layers' in topology['config']:
-        for i, layer in enumerate(topology['config']['layers']):
-            topology['config']['layers'][i] = fix_layer_config(layer)
-
-    # Remove top-level Keras 3 fields
+    """Transform full model topology."""
     topology.pop('module', None)
     topology.pop('registered_name', None)
 
-    # Fix build_config at model level
     if 'config' in topology:
         topology['config'].pop('build_config', None)
+
+        # Fix layers
+        if 'layers' in topology['config']:
+            for i, layer in enumerate(topology['config']['layers']):
+                topology['config']['layers'][i] = fix_layer(layer)
+
+        # Fix input_layers / output_layers format
+        # Keras 3: flat ["input_layer", 0, 0]
+        # TF.js expects: nested [["input_layer", 0, 0]]
+        for key in ('input_layers', 'output_layers'):
+            val = topology['config'].get(key)
+            if val and isinstance(val, list) and len(val) > 0:
+                if isinstance(val[0], str):
+                    # Flat array -> wrap in outer array
+                    topology['config'][key] = [val]
 
     return topology
 
 
 def main():
     print("=" * 60)
-    print("  Converting Keras 3 model to TensorFlow.js format")
+    print("  Keras 3 -> TensorFlow.js Converter v3.0")
     print("=" * 60)
 
     if not MODEL_PATH.exists():
-        print(f"\nERROR: Model not found at {MODEL_PATH}")
+        print(f"\nERROR: Model not found: {MODEL_PATH}")
         sys.exit(1)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-    # Clean old files
     for f in OUTPUT_DIR.iterdir():
         f.unlink()
-
-    print(f"\n  Input : {MODEL_PATH}")
-    print(f"  Output: {OUTPUT_DIR}")
 
     import numpy as np
     import tensorflow as tf
 
-    print("\n  Loading model...")
+    print(f"\n  Loading {MODEL_PATH.name}...")
     model = tf.keras.models.load_model(str(MODEL_PATH))
-    print(f"  Loaded: {len(model.layers)} layers, {model.count_params()} params")
+    print(f"  {len(model.layers)} layers, {model.count_params()} params")
 
-    # Get and fix topology
-    print("  Fixing topology for TF.js compatibility...")
-    model_config = json.loads(model.to_json())
-    model_config = fix_topology(model_config)
+    # Fix topology
+    print("  Transforming topology (Keras 3 -> TF.js)...")
+    topo = json.loads(model.to_json())
+    topo = fix_topology(topo)
 
-    # Verify InputLayer fix
-    first_layer = model_config['config']['layers'][0]
-    assert 'batch_input_shape' in first_layer['config'], "InputLayer fix failed!"
-    print(f"  InputLayer batch_input_shape: {first_layer['config']['batch_input_shape']}")
+    # Verify
+    first = topo['config']['layers'][0]
+    assert first['class_name'] == 'InputLayer'
+    assert 'batch_input_shape' in first['config']
+    print(f"  Input shape: {first['config']['batch_input_shape']}")
 
     # Extract weights
     print("  Extracting weights...")
-    weight_specs = []
-    weight_data = bytearray()
+    specs = []
+    buf = bytearray()
 
     for layer in model.layers:
         for w in layer.weights:
-            w_np = w.numpy().astype(np.float32)
-            weight_data.extend(w_np.tobytes())
+            arr = w.numpy().astype(np.float32)
+            buf.extend(arr.tobytes())
+            name = w.name.removesuffix(':0')
+            specs.append({'name': name, 'shape': list(arr.shape), 'dtype': 'float32'})
 
-            name = w.name
-            if name.endswith(':0'):
-                name = name[:-2]
+    # Write shards
+    MAX = 4 * 1024 * 1024
+    data = bytes(buf)
+    n_shards = max(1, (len(data) + MAX - 1) // MAX)
+    paths = []
 
-            weight_specs.append({
-                'name': name,
-                'shape': list(w_np.shape),
-                'dtype': 'float32',
-            })
-
-    # Write shards (max 4MB each)
-    MAX_SHARD = 4 * 1024 * 1024
-    data_bytes = bytes(weight_data)
-    num_shards = max(1, (len(data_bytes) + MAX_SHARD - 1) // MAX_SHARD)
-    shard_paths = []
-
-    for i in range(num_shards):
-        start = i * MAX_SHARD
-        end = min(start + MAX_SHARD, len(data_bytes))
-        shard_name = f"group1-shard{i + 1}of{num_shards}.bin"
-        with open(OUTPUT_DIR / shard_name, 'wb') as f:
-            f.write(data_bytes[start:end])
-        shard_paths.append(shard_name)
+    for i in range(n_shards):
+        name = f'group1-shard{i+1}of{n_shards}.bin'
+        with open(OUTPUT_DIR / name, 'wb') as f:
+            f.write(data[i*MAX : (i+1)*MAX])
+        paths.append(name)
 
     # Write model.json
     manifest = {
         'format': 'layers-model',
         'generatedBy': f'keras v{tf.keras.__version__}',
-        'convertedBy': 'Mapan TF.js converter v2.0 (Keras 3 compat)',
-        'modelTopology': model_config,
-        'weightsManifest': [{
-            'paths': shard_paths,
-            'weights': weight_specs,
-        }],
+        'convertedBy': 'Mapan converter v3.0',
+        'modelTopology': topo,
+        'weightsManifest': [{'paths': paths, 'weights': specs}],
     }
 
     with open(OUTPUT_DIR / 'model.json', 'w') as f:
         json.dump(manifest, f)
 
     # Summary
-    total_size = sum((OUTPUT_DIR / p).stat().st_size for p in shard_paths)
-    total_size += (OUTPUT_DIR / 'model.json').stat().st_size
+    total = sum((OUTPUT_DIR / p).stat().st_size for p in paths)
+    total += (OUTPUT_DIR / 'model.json').stat().st_size
 
-    print(f"\n  Conversion complete!")
-    print(f"  Weights: {len(weight_specs)} tensors, {num_shards} shards")
+    print(f"\n  Done! {len(specs)} weight tensors, {n_shards} shards")
     for f in sorted(OUTPUT_DIR.iterdir()):
-        print(f"    {f.name} ({f.stat().st_size / 1024:.1f} KB)")
-    print(f"  Total: {total_size / 1024 / 1024:.2f} MB")
-    print(f"\n  Model ready at: /models/rice-disease/model.json")
+        print(f"    {f.name} ({f.stat().st_size/1024:.1f} KB)")
+    print(f"  Total: {total/1024/1024:.2f} MB")
 
 
 if __name__ == '__main__':

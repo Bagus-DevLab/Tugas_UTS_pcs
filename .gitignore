@@ -39,6 +39,7 @@ ml/label_progress.json
 __pycache__/
 *.pyc
 
-# TF.js model files (generated, large binary)
+# ML model files (generated, large binary)
 /public/models/rice-disease/*.bin
+/public/models/rice-disease/*.onnx
 

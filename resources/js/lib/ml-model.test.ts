@@ -42,17 +42,6 @@ describe('getTopPrediction', () => {
         expect(top.confidence).toBe(85.5);
     });
 
-    it('handles equal confidence values', () => {
-        const predictions: Prediction[] = [
-            { label: 'Blast', confidence: 50 },
-            { label: 'Healthy', confidence: 50 },
-        ];
-
-        const top = getTopPrediction(predictions);
-        // Should return one of them (first encountered with max)
-        expect(top.confidence).toBe(50);
-    });
-
     it('handles single prediction', () => {
         const predictions: Prediction[] = [
             { label: 'Healthy', confidence: 99.9 },

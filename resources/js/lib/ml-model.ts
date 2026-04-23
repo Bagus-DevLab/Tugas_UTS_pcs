@@ -1,4 +1,4 @@
-import * as tf from '@tensorflow/tfjs';
+import * as ort from 'onnxruntime-web';
 
 export const CLASS_LABELS = [
     'Bacterial Leaf Blight',
@@ -21,27 +21,26 @@ export interface Prediction {
     confidence: number; // 0-100
 }
 
-let model: tf.LayersModel | null = null;
+let session: ort.InferenceSession | null = null;
 let isLoading = false;
 
 /**
- * Load the TensorFlow.js model from public/models/rice-disease/
+ * Load the ONNX model from public/models/rice-disease/
  */
-export async function loadModel(): Promise<tf.LayersModel> {
-    if (model) {
-return model;
+export async function loadModel(): Promise<ort.InferenceSession> {
+    if (session) {
+return session;
 }
 
     if (isLoading) {
-        // Wait for existing load to complete
         return new Promise((resolve, reject) => {
             const interval = setInterval(() => {
-                if (model) {
+                if (session) {
                     clearInterval(interval);
-                    resolve(model);
+                    resolve(session);
                 }
 
-                if (!isLoading && !model) {
+                if (!isLoading && !session) {
                     clearInterval(interval);
                     reject(new Error('Model loading failed'));
                 }
@@ -52,39 +51,39 @@ return model;
     isLoading = true;
 
     try {
-        console.log('[ML] Loading model from /models/rice-disease/model.json ...');
+        console.log('[ML] Loading ONNX model...');
 
-        // First verify model.json is accessible
-        const resp = await fetch('/models/rice-disease/model.json');
+        // Check if model file exists
+        const resp = await fetch('/models/rice-disease/model.onnx', { method: 'HEAD' });
+
         if (!resp.ok) {
             isLoading = false;
+
             throw new Error('Model ML belum tersedia. Silakan train model terlebih dahulu.');
         }
 
-        model = await tf.loadLayersModel('/models/rice-disease/model.json', {
-            strict: false,
+        // Configure ONNX Runtime Web - use CDN for WASM files
+        ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.24.3/dist/';
+        ort.env.wasm.numThreads = 1;
+        ort.env.wasm.proxy = false;
+
+        session = await ort.InferenceSession.create('/models/rice-disease/model.onnx', {
+            executionProviders: ['wasm'],
+            graphOptimizationLevel: 'all',
         });
-        console.log('[ML] Model loaded successfully. Input shape:', model.inputs[0]?.shape, 'Output shape:', model.outputs[0]?.shape);
+
+        console.log('[ML] ONNX model loaded successfully.');
+        console.log('[ML] Input:', session.inputNames, 'Output:', session.outputNames);
         isLoading = false;
 
-        return model;
+        return session;
     } catch (error) {
         isLoading = false;
-
-        // Log full error for debugging
-        console.error('[ML] Model loading failed:', error);
-        if (error instanceof Error && error.stack) {
-            console.error('[ML] Stack:', error.stack);
-        }
-
         const msg = error instanceof Error ? error.message : String(error);
+        console.error('[ML] Model loading failed:', msg);
 
-        if (msg.includes('404') || msg.includes('not found') || msg.includes('Failed to fetch')) {
+        if (msg.includes('404') || msg.includes('not found') || msg.includes('Failed to fetch') || msg.includes('belum tersedia')) {
             throw new Error('Model ML belum tersedia. Silakan train model terlebih dahulu.');
-        }
-
-        if (!msg || msg.trim() === '') {
-            throw new Error('Gagal memuat model ML. Kemungkinan format model tidak kompatibel dengan TensorFlow.js. Cek console browser untuk detail.');
         }
 
         throw new Error(`Gagal memuat model ML: ${msg}`);
@@ -95,55 +94,67 @@ return model;
  * Check if the model is loaded
  */
 export function isModelLoaded(): boolean {
-    return model !== null;
+    return session !== null;
 }
 
 /**
- * Preprocess an image element for model input
- * Resize to 224x224, normalize to [-1, 1] (MobileNetV2 preprocessing)
+ * Preprocess image: resize to 224x224, normalize with training preprocessing
+ * Training uses: preprocessing_function(x-1) then rescale(/127.5)
+ * So final: (pixel - 1) / 127.5
  */
-export function preprocessImage(imageElement: HTMLImageElement | HTMLCanvasElement): tf.Tensor4D {
-    return tf.tidy(() => {
-        // Convert image to tensor
-        let tensor = tf.browser.fromPixels(imageElement);
+function preprocessImage(imageElement: HTMLImageElement | HTMLCanvasElement): Float32Array {
+    // Draw image to canvas at 224x224
+    const canvas = document.createElement('canvas');
+    canvas.width = 224;
+    canvas.height = 224;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(imageElement, 0, 0, 224, 224);
 
-        // Resize to 224x224
-        tensor = tf.image.resizeBilinear(tensor as tf.Tensor3D, [224, 224]);
+    const imageData = ctx.getImageData(0, 0, 224, 224);
+    const { data } = imageData; // RGBA uint8
 
-        // Normalize to [-1, 1] (MobileNetV2 preprocessing)
-        const normalized = tensor.toFloat().div(tf.scalar(127.5)).sub(tf.scalar(1));
+    // Convert to float32 NCHW or NHWC depending on model
+    // Our model expects NHWC: [1, 224, 224, 3]
+    const float32Data = new Float32Array(1 * 224 * 224 * 3);
 
-        // Add batch dimension
-        return normalized.expandDims(0) as tf.Tensor4D;
-    });
+    for (let i = 0; i < 224 * 224; i++) {
+        const r = data[i * 4];
+        const g = data[i * 4 + 1];
+        const b = data[i * 4 + 2];
+
+        // Apply training preprocessing: (pixel - 1) / 127.5
+        float32Data[i * 3] = (r - 1) / 127.5;
+        float32Data[i * 3 + 1] = (g - 1) / 127.5;
+        float32Data[i * 3 + 2] = (b - 1) / 127.5;
+    }
+
+    return float32Data;
 }
 
 /**
  * Run inference on an image and return predictions for all classes
  */
 export async function predict(imageElement: HTMLImageElement | HTMLCanvasElement): Promise<Prediction[]> {
-    const loadedModel = await loadModel();
+    const loadedSession = await loadModel();
 
-    const inputTensor = preprocessImage(imageElement);
+    const inputData = preprocessImage(imageElement);
+    const inputTensor = new ort.Tensor('float32', inputData, [1, 224, 224, 3]);
 
-    try {
-        const output = loadedModel.predict(inputTensor) as tf.Tensor;
-        const probabilities = await output.data();
+    const inputName = loadedSession.inputNames[0];
+    const feeds: Record<string, ort.Tensor> = { [inputName]: inputTensor };
 
-        output.dispose();
+    const results = await loadedSession.run(feeds);
+    const outputName = loadedSession.outputNames[0];
+    const probabilities = results[outputName].data as Float32Array;
 
-        const predictions: Prediction[] = CLASS_LABELS.map((label, index) => ({
-            label,
-            confidence: Math.round(probabilities[index] * 10000) / 100, // Convert to percentage with 2 decimals
-        }));
+    const predictions: Prediction[] = CLASS_LABELS.map((label, index) => ({
+        label,
+        confidence: Math.round(probabilities[index] * 10000) / 100,
+    }));
 
-        // Sort by confidence descending
-        predictions.sort((a, b) => b.confidence - a.confidence);
+    predictions.sort((a, b) => b.confidence - a.confidence);
 
-        return predictions;
-    } finally {
-        inputTensor.dispose();
-    }
+    return predictions;
 }
 
 /**
@@ -159,8 +170,8 @@ export function getTopPrediction(predictions: Prediction[]): Prediction {
  * Dispose the loaded model to free memory
  */
 export function disposeModel(): void {
-    if (model) {
-        model.dispose();
-        model = null;
+    if (session) {
+        session.release();
+        session = null;
     }
 }
