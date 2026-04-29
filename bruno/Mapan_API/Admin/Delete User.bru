@@ -1,0 +1,25 @@
+meta {
+  name: Delete User (Super Admin)
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{base_url}}/admin/users/2
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}
+
+docs {
+  Requires Super Admin role
+}

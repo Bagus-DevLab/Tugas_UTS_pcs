@@ -1,0 +1,25 @@
+meta {
+  name: Get All Symptoms
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/symptoms
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response is array", function() {
+    expect(res.body).to.be.an('array');
+  });
+}

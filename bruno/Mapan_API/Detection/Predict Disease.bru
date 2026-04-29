@@ -1,0 +1,40 @@
+meta {
+  name: Predict Disease (ML Inference)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/detections/predict
+  body: multipartForm
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:multipart-form {
+  image: @file(C:\Users\bagus\Downloads\Compressed\archive\data\test\tungro\100056.jpg)
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response has prediction", function() {
+    expect(res.body.label).to.be.a('string');
+    expect(res.body.confidence).to.be.a('number');
+    expect(res.body.predictions).to.be.an('array');
+  });
+}
+
+docs {
+  Upload image untuk ML inference di server. Returns prediction results.
+  - image: wajib, format jpeg/png/jpg/webp, max 10MB
+}

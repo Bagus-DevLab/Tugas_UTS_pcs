@@ -29,6 +29,11 @@ yarn-error.log
 
 # Python virtual environment
 ml/venv/
+venv/
+__pycache__/
+*.pyc
+
+# ML files
 ml/model/
 ml/dataset/
 ml/dataset_split/
@@ -36,10 +41,17 @@ ml/test/
 ml/val/
 ml/smartfarmingimage/
 ml/label_progress.json
-__pycache__/
-*.pyc
 
 # ML model files (generated, large binary)
 /public/models/rice-disease/*.bin
 /public/models/rice-disease/*.onnx
 
+# Scripts
+/scripts/
+router.php
+RUN.md
+
+# Logs
+*.log
+/tmp/
+venv/

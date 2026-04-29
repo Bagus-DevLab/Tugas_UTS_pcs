@@ -1,0 +1,47 @@
+meta {
+  name: Create Disease (Admin)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/admin/diseases
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "New Disease",
+    "latin_name": "Scientific Name",
+    "description": "Disease description",
+    "cause": "Disease cause",
+    "prevention": "Prevention methods",
+    "symptoms": [
+      { "id": 1, "weight": 0.9 },
+      { "id": 2, "weight": 0.8 }
+    ]
+  }
+}
+
+tests {
+  test("Status is 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  
+  test("Response has disease data", function() {
+    expect(res.body.disease).to.be.an('object');
+  });
+}
+
+docs {
+  Requires Admin or Super Admin role
+}

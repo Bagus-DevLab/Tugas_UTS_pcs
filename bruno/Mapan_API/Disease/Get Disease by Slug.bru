@@ -1,0 +1,30 @@
+meta {
+  name: Get Disease by Slug
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/diseases/blast
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response has disease data", function() {
+    expect(res.body.disease).to.be.an('object');
+    expect(res.body.disease.slug).to.equal('blast');
+  });
+}

@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 // ===================================================================
 // API v1
 // ===================================================================
+Route::get('dashboard/stats', [DashboardApiController::class, 'stats']);
+
 
 Route::prefix('v1')->group(function () {
     // ----- Public (no auth) -----
@@ -24,11 +26,11 @@ Route::prefix('v1')->group(function () {
         Route::get('user', [AuthController::class, 'user']);
 
         // Dashboard
-        Route::get('dashboard/stats', [DashboardApiController::class, 'stats']);
 
         // Detections (CRUD)
         Route::get('detections', [DetectionApiController::class, 'index']);
         Route::post('detections', [DetectionApiController::class, 'store']);
+        Route::post('detections/predict', [DetectionApiController::class, 'predict']);
         Route::get('detections/{detection}', [DetectionApiController::class, 'show']);
         Route::delete('detections/{detection}', [DetectionApiController::class, 'destroy']);
 

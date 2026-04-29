@@ -1,13 +1,13 @@
 {
 	"info": {
 		"name": "Mapan API - Sistem Pakar Deteksi Penyakit Padi",
-		"description": "API endpoints untuk Mapan - Sistem Pakar Deteksi Penyakit Tanaman Padi.\n\n## Cara Pakai\n1. Jalankan request **Login** terlebih dahulu\n2. Token otomatis tersimpan di variable `token`\n3. Semua request lain otomatis menggunakan token tersebut\n\n## Akun Default\n- Super Admin: superadmin@mapan.test / password\n- Admin: admin@mapan.test / password\n- User: user@mapan.test / password",
+		"description": "API endpoints untuk Mapan - Sistem Pakar Deteksi Penyakit Tanaman Padi.\n\n## Cara Pakai\n1. Jalankan request **Login** terlebih dahulu\n2. Token otomatis tersimpan di variable `token`\n3. Semua request lain otomatis menggunakan token tersebut\n\n## Akun Default\n- Super Admin: superadmin@mapan.test / password\n- Admin: admin@mapan.test / password\n- User: user@mapan.test / password\n\n## Base URL\nGunakan salah satu:\n- Port 8000 (Frontend + API): http://localhost:8000/public/api/v1\n- Port 6000 (API Only): http://localhost:6000/public/api/v1\n- Ngrok: https://your-ngrok-url.ngrok-free.app/public/api/v1",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://127.0.0.1:8000/api/v1"
+			"value": "http://localhost:6000/public/api/v1"
 		},
 		{
 			"key": "token",
@@ -144,6 +144,20 @@
 							]
 						},
 						"url": { "raw": "{{base_url}}/detections", "host": ["{{base_url}}"], "path": ["detections"] }
+					}
+				},
+				{
+					"name": "Predict Disease (ML Inference)",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{ "key": "image", "type": "file", "src": "" }
+							]
+						},
+						"url": { "raw": "{{base_url}}/detections/predict", "host": ["{{base_url}}"], "path": ["detections", "predict"] }
 					}
 				},
 				{

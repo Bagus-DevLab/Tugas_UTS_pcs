@@ -115,4 +115,48 @@ class DetectionApiController extends Controller
             'message' => 'Deteksi berhasil dihapus.',
         ]);
     }
+
+    /**
+     * POST /api/v1/detections/predict
+     * Run ML inference on uploaded image
+     */
+    public function predict(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:10240',
+        ]);
+
+        $image = $request->file('image');
+        $tempPath = $image->store('temp', 'public');
+        $fullPath = storage_path('app/public/' . $tempPath);
+
+        $pythonPath = base_path('venv/bin/python');
+        $scriptPath = base_path('scripts/predict.py');
+
+        $command = escapeshellcmd($pythonPath) . ' ' . escapeshellcmd($scriptPath) . ' ' . escapeshellarg($fullPath);
+        
+        $output = shell_exec($command);
+        
+        @unlink($fullPath);
+
+        if (!$output) {
+            return response()->json([
+                'message' => 'Prediction failed.',
+            ], 500);
+        }
+
+        $result = json_decode($output, true);
+
+        if (isset($result['error'])) {
+            return response()->json([
+                'message' => $result['error'],
+            ], 500);
+        }
+
+        return response()->json([
+            'label' => $result['top_label'],
+            'confidence' => $result['top_confidence'],
+            'predictions' => $result['predictions'],
+        ]);
+    }
 }
