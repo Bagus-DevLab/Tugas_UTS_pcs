@@ -1,0 +1,439 @@
+{
+	"info": {
+		"name": "Mapan API - Sistem Pakar Deteksi Penyakit Padi",
+		"description": "API endpoints untuk Mapan - Sistem Pakar Deteksi Penyakit Tanaman Padi.\n\n## Cara Pakai\n1. Jalankan request **Login** terlebih dahulu\n2. Token otomatis tersimpan di variable `token`\n3. Semua request lain otomatis menggunakan token tersebut\n\n## Akun Default\n- Super Admin: superadmin@mapan.test / password\n- Admin: admin@mapan.test / password\n- User: user@mapan.test / password",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000/api/v1"
+		},
+		{
+			"key": "token",
+			"value": ""
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set('token', jsonData.token);",
+									"    console.log('Token saved: ' + jsonData.token.substring(0, 20) + '...');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "noauth" },
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"superadmin@mapan.test\",\n    \"password\": \"password\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/login", "host": ["{{base_url}}"], "path": ["login"] }
+					}
+				},
+				{
+					"name": "Register",
+					"request": {
+						"auth": { "type": "noauth" },
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New User\",\n    \"email\": \"newuser@mapan.test\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/register", "host": ["{{base_url}}"], "path": ["register"] }
+					}
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/user", "host": ["{{base_url}}"], "path": ["user"] }
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/logout", "host": ["{{base_url}}"], "path": ["logout"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Dashboard",
+			"item": [
+				{
+					"name": "Get Dashboard Stats",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/dashboard/stats", "host": ["{{base_url}}"], "path": ["dashboard", "stats"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Detections",
+			"item": [
+				{
+					"name": "List My Detections",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": {
+							"raw": "{{base_url}}/detections?per_page=10",
+							"host": ["{{base_url}}"],
+							"path": ["detections"],
+							"query": [{ "key": "per_page", "value": "10" }, { "key": "method", "value": "image", "disabled": true }]
+						}
+					}
+				},
+				{
+					"name": "Store Detection (Image)",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{ "key": "method", "value": "image", "type": "text" },
+								{ "key": "image", "type": "file", "src": "" },
+								{ "key": "label", "value": "Blast", "type": "text" },
+								{ "key": "confidence", "value": "92.5", "type": "text" },
+								{ "key": "temperature", "value": "28.5", "type": "text" },
+								{ "key": "scanned_at", "value": "2025-04-29T10:00:00Z", "type": "text" },
+								{ "key": "scan_duration_ms", "value": "1250", "type": "text" },
+								{ "key": "latitude", "value": "-6.2088", "type": "text" },
+								{ "key": "longitude", "value": "106.8456", "type": "text" },
+								{ "key": "connection_status", "value": "online", "type": "text" },
+								{ "key": "predictions", "value": "{\"Blast\": 92.5, \"Healthy\": 5.0, \"Brown Spot\": 2.5}", "type": "text" }
+							]
+						},
+						"url": { "raw": "{{base_url}}/detections", "host": ["{{base_url}}"], "path": ["detections"] }
+					}
+				},
+				{
+					"name": "Get Detection Detail",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/detections/1", "host": ["{{base_url}}"], "path": ["detections", "1"] }
+					}
+				},
+				{
+					"name": "Delete Detection",
+					"request": {
+						"method": "DELETE",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/detections/1", "host": ["{{base_url}}"], "path": ["detections", "1"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Expert System",
+			"item": [
+				{
+					"name": "List All Symptoms",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/symptoms", "host": ["{{base_url}}"], "path": ["symptoms"] }
+					}
+				},
+				{
+					"name": "Diagnose (Forward Chaining + CF)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"symptom_ids\": [1, 2, 3]\n}"
+						},
+						"url": { "raw": "{{base_url}}/expert-system/diagnose", "host": ["{{base_url}}"], "path": ["expert-system", "diagnose"] }
+					}
+				},
+				{
+					"name": "Store Expert System Result",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"disease_id\": 1,\n    \"label\": \"Blast\",\n    \"confidence\": 99.5,\n    \"temperature\": 28.0,\n    \"scanned_at\": \"2025-04-29T10:00:00Z\",\n    \"scan_duration_ms\": 50,\n    \"latitude\": -6.2088,\n    \"longitude\": 106.8456,\n    \"connection_status\": \"online\",\n    \"selected_symptoms\": \"[1, 2, 3]\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/expert-system", "host": ["{{base_url}}"], "path": ["expert-system"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Knowledge Base",
+			"item": [
+				{
+					"name": "List All Diseases",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/diseases", "host": ["{{base_url}}"], "path": ["diseases"] }
+					}
+				},
+				{
+					"name": "Get Disease Detail",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/diseases/blast", "host": ["{{base_url}}"], "path": ["diseases", "blast"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin - Diseases (admin+)",
+			"item": [
+				{
+					"name": "List Diseases (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/admin/diseases", "host": ["{{base_url}}"], "path": ["admin", "diseases"] }
+					}
+				},
+				{
+					"name": "Create Disease",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Disease\",\n    \"latin_name\": \"Testus diseaseus\",\n    \"description\": \"Deskripsi penyakit test\",\n    \"cause\": \"Penyebab penyakit test\",\n    \"symptoms\": [\n        { \"id\": 1, \"weight\": 0.9 },\n        { \"id\": 2, \"weight\": 0.8 }\n    ]\n}"
+						},
+						"url": { "raw": "{{base_url}}/admin/diseases", "host": ["{{base_url}}"], "path": ["admin", "diseases"] }
+					}
+				},
+				{
+					"name": "Update Disease",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Disease\",\n    \"description\": \"Updated description\",\n    \"cause\": \"Updated cause\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/admin/diseases/1", "host": ["{{base_url}}"], "path": ["admin", "diseases", "1"] }
+					}
+				},
+				{
+					"name": "Delete Disease",
+					"request": {
+						"method": "DELETE",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/admin/diseases/1", "host": ["{{base_url}}"], "path": ["admin", "diseases", "1"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin - Symptoms (admin+)",
+			"item": [
+				{
+					"name": "List Symptoms (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/admin/symptoms", "host": ["{{base_url}}"], "path": ["admin", "symptoms"] }
+					}
+				},
+				{
+					"name": "Create Symptom",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"G99\",\n    \"name\": \"Gejala test baru\",\n    \"description\": \"Deskripsi gejala test\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/admin/symptoms", "host": ["{{base_url}}"], "path": ["admin", "symptoms"] }
+					}
+				},
+				{
+					"name": "Update Symptom",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"G99\",\n    \"name\": \"Updated symptom\",\n    \"description\": \"Updated description\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/admin/symptoms/1", "host": ["{{base_url}}"], "path": ["admin", "symptoms", "1"] }
+					}
+				},
+				{
+					"name": "Delete Symptom",
+					"request": {
+						"method": "DELETE",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/admin/symptoms/1", "host": ["{{base_url}}"], "path": ["admin", "symptoms", "1"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin - Treatments (admin+)",
+			"item": [
+				{
+					"name": "List Treatments (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/admin/treatments", "host": ["{{base_url}}"], "path": ["admin", "treatments"] }
+					}
+				},
+				{
+					"name": "Create Treatment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"disease_id\": 1,\n    \"type\": \"chemical\",\n    \"description\": \"Aplikasi fungisida test\",\n    \"dosage\": \"2.5\",\n    \"dosage_unit\": \"ml/L\",\n    \"priority\": 1\n}"
+						},
+						"url": { "raw": "{{base_url}}/admin/treatments", "host": ["{{base_url}}"], "path": ["admin", "treatments"] }
+					}
+				},
+				{
+					"name": "Update Treatment",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"disease_id\": 1,\n    \"type\": \"biological\",\n    \"description\": \"Updated treatment\",\n    \"dosage\": \"5\",\n    \"dosage_unit\": \"gram/L\",\n    \"priority\": 2\n}"
+						},
+						"url": { "raw": "{{base_url}}/admin/treatments/1", "host": ["{{base_url}}"], "path": ["admin", "treatments", "1"] }
+					}
+				},
+				{
+					"name": "Delete Treatment",
+					"request": {
+						"method": "DELETE",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/admin/treatments/1", "host": ["{{base_url}}"], "path": ["admin", "treatments", "1"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin - Detections (admin+)",
+			"item": [
+				{
+					"name": "List All Detections (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": {
+							"raw": "{{base_url}}/admin/detections",
+							"host": ["{{base_url}}"],
+							"path": ["admin", "detections"],
+							"query": [{ "key": "method", "value": "image", "disabled": true }]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin - Users (super_admin)",
+			"item": [
+				{
+					"name": "List Users",
+					"request": {
+						"method": "GET",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/admin/users", "host": ["{{base_url}}"], "path": ["admin", "users"] }
+					}
+				},
+				{
+					"name": "Update User Role",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"User Name\",\n    \"email\": \"user@mapan.test\",\n    \"role\": \"admin\"\n}"
+						},
+						"url": { "raw": "{{base_url}}/admin/users/3", "host": ["{{base_url}}"], "path": ["admin", "users", "3"] }
+					}
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [{ "key": "Accept", "value": "application/json" }],
+						"url": { "raw": "{{base_url}}/admin/users/3", "host": ["{{base_url}}"], "path": ["admin", "users", "3"] }
+					}
+				}
+			]
+		}
+	]
+}
