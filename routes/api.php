@@ -11,13 +11,29 @@ use Illuminate\Support\Facades\Route;
 // ===================================================================
 // API v1
 // ===================================================================
-Route::get('dashboard/stats', [DashboardApiController::class, 'stats']);
-
 
 Route::prefix('v1')->group(function () {
     // ----- Public (no auth) -----
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
+
+    // Public Knowledge Base (no auth required)
+    Route::get('diseases', function () {
+        return response()->json([
+            'diseases' => Disease::with(['symptoms', 'treatments'])->get(),
+        ]);
+    });
+    Route::get('diseases/{disease:slug}', function (Disease $disease) {
+        return response()->json([
+            'disease' => $disease->load(['symptoms', 'treatments']),
+        ]);
+    });
+
+    // Public Symptoms (no auth required)
+    Route::get('symptoms', [ExpertSystemApiController::class, 'symptoms']);
+
+    // Public Predict (no auth required)
+    Route::post('detections/predict', [DetectionApiController::class, 'predict']);
 
     // ----- Authenticated (Sanctum token) -----
     Route::middleware('auth:sanctum')->group(function () {
@@ -26,30 +42,17 @@ Route::prefix('v1')->group(function () {
         Route::get('user', [AuthController::class, 'user']);
 
         // Dashboard
+        Route::get('dashboard/stats', [DashboardApiController::class, 'stats']);
 
         // Detections (CRUD)
         Route::get('detections', [DetectionApiController::class, 'index']);
         Route::post('detections', [DetectionApiController::class, 'store']);
-        Route::post('detections/predict', [DetectionApiController::class, 'predict']);
         Route::get('detections/{detection}', [DetectionApiController::class, 'show']);
         Route::delete('detections/{detection}', [DetectionApiController::class, 'destroy']);
 
         // Expert System
-        Route::get('symptoms', [ExpertSystemApiController::class, 'symptoms']);
         Route::post('expert-system/diagnose', [ExpertSystemApiController::class, 'diagnose']);
         Route::post('expert-system', [ExpertSystemApiController::class, 'store']);
-
-        // Knowledge Base (read-only)
-        Route::get('diseases', function () {
-            return response()->json([
-                'diseases' => Disease::with(['symptoms', 'treatments'])->get(),
-            ]);
-        });
-        Route::get('diseases/{disease:slug}', function (Disease $disease) {
-            return response()->json([
-                'disease' => $disease->load(['symptoms', 'treatments']),
-            ]);
-        });
 
         // ===== Admin routes (admin + super_admin) =====
         Route::middleware('role:super_admin,admin')->prefix('admin')->group(function () {

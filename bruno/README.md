@@ -33,11 +33,19 @@ Collection ini memiliki 3 environment:
 
 ## All Available Endpoints
 
-### Auth (Public)
+### Auth (Public - No Auth Required)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/register` | Register new user |
 | POST | `/login` | Login to get token |
+
+### Public Endpoints (No Auth Required)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/diseases` | Get all diseases with symptoms & treatments |
+| GET | `/diseases/{slug}` | Get disease by slug |
+| GET | `/symptoms` | Get all symptoms |
+| POST | `/detections/predict` | ML inference on image (server-side) |
 
 ### Auth (Protected)
 | Method | Endpoint | Description |
@@ -45,32 +53,24 @@ Collection ini memiliki 3 environment:
 | GET | `/user` | Get current user info |
 | POST | `/logout` | Logout and invalidate token |
 
-### Dashboard
+### Dashboard (Protected)
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/dashboard/stats` | Get dashboard statistics | admin/super_admin |
+| GET | `/dashboard/stats` | Get dashboard statistics | authenticated |
 
-### Detections (CRUD)
+### Detections (Protected)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/detections` | Get all detections |
 | POST | `/detections` | Create new detection |
-| POST | `/detections/predict` | ML inference on image (server-side) |
 | GET | `/detections/{id}` | Get detection by ID |
 | DELETE | `/detections/{id}` | Delete detection |
 
-### Expert System
+### Expert System (Protected)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/symptoms` | Get all symptoms |
 | POST | `/expert-system/diagnose` | Diagnose disease by symptoms |
 | POST | `/expert-system` | Store expert system consultation |
-
-### Knowledge Base (Read-only)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/diseases` | Get all diseases with symptoms & treatments |
-| GET | `/diseases/{slug}` | Get disease by slug |
 
 ### Admin - Diseases Management
 | Method | Endpoint | Description | Required Role |

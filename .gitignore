@@ -27,9 +27,9 @@ yarn-error.log
 /.vscode
 /.zed
 
-# Python virtual environment
-ml/venv/
+# Python
 venv/
+ml/venv/
 __pycache__/
 *.pyc
 
@@ -42,16 +42,13 @@ ml/val/
 ml/smartfarmingimage/
 ml/label_progress.json
 
-# ML model files (generated, large binary)
+# ML model files (large binary)
 /public/models/rice-disease/*.bin
 /public/models/rice-disease/*.onnx
 
-# Scripts
-/scripts/
-router.php
-RUN.md
-
-# Logs
+# Temporary files
 *.log
 /tmp/
-venv/
+cleanup.sh
+ANALYSIS.md
+RUN.md
