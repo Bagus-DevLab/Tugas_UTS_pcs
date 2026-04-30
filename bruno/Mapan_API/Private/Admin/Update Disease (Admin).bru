@@ -1,0 +1,40 @@
+meta {
+  name: Update Disease (Admin)
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{private_url}}/admin/diseases/1
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Updated Disease Name",
+    "scientific_name": "Updated Scientific Name",
+    "description": "Updated description",
+    "cause": "Updated cause",
+    "prevention": "Updated prevention"
+  }
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response has updated data", function() {
+    expect(res.body.id).to.equal(1);
+    expect(res.body.name).to.equal('Updated Disease Name');
+  });
+}
+
+docs {
+  Requires Admin or Super Admin role
+}

@@ -102,6 +102,58 @@ Sistem memiliki 3 role dengan hak akses bertingkat:
 | Password | Bcrypt 12 rounds, hashed cast pada model, strength indicator pada registrasi |
 | Self-Protection | Super Admin tidak bisa mengubah role sendiri atau menghapus akun sendiri |
 
+## API Structure
+
+API menggunakan **dual-prefix architecture** untuk memisahkan endpoint public dan private:
+
+### `/public/api/v1/*` - Public Endpoints
+- ✅ **No authentication required**
+- Semua endpoint GET (read-only)
+- Login & Register
+
+**Contoh:**
+```bash
+GET  /public/api/v1/diseases
+GET  /public/api/v1/symptoms
+GET  /public/api/v1/detections
+POST /public/api/v1/login
+POST /public/api/v1/register
+```
+
+### `/private/api/v1/*` - Private Endpoints
+- 🔒 **Authentication required** (Bearer token)
+- Semua endpoint POST/PUT/DELETE (write operations)
+- User info & Logout
+- Admin endpoints (`/private/api/v1/admin/*`)
+
+**Contoh:**
+```bash
+GET    /private/api/v1/user
+POST   /private/api/v1/logout
+POST   /private/api/v1/detections
+POST   /private/api/v1/detections/predict
+DELETE /private/api/v1/detections/{id}
+POST   /private/api/v1/expert-system/diagnose
+
+# Admin endpoints (admin/super_admin only)
+GET    /private/api/v1/admin/dashboard/stats
+GET    /private/api/v1/admin/diseases
+POST   /private/api/v1/admin/diseases
+PUT    /private/api/v1/admin/diseases/{id}
+DELETE /private/api/v1/admin/diseases/{id}
+```
+
+### Testing API
+
+Gunakan **Bruno** collection di folder `bruno/Mapan_API/`:
+- Environment: Local6000, Local8000, Ngrok
+- Folder structure: `Public/` dan `Private/`
+- 21 request files sudah dikonfigurasi
+
+Lihat `bruno/README.md` untuk dokumentasi lengkap.
+
+**Migration Guide:** Jika Anda mengupdate dari versi sebelumnya, baca `MIGRATION_GUIDE.md` untuk panduan migrasi frontend.
+
 ## Prasyarat
 
 - PHP >= 8.3

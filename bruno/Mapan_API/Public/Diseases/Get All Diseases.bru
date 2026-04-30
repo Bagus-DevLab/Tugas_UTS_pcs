@@ -1,0 +1,29 @@
+meta {
+  name: Get All Diseases
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{public_url}}/diseases
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response has diseases", function() {
+    expect(res.body.diseases).to.be.an('array');
+  });
+}

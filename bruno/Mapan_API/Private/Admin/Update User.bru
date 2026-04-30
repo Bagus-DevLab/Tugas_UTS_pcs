@@ -1,0 +1,38 @@
+meta {
+  name: Update User (Super Admin)
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{private_url}}/admin/users/2
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Updated Admin User",
+    "email": "admin.updated@example.com",
+    "role": "admin"
+  }
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response has updated data", function() {
+    expect(res.body.id).to.equal(2);
+    expect(res.body.name).to.equal('Updated Admin User');
+  });
+}
+
+docs {
+  Requires Super Admin role
+}

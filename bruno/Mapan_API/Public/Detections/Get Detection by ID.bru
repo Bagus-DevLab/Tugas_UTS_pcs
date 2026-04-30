@@ -1,0 +1,29 @@
+meta {
+  name: Get Detection by ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{public_url}}/detections/45
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response has detection data", function() {
+    expect(res.body.detection).to.be.an('object');
+  });
+}

@@ -9,79 +9,85 @@ use App\Http\Controllers\Api\ExpertSystemApiController;
 use Illuminate\Support\Facades\Route;
 
 // ===================================================================
-// API v1
+// PUBLIC API - /public/api/v1/*
+// No authentication required
 // ===================================================================
 
-Route::prefix('v1')->group(function () {
-    // ===================================================================
-    // PUBLIC ROUTES (No Auth Required)
-    // ===================================================================
-    
-    // Auth endpoints
+Route::prefix('public/api/v1')->group(function () {
+    // ===== Authentication =====
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
 
-    // Public GET endpoints - Knowledge Base
+    // ===== Knowledge Base (Read-only) =====
+    // Diseases
     Route::get('diseases', [DiseaseApiController::class, 'index']);
     Route::get('diseases/{disease:slug}', [DiseaseApiController::class, 'show']);
     
-    // Public GET endpoints - Symptoms
+    // Symptoms
     Route::get('symptoms', [ExpertSystemApiController::class, 'symptoms']);
     
-    // Public GET endpoints - Detections (list all)
+    // Detections (Read-only - list all)
     Route::get('detections', [DetectionApiController::class, 'index']);
     Route::get('detections/{detection}', [DetectionApiController::class, 'show']);
+});
+
+// ===================================================================
+// PRIVATE API - /private/api/v1/*
+// Authentication required (auth:sanctum)
+// ===================================================================
+
+Route::prefix('private/api/v1')->middleware('auth:sanctum')->group(function () {
+    // ===== Authentication =====
+    Route::get('user', [AuthController::class, 'user']);
+    Route::post('logout', [AuthController::class, 'logout']);
+
+    // ===== Detections (Create, Predict, Delete) =====
+    Route::post('detections', [DetectionApiController::class, 'store']);
+    Route::post('detections/predict', [DetectionApiController::class, 'predict']);
+    Route::delete('detections/{detection}', [DetectionApiController::class, 'destroy']);
+
+    // ===== Expert System =====
+    Route::post('expert-system/diagnose', [ExpertSystemApiController::class, 'diagnose']);
+    Route::post('expert-system', [ExpertSystemApiController::class, 'store']);
 
     // ===================================================================
-    // PROTECTED ROUTES (Auth Required)
+    // ADMIN ROUTES (admin + super_admin roles)
     // ===================================================================
     
-    Route::middleware('auth:sanctum')->group(function () {
-        // Auth
-        Route::post('logout', [AuthController::class, 'logout']);
-        Route::get('user', [AuthController::class, 'user']);
+    Route::middleware('role:super_admin,admin')->prefix('admin')->group(function () {
+        // ===== Dashboard =====
+        Route::get('dashboard/stats', [DashboardApiController::class, 'stats']);
+        
+        // ===== Diseases Management =====
+        Route::get('diseases', [AdminApiController::class, 'diseases']);
+        Route::post('diseases', [AdminApiController::class, 'storeDisease']);
+        Route::put('diseases/{disease}', [AdminApiController::class, 'updateDisease']);
+        Route::delete('diseases/{disease}', [AdminApiController::class, 'destroyDisease']);
 
-        // Detections (Create, Predict, Delete)
-        Route::post('detections', [DetectionApiController::class, 'store']);
-        Route::post('detections/predict', [DetectionApiController::class, 'predict']);
-        Route::delete('detections/{detection}', [DetectionApiController::class, 'destroy']);
+        // ===== Symptoms Management =====
+        Route::get('symptoms', [AdminApiController::class, 'symptoms']);
+        Route::post('symptoms', [AdminApiController::class, 'storeSymptom']);
+        Route::put('symptoms/{symptom}', [AdminApiController::class, 'updateSymptom']);
+        Route::delete('symptoms/{symptom}', [AdminApiController::class, 'destroySymptom']);
 
-        // Expert System
-        Route::post('expert-system/diagnose', [ExpertSystemApiController::class, 'diagnose']);
-        Route::post('expert-system', [ExpertSystemApiController::class, 'store']);
+        // ===== Treatments Management =====
+        Route::get('treatments', [AdminApiController::class, 'treatments']);
+        Route::post('treatments', [AdminApiController::class, 'storeTreatment']);
+        Route::put('treatments/{treatment}', [AdminApiController::class, 'updateTreatment']);
+        Route::delete('treatments/{treatment}', [AdminApiController::class, 'destroyTreatment']);
 
-        // ===== Admin routes (admin + super_admin) =====
-        Route::middleware('role:super_admin,admin')->prefix('admin')->group(function () {
-            // Dashboard Stats (Admin only)
-            Route::get('dashboard/stats', [DashboardApiController::class, 'stats']);
-            
-            // Diseases Management
-            Route::get('diseases', [AdminApiController::class, 'diseases']);
-            Route::post('diseases', [AdminApiController::class, 'storeDisease']);
-            Route::put('diseases/{disease}', [AdminApiController::class, 'updateDisease']);
-            Route::delete('diseases/{disease}', [AdminApiController::class, 'destroyDisease']);
+        // ===== Detections Management =====
+        Route::get('detections', [AdminApiController::class, 'detections']);
+    });
 
-            // Symptoms Management
-            Route::get('symptoms', [AdminApiController::class, 'symptoms']);
-            Route::post('symptoms', [AdminApiController::class, 'storeSymptom']);
-            Route::put('symptoms/{symptom}', [AdminApiController::class, 'updateSymptom']);
-            Route::delete('symptoms/{symptom}', [AdminApiController::class, 'destroySymptom']);
-
-            // Treatments Management
-            Route::get('treatments', [AdminApiController::class, 'treatments']);
-            Route::post('treatments', [AdminApiController::class, 'storeTreatment']);
-            Route::put('treatments/{treatment}', [AdminApiController::class, 'updateTreatment']);
-            Route::delete('treatments/{treatment}', [AdminApiController::class, 'destroyTreatment']);
-
-            // Detections Management
-            Route::get('detections', [AdminApiController::class, 'detections']);
-        });
-
-        // ===== Super Admin only =====
-        Route::middleware('role:super_admin')->prefix('admin')->group(function () {
-            Route::get('users', [AdminApiController::class, 'users']);
-            Route::put('users/{user}', [AdminApiController::class, 'updateUser']);
-            Route::delete('users/{user}', [AdminApiController::class, 'destroyUser']);
-        });
+    // ===================================================================
+    // SUPER ADMIN ONLY ROUTES
+    // ===================================================================
+    
+    Route::middleware('role:super_admin')->prefix('admin')->group(function () {
+        // ===== Users Management =====
+        Route::get('users', [AdminApiController::class, 'users']);
+        Route::put('users/{user}', [AdminApiController::class, 'updateUser']);
+        Route::delete('users/{user}', [AdminApiController::class, 'destroyUser']);
     });
 });

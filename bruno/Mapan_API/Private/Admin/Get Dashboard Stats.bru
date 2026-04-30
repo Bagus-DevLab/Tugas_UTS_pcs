@@ -1,0 +1,33 @@
+meta {
+  name: Get Dashboard Stats
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{private_url}}/dashboard/stats
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response has stats", function() {
+    expect(res.body.total_detections).to.be.a('number');
+  });
+}
+
+docs {
+  Requires Admin or Super Admin role
+}

@@ -1,0 +1,29 @@
+meta {
+  name: Get All Detections
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{public_url}}/detections
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response has data", function() {
+    expect(res.body.data).to.be.an('array');
+  });
+}

@@ -10,20 +10,38 @@ Bruno collection untuk testing API Mapan (Sistem Pakar Deteksi Penyakit Tanaman 
 
 ## Environments
 
-Collection ini memiliki 3 environment:
+Collection ini memiliki 3 environment dengan **2 base URLs** (Public & Private):
 
 ### Local8000 (Frontend + API)
-- `base_url`: http://localhost:8000/public/api/v1
+- `public_url`: http://localhost:8000/public/api/v1
+- `private_url`: http://localhost:8000/private/api/v1
 - Command: `php -S localhost:8000 -t public`
 
-### Local6000 (API Only)
-- `base_url`: http://localhost:6000/public/api/v1
+### Local6000 (API Only) - **Recommended for API Testing**
+- `public_url`: http://localhost:6000/public/api/v1
+- `private_url`: http://localhost:6000/private/api/v1
 - Command: `php -S localhost:6000 -t public`
 
 ### Ngrok
-- `base_url`: https://your-ngrok-url.ngrok-free.app/public/api/v1
+- `public_url`: https://your-ngrok-url.ngrok-free.app/public/api/v1
+- `private_url`: https://your-ngrok-url.ngrok-free.app/private/api/v1
 - Ganti `your-ngrok-url` dengan URL ngrok Anda
 - Aktifkan ngrok: `ngrok http 8000`
+
+## 🔄 API Structure (Public vs Private)
+
+API sekarang dipisah menjadi 2 prefix berbeda:
+
+### `/public/api/v1/*` - Public Endpoints
+- ✅ **No authentication required**
+- Semua endpoint GET (read-only)
+- Login & Register
+
+### `/private/api/v1/*` - Private Endpoints
+- 🔒 **Authentication required** (Bearer token)
+- Semua endpoint POST/PUT/DELETE (write operations)
+- User info & Logout
+- Admin endpoints
 
 ## Authentication Flow
 
@@ -33,94 +51,94 @@ Collection ini memiliki 3 environment:
 
 ## All Available Endpoints
 
-### 🌐 Public Endpoints (No Auth Required)
+### 🌐 Public Endpoints - `/public/api/v1/*` (No Auth Required)
 
 #### Auth
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/register` | Register new user |
-| POST | `/login` | Login to get token |
+| POST | `/public/api/v1/register` | Register new user |
+| POST | `/public/api/v1/login` | Login to get token |
 
 #### Knowledge Base (GET - Public)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/diseases` | Get all diseases with symptoms & treatments |
-| GET | `/diseases/{slug}` | Get disease by slug |
-| GET | `/symptoms` | Get all symptoms |
+| GET | `/public/api/v1/diseases` | Get all diseases with symptoms & treatments |
+| GET | `/public/api/v1/diseases/{slug}` | Get disease by slug |
+| GET | `/public/api/v1/symptoms` | Get all symptoms |
 
 #### Detections (GET - Public)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/detections` | Get all detections |
-| GET | `/detections/{id}` | Get detection by ID |
+| GET | `/public/api/v1/detections` | Get all detections |
+| GET | `/public/api/v1/detections/{id}` | Get detection by ID |
 
 ---
 
-### 🔒 Protected Endpoints (Auth Required)
+### 🔒 Private Endpoints - `/private/api/v1/*` (Auth Required)
 
 #### Auth
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/user` | Get current user info |
-| POST | `/logout` | Logout and invalidate token |
+| GET | `/private/api/v1/user` | Get current user info |
+| POST | `/private/api/v1/logout` | Logout and invalidate token |
 
 #### Detections (POST/DELETE - Protected)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/detections` | Create new detection |
-| POST | `/detections/predict` | ML inference on image (server-side) |
-| DELETE | `/detections/{id}` | Delete detection |
+| POST | `/private/api/v1/detections` | Create new detection |
+| POST | `/private/api/v1/detections/predict` | ML inference on image (server-side) |
+| DELETE | `/private/api/v1/detections/{id}` | Delete detection |
 
 #### Expert System (Protected)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/expert-system/diagnose` | Diagnose disease by symptoms |
-| POST | `/expert-system` | Store expert system consultation |
+| POST | `/private/api/v1/expert-system/diagnose` | Diagnose disease by symptoms |
+| POST | `/private/api/v1/expert-system` | Store expert system consultation |
 
 ---
 
-### 👑 Admin Endpoints (Admin/Super Admin Only)
+### 👑 Admin Endpoints - `/private/api/v1/admin/*` (Admin/Super Admin Only)
 
 #### Dashboard
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/admin/dashboard/stats` | Get dashboard statistics | admin/super_admin |
+| GET | `/private/api/v1/admin/dashboard/stats` | Get dashboard statistics | admin/super_admin |
 
 #### Diseases Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/admin/diseases` | Get all diseases (admin) | admin/super_admin |
-| POST | `/admin/diseases` | Create disease | admin/super_admin |
-| PUT | `/admin/diseases/{id}` | Update disease | admin/super_admin |
-| DELETE | `/admin/diseases/{id}` | Delete disease | admin/super_admin |
+| GET | `/private/api/v1/admin/diseases` | Get all diseases (admin) | admin/super_admin |
+| POST | `/private/api/v1/admin/diseases` | Create disease | admin/super_admin |
+| PUT | `/private/api/v1/admin/diseases/{id}` | Update disease | admin/super_admin |
+| DELETE | `/private/api/v1/admin/diseases/{id}` | Delete disease | admin/super_admin |
 
 #### Symptoms Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/admin/symptoms` | Get all symptoms (admin) | admin/super_admin |
-| POST | `/admin/symptoms` | Create symptom | admin/super_admin |
-| PUT | `/admin/symptoms/{id}` | Update symptom | admin/super_admin |
-| DELETE | `/admin/symptoms/{id}` | Delete symptom | admin/super_admin |
+| GET | `/private/api/v1/admin/symptoms` | Get all symptoms (admin) | admin/super_admin |
+| POST | `/private/api/v1/admin/symptoms` | Create symptom | admin/super_admin |
+| PUT | `/private/api/v1/admin/symptoms/{id}` | Update symptom | admin/super_admin |
+| DELETE | `/private/api/v1/admin/symptoms/{id}` | Delete symptom | admin/super_admin |
 
 #### Treatments Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/admin/treatments` | Get all treatments | admin/super_admin |
-| POST | `/admin/treatments` | Create treatment | admin/super_admin |
-| PUT | `/admin/treatments/{id}` | Update treatment | admin/super_admin |
-| DELETE | `/admin/treatments/{id}` | Delete treatment | admin/super_admin |
+| GET | `/private/api/v1/admin/treatments` | Get all treatments | admin/super_admin |
+| POST | `/private/api/v1/admin/treatments` | Create treatment | admin/super_admin |
+| PUT | `/private/api/v1/admin/treatments/{id}` | Update treatment | admin/super_admin |
+| DELETE | `/private/api/v1/admin/treatments/{id}` | Delete treatment | admin/super_admin |
 
 #### Detections Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/admin/detections` | Get all detections (admin view) | admin/super_admin |
+| GET | `/private/api/v1/admin/detections` | Get all detections (admin view) | admin/super_admin |
 
 #### User Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/admin/users` | Get all users | super_admin |
-| PUT | `/admin/users/{id}` | Update user | super_admin |
-| DELETE | `/admin/users/{id}` | Delete user | super_admin |
+| GET | `/private/api/v1/admin/users` | Get all users | super_admin |
+| PUT | `/private/api/v1/admin/users/{id}` | Update user | super_admin |
+| DELETE | `/private/api/v1/admin/users/{id}` | Delete user | super_admin |
 
 ---
 
@@ -147,39 +165,42 @@ Collection ini memiliki 3 environment:
 bruno/Mapan_API/
 ├── bruno.json
 ├── environments/
-│   ├── Local8000.bru
-│   ├── Local6000.bru
-│   └── Ngrok.bru
-├── Auth/
-│   ├── Register.bru
-│   ├── Login.bru
-│   ├── Get Current User.bru
-│   └── Logout.bru
-├── Detection/
-│   ├── Get All Detections.bru (Public)
-│   ├── Get Detection by ID.bru (Public)
-│   ├── Create Detection.bru (Protected)
-│   ├── Predict Disease.bru (Protected)
-│   └── Delete Detection.bru (Protected)
-├── Disease/
-│   ├── Get All Diseases.bru (Public)
-│   └── Get Disease by Slug.bru (Public)
-├── Expert System/
-│   ├── Get All Symptoms.bru (Public)
-│   └── Diagnose Disease.bru (Protected)
-└── Admin/
-    ├── Get Dashboard Stats.bru (Admin)
-    ├── Disease CRUD (Admin)
-    ├── Symptom CRUD (Admin)
-    ├── Treatment CRUD (Admin)
-    └── User Management (Super Admin)
+│   ├── Local8000.bru (public_url + private_url)
+│   ├── Local6000.bru (public_url + private_url)
+│   └── Ngrok.bru (public_url + private_url)
+├── Public/ (uses {{public_url}})
+│   ├── Auth/
+│   │   ├── Register.bru
+│   │   └── Login.bru
+│   ├── Diseases/
+│   │   ├── Get All Diseases.bru
+│   │   └── Get Disease by Slug.bru
+│   ├── Symptoms/
+│   │   └── Get All Symptoms.bru
+│   └── Detections/
+│       ├── Get All Detections.bru
+│       └── Get Detection by ID.bru
+└── Private/ (uses {{private_url}})
+    ├── Auth/
+    │   ├── Get Current User.bru
+    │   └── Logout.bru
+    ├── Detections/
+    │   ├── Create Detection.bru
+    │   ├── Predict Disease.bru
+    │   └── Delete Detection.bru
+    ├── Expert System/
+    │   └── Diagnose Disease.bru
+    └── Admin/
+        ├── Get Dashboard Stats.bru
+        ├── Disease CRUD (4 files)
+        └── User Management (3 files)
 ```
 
 ---
 
 ## Example Usage
 
-### Public Access (No Token)
+### Public Access (No Token) - `/public/api/v1/*`
 ```bash
 # Get all diseases
 curl http://localhost:6000/public/api/v1/diseases
@@ -191,17 +212,28 @@ curl http://localhost:6000/public/api/v1/symptoms
 curl http://localhost:6000/public/api/v1/detections
 ```
 
-### Protected Access (Need Token)
+### Protected Access (Need Token) - `/private/api/v1/*`
 ```bash
-# Login first
+# Login first (public endpoint)
 curl -X POST http://localhost:6000/public/api/v1/login \
   -H "Content-Type: application/json" \
   -d '{"email":"user@mapan.test","password":"password"}'
 
-# Use token for protected endpoints
-curl -X POST http://localhost:6000/public/api/v1/detections/predict \
+# Use token for protected endpoints (private URL)
+curl -X POST http://localhost:6000/private/api/v1/detections/predict \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -F "image=@image.jpg"
+
+# Get current user (private URL)
+curl http://localhost:6000/private/api/v1/user \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Admin Access (Admin Token) - `/private/api/v1/admin/*`
+```bash
+# Get dashboard stats (admin only)
+curl http://localhost:6000/private/api/v1/admin/dashboard/stats \
+  -H "Authorization: Bearer ADMIN_TOKEN"
 ```
 
 ---
