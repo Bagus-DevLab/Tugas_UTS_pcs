@@ -29,50 +29,64 @@ Collection ini memiliki 3 environment:
 
 1. **Register** atau **Login** untuk mendapatkan token
 2. Token akan otomatis disimpan ke environment variable `token`
-3. Semua request lain akan menggunakan token ini di header `Authorization: Bearer {token}`
+3. Semua request POST/PUT/DELETE akan menggunakan token ini di header `Authorization: Bearer {token}`
 
 ## All Available Endpoints
 
-### Auth (Public - No Auth Required)
+### 🌐 Public Endpoints (No Auth Required)
+
+#### Auth
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/register` | Register new user |
 | POST | `/login` | Login to get token |
 
-### Public Endpoints (No Auth Required)
+#### Knowledge Base (GET - Public)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/diseases` | Get all diseases with symptoms & treatments |
 | GET | `/diseases/{slug}` | Get disease by slug |
 | GET | `/symptoms` | Get all symptoms |
-| POST | `/detections/predict` | ML inference on image (server-side) |
 
-### Auth (Protected)
+#### Detections (GET - Public)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/detections` | Get all detections |
+| GET | `/detections/{id}` | Get detection by ID |
+
+---
+
+### 🔒 Protected Endpoints (Auth Required)
+
+#### Auth
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/user` | Get current user info |
 | POST | `/logout` | Logout and invalidate token |
 
-### Dashboard (Protected)
-| Method | Endpoint | Description | Required Role |
-|--------|----------|-------------|---------------|
-| GET | `/dashboard/stats` | Get dashboard statistics | authenticated |
-
-### Detections (Protected)
+#### Detections (POST/DELETE - Protected)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/detections` | Get all detections |
 | POST | `/detections` | Create new detection |
-| GET | `/detections/{id}` | Get detection by ID |
+| POST | `/detections/predict` | ML inference on image (server-side) |
 | DELETE | `/detections/{id}` | Delete detection |
 
-### Expert System (Protected)
+#### Expert System (Protected)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/expert-system/diagnose` | Diagnose disease by symptoms |
 | POST | `/expert-system` | Store expert system consultation |
 
-### Admin - Diseases Management
+---
+
+### 👑 Admin Endpoints (Admin/Super Admin Only)
+
+#### Dashboard
+| Method | Endpoint | Description | Required Role |
+|--------|----------|-------------|---------------|
+| GET | `/admin/dashboard/stats` | Get dashboard statistics | admin/super_admin |
+
+#### Diseases Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
 | GET | `/admin/diseases` | Get all diseases (admin) | admin/super_admin |
@@ -80,7 +94,7 @@ Collection ini memiliki 3 environment:
 | PUT | `/admin/diseases/{id}` | Update disease | admin/super_admin |
 | DELETE | `/admin/diseases/{id}` | Delete disease | admin/super_admin |
 
-### Admin - Symptoms Management
+#### Symptoms Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
 | GET | `/admin/symptoms` | Get all symptoms (admin) | admin/super_admin |
@@ -88,7 +102,7 @@ Collection ini memiliki 3 environment:
 | PUT | `/admin/symptoms/{id}` | Update symptom | admin/super_admin |
 | DELETE | `/admin/symptoms/{id}` | Delete symptom | admin/super_admin |
 
-### Admin - Treatments Management
+#### Treatments Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
 | GET | `/admin/treatments` | Get all treatments | admin/super_admin |
@@ -96,101 +110,101 @@ Collection ini memiliki 3 environment:
 | PUT | `/admin/treatments/{id}` | Update treatment | admin/super_admin |
 | DELETE | `/admin/treatments/{id}` | Delete treatment | admin/super_admin |
 
-### Admin - Detections (View All)
+#### Detections Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
 | GET | `/admin/detections` | Get all detections (admin view) | admin/super_admin |
 
-### Super Admin - User Management
+#### User Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
 | GET | `/admin/users` | Get all users | super_admin |
 | PUT | `/admin/users/{id}` | Update user | super_admin |
 | DELETE | `/admin/users/{id}` | Delete user | super_admin |
 
+---
+
+## 📋 API Rules (Instruksi Dosen)
+
+### ✅ Public (No Auth)
+- **Semua endpoint GET** untuk mengambil data
+- Login & Register
+
+### 🔒 Protected (Auth Required)
+- **Semua endpoint POST/PUT/DELETE** untuk modifikasi data
+- User info & Logout
+
+### 👑 Admin Only
+- Dashboard stats
+- Management endpoints (CRUD diseases, symptoms, treatments)
+- User management (super admin only)
+
+---
+
 ## Collection Structure
 
 ```
 bruno/Mapan_API/
-├── bruno.json                          # Collection config
+├── bruno.json
 ├── environments/
-│   ├── Local.bru                       # Local environment
-│   └── Ngrok.bru                       # Ngrok environment
+│   ├── Local8000.bru
+│   ├── Local6000.bru
+│   └── Ngrok.bru
 ├── Auth/
-│   ├── Register.bru                    # POST /register
-│   ├── Login.bru                       # POST /login
-│   ├── Get Current User.bru            # GET /user
-│   └── Logout.bru                      # POST /logout
+│   ├── Register.bru
+│   ├── Login.bru
+│   ├── Get Current User.bru
+│   └── Logout.bru
 ├── Detection/
-│   ├── Create Detection.bru            # POST /detections
-│   ├── Get All Detections.bru          # GET /detections
-│   ├── Get Detection by ID.bru         # GET /detections/{id}
-│   └── Delete Detection.bru            # DELETE /detections/{id}
+│   ├── Get All Detections.bru (Public)
+│   ├── Get Detection by ID.bru (Public)
+│   ├── Create Detection.bru (Protected)
+│   ├── Predict Disease.bru (Protected)
+│   └── Delete Detection.bru (Protected)
 ├── Disease/
-│   ├── Get All Diseases.bru            # GET /diseases
-│   └── Get Disease by Slug.bru         # GET /diseases/{slug}
+│   ├── Get All Diseases.bru (Public)
+│   └── Get Disease by Slug.bru (Public)
 ├── Expert System/
-│   ├── Get All Symptoms.bru            # GET /symptoms
-│   └── Diagnose Disease.bru            # POST /expert-system/diagnose
+│   ├── Get All Symptoms.bru (Public)
+│   └── Diagnose Disease.bru (Protected)
 └── Admin/
-    ├── Get Dashboard Stats.bru         # GET /dashboard/stats (admin)
-    ├── Get All Diseases (Admin).bru     # GET /admin/diseases (admin)
-    ├── Create Disease (Admin).bru       # POST /admin/diseases (admin)
-    ├── Update Disease (Admin).bru      # PUT /admin/diseases/{id} (admin)
-    ├── Delete Disease (Admin).bru      # DELETE /admin/diseases/{id} (admin)
-    ├── Get All Users.bru               # GET /admin/users (super_admin)
-    ├── Update User.bru                 # PUT /admin/users/{id} (super_admin)
-    └── Delete User.bru                 # DELETE /admin/users/{id} (super_admin)
+    ├── Get Dashboard Stats.bru (Admin)
+    ├── Disease CRUD (Admin)
+    ├── Symptom CRUD (Admin)
+    ├── Treatment CRUD (Admin)
+    └── User Management (Super Admin)
 ```
 
-## Role Requirements
+---
 
-- **User**: Auth, Detection, Disease, Expert System endpoints
-- **Admin**: Semua User endpoints + Admin Disease CRUD + Dashboard Stats
-- **Super Admin**: Semua Admin endpoints + User Management (GET/PUT/DELETE /admin/users)
+## Example Usage
 
-## Example: Testing Flow
+### Public Access (No Token)
+```bash
+# Get all diseases
+curl http://localhost:6000/public/api/v1/diseases
 
-### 1. Authentication
-```
-1. Run "Register" untuk membuat user baru
-2. Atau run "Login" dengan credentials yang sudah ada
-3. Token akan otomatis tersimpan di environment variable
-```
+# Get symptoms
+curl http://localhost:6000/public/api/v1/symptoms
 
-### 2. Basic User Flow
-```
-1. Get All Diseases - lihat daftar penyakit
-2. Get Disease by Slug - detail penyakit tertentu (GET /diseases/blast)
-3. Create Detection - upload gambar daun padi (ganti path file)
-4. Get All Detections - lihat riwayat deteksi
+# Get detections
+curl http://localhost:6000/public/api/v1/detections
 ```
 
-### 3. Expert System Flow
-```
-1. Get All Symptoms - lihat daftar gejala
-2. Diagnose Disease - kirim symptom_ids untuk diagnosis
+### Protected Access (Need Token)
+```bash
+# Login first
+curl -X POST http://localhost:6000/public/api/v1/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@mapan.test","password":"password"}'
+
+# Use token for protected endpoints
+curl -X POST http://localhost:6000/public/api/v1/detections/predict \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "image=@image.jpg"
 ```
 
-### 4. Admin Flow (requires admin/super_admin role)
-```
-1. Get Dashboard Stats - statistik dashboard
-2. Get All Diseases (Admin) - CRUD diseases
-3. Create/Update/Delete Disease
-```
-
-### 5. Super Admin Flow (requires super_admin role)
-```
-1. Get All Users - user management
-2. Update/Delete User
-```
-
-## Notes
-
-- Untuk **Create Detection**, ganti path file di `@file(/path/to/rice-leaf-image.jpg)` dengan path gambar yang valid
-- Semua request (kecuali Register/Login) memerlukan authentication token
-- Token akan expired sesuai konfigurasi Sanctum di Laravel
-- Setiap request memiliki test assertions untuk validasi response
+---
 
 ## Available Diseases (Slug List)
 
@@ -205,6 +219,8 @@ bruno/Mapan_API/
 9. `bacterial-leaf-streak` - Bacterial Leaf Streak
 10. `bacterial-panicle-blight` - Bacterial Panicle Blight
 11. `leaf-smut` - Leaf Smut
+
+---
 
 ## Troubleshooting
 
