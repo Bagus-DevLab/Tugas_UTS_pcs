@@ -3,7 +3,7 @@ import { Leaf } from 'lucide-react';
 export default function AppLogo() {
     return (
         <>
-            <div className="flex aspect-square size-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#50808E] to-[#69A297] shadow-sm">
+            <div className="flex aspect-square size-8 items-center justify-center rounded-xl bg-emerald-600 shadow-sm">
                 <Leaf className="size-5 text-white" />
             </div>
             <div className="ml-1 grid flex-1 text-left text-sm">
