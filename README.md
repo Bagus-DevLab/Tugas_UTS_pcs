@@ -58,32 +58,37 @@ Komponen yang digunakan: Alert, Avatar, Badge, Breadcrumb, Button, Card, Checkbo
 
 ## Role & Hak Akses
 
-Sistem memiliki 3 role dengan hak akses bertingkat:
+Sistem memiliki 4 role dengan hak akses bertingkat dan pemisahan domain:
 
-| Fitur | Super Admin | Admin | User |
-|-------|:----------:|:-----:|:----:|
-| Dashboard, Deteksi ML, Sistem Pakar | v | v | v |
-| Knowledge Base (lihat) | v | v | v |
-| Riwayat Deteksi (pribadi) | v | v | v |
-| **Kelola Penyakit** (CRUD) | v | v | - |
-| **Kelola Gejala** (CRUD) | v | v | - |
-| **Kelola Penanganan** (CRUD) | v | v | - |
-| **Lihat Semua Deteksi** user | v | v | - |
-| **Kelola User** (edit role, hapus) | v | - | - |
+| Fitur | Super Admin | Admin Sistem | Pakar Pertanian | User |
+|-------|:-----------:|:------------:|:---------------:|:----:|
+| Dashboard, Deteksi ML, Sistem Pakar | ✓ | ✓ | ✓ | ✓ |
+| Knowledge Base (lihat) | ✓ | ✓ | ✓ | ✓ |
+| Riwayat Deteksi (pribadi) | ✓ | ✓ | ✓ | ✓ |
+| **Kelola Penyakit** (CRUD) | ✓ | - | ✓ | - |
+| **Kelola Gejala** (CRUD) | ✓ | - | ✓ | - |
+| **Kelola Penanganan** (CRUD) | ✓ | - | ✓ | - |
+| **Lihat Semua Deteksi** | ✓ | ✓ | ✓ | - |
+| **Dashboard Sistem** | ✓ | ✓ | - | - |
+| **Kelola User** (edit role, hapus) | ✓ | - | - | - |
 
 ### Sidebar Navigation per Role
 
 - **User**: Dashboard, Deteksi Penyakit, Sistem Pakar, Knowledge Base, Riwayat Deteksi
-- **Admin**: semua menu User + Kelola Penyakit, Kelola Gejala, Kelola Penanganan, Semua Deteksi
-- **Super Admin**: semua menu Admin + Kelola User
+- **Pakar Pertanian**: semua menu User + Kelola Penyakit, Kelola Gejala, Kelola Penanganan, Semua Deteksi
+- **Admin Sistem**: semua menu User + Dashboard Sistem, Semua Deteksi
+- **Super Admin**: semua menu Pakar + semua menu Admin Sistem + Kelola User
 
 ### Implementasi
 
-- Kolom `role` pada tabel `users` (enum: `super_admin`, `admin`, `user`)
+- Kolom `role` pada tabel `users` (values: `super_admin`, `admin`, `pakar`, `user`)
 - Middleware `CheckRole` untuk proteksi route berdasarkan role
-- Helper methods pada model User: `isSuperAdmin()`, `isAdmin()`, `isAtLeastAdmin()`
-- Route groups: `/admin/*` (admin + super_admin), `/admin/users/*` (super_admin only)
-- Sidebar dinamis berdasarkan `auth.user.role` dari Inertia shared props
+- Helper methods pada model User: `isSuperAdmin()`, `isAdmin()`, `isPakar()`, `canManageKnowledgeBase()`, `canManageSystem()`
+- Route groups: 
+  - `/admin/knowledge-base/*` (pakar + super_admin) - Domain pertanian
+  - `/admin/system/*` (admin + super_admin) - Domain IT/sistem
+  - `/admin/detections` (shared: admin + pakar + super_admin)
+- Sidebar dinamis berdasarkan `auth.user.permissions` dari Inertia shared props
 
 ## Keamanan
 

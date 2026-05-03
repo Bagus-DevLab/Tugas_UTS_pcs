@@ -62,14 +62,26 @@ php artisan route:list --path=private/api  # 24 private routes
 - **Frontend:** React 19, TypeScript, Inertia.js, Tailwind CSS v4
 - **ML:** ONNX Runtime Web (browser-side), Python training in `ml/`
 - **Auth:** Laravel Sanctum (Bearer tokens), Fortify (2FA)
-- **Roles:** 3-tier system (super_admin, admin, user) via `CheckRole` middleware
+- **Roles:** 4-tier system (super_admin, admin, pakar, user) via `CheckRole` middleware
+  - `super_admin` - Full system access
+  - `admin` - IT/System operations (user management, system dashboard)
+  - `pakar` - Domain expert pertanian (diseases, symptoms, treatments management)
+  - `user` - End user/petani
 
 ## Key Files
 
 - `routes/api.php` - Dual-prefix API routes (public/private split)
+  - `/private/api/v1/admin/knowledge-base/*` - Pakar domain (diseases, symptoms, treatments)
+  - `/private/api/v1/admin/system/*` - Admin domain (users, system dashboard)
+- `routes/web.php` - Inertia routes with same domain split
 - `bootstrap/app.php` - Empty apiPrefix, custom middleware aliases
 - `app/Http/Middleware/CheckRole.php` - Role-based authorization
-- `database/seeders/DatabaseSeeder.php` - Creates test users (user@mapan.test, admin@mapan.test, superadmin@mapan.test, all password: "password")
+- `app/Models/User.php` - Role constants and permission helpers
+- `database/seeders/DatabaseSeeder.php` - Creates 4 test users (all password: "password")
+  - user@mapan.test (user)
+  - pakar@mapan.test (pakar)
+  - admin@mapan.test (admin)
+  - superadmin@mapan.test (super_admin)
 
 ## Environment Setup
 
@@ -108,7 +120,13 @@ Model output: `public/models/model.onnx` (used by ONNX Runtime Web in browser)
 3. **Bruno collection updated** - Old structure deprecated, use Public/Private folders
 4. **Frontend migration needed** - POST/PUT/DELETE changed from `/public` to `/private` (see `MIGRATION_GUIDE.md`)
 5. **SQLite database** - `database/database.sqlite` created by migrations
-6. **Test users seeded** - user@mapan.test (user), admin@mapan.test (admin), superadmin@mapan.test (super_admin), all password: "password"
+6. **Test users seeded** - 4 users with different roles (all password: "password")
+   - user@mapan.test (user)
+   - pakar@mapan.test (pakar)
+   - admin@mapan.test (admin)
+   - superadmin@mapan.test (super_admin)
+7. **Role-based routes** - Knowledge base routes (`/admin/knowledge-base/*`) require `pakar` or `super_admin` role. System routes (`/admin/system/*`) require `admin` or `super_admin` role.
+8. **Domain separation** - Pakar manages diseases/symptoms/treatments. Admin manages users/system. Both can view all detections.
 
 ## Session Context
 
