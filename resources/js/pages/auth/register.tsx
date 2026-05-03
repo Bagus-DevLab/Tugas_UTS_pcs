@@ -57,7 +57,7 @@ score++;
             color = '#eab308';
         } else {
             label = 'Kuat';
-            color = '#84B59F';
+            color = '#059669';
         }
 
         return { score, percentage, label, color };
@@ -208,7 +208,7 @@ export default function Register() {
 
                                 <Button
                                     type="submit"
-                                    className="mt-2 w-full bg-gradient-to-r from-[#50808E] to-[#69A297] text-white shadow-md shadow-[#50808E]/20 transition-all hover:from-[#50808E]/90 hover:to-[#69A297]/90 hover:shadow-lg"
+                                    className="mt-2 w-full"
                                     tabIndex={5}
                                     data-test="register-user-button"
                                 >
