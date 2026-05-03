@@ -27,17 +27,21 @@ const mainNavItems: NavItem[] = [
     { title: 'Riwayat Deteksi', href: '/detection/history', icon: History },
 ];
 
-// Admin + Super Admin menu items
-const adminNavItems: NavItem[] = [
-    { title: 'Kelola Penyakit', href: '/admin/diseases', icon: Bug },
-    { title: 'Kelola Gejala', href: '/admin/symptoms', icon: ClipboardList },
-    { title: 'Kelola Penanganan', href: '/admin/treatments', icon: Leaf },
-    { title: 'Semua Deteksi', href: '/admin/detections', icon: Shield },
+// Knowledge Base Management (pakar + super_admin)
+const knowledgeBaseNavItems: NavItem[] = [
+    { title: 'Kelola Penyakit', href: '/admin/knowledge-base/diseases', icon: Bug },
+    { title: 'Kelola Gejala', href: '/admin/knowledge-base/symptoms', icon: ClipboardList },
+    { title: 'Kelola Penanganan', href: '/admin/knowledge-base/treatments', icon: Leaf },
 ];
 
-// Super Admin only
-const superAdminNavItems: NavItem[] = [
-    { title: 'Kelola User', href: '/admin/users', icon: Users },
+// System Management (admin + super_admin)
+const systemNavItems: NavItem[] = [
+    { title: 'Kelola User', href: '/admin/system/users', icon: Users },
+];
+
+// Shared Admin (all admin-level roles)
+const sharedAdminNavItems: NavItem[] = [
+    { title: 'Semua Deteksi', href: '/admin/detections', icon: Shield },
 ];
 
 function AdminNav({ items, label }: { items: NavItem[]; label: string }) {
@@ -68,9 +72,11 @@ function AdminNav({ items, label }: { items: NavItem[]; label: string }) {
 
 export function AppSidebar() {
     const { auth } = usePage().props;
-    const role = auth.user?.role as string | undefined;
-    const isAdmin = role === 'admin' || role === 'super_admin';
-    const isSuperAdmin = role === 'super_admin';
+    const user = auth.user as { role: string; permissions: { canManageKnowledgeBase: boolean; canManageSystem: boolean; canViewAllDetections: boolean } } | null;
+    
+    const canManageKnowledgeBase = user?.permissions?.canManageKnowledgeBase ?? false;
+    const canManageSystem = user?.permissions?.canManageSystem ?? false;
+    const canViewAllDetections = user?.permissions?.canViewAllDetections ?? false;
 
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -89,15 +95,25 @@ export function AppSidebar() {
             <SidebarContent>
                 <NavMain items={mainNavItems} />
 
-                {isAdmin && (
+                {canManageKnowledgeBase && (
                     <>
                         <SidebarSeparator className="mx-3" />
-                        <AdminNav items={adminNavItems} label="Admin" />
+                        <AdminNav items={knowledgeBaseNavItems} label="Pakar Pertanian" />
                     </>
                 )}
 
-                {isSuperAdmin && (
-                    <AdminNav items={superAdminNavItems} label="Super Admin" />
+                {canManageSystem && (
+                    <>
+                        {!canManageKnowledgeBase && <SidebarSeparator className="mx-3" />}
+                        <AdminNav items={systemNavItems} label="Admin Sistem" />
+                    </>
+                )}
+
+                {canViewAllDetections && (
+                    <>
+                        {!canManageKnowledgeBase && !canManageSystem && <SidebarSeparator className="mx-3" />}
+                        <AdminNav items={sharedAdminNavItems} label="Monitoring" />
+                    </>
                 )}
             </SidebarContent>
 
