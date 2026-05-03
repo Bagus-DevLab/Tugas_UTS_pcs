@@ -8,11 +8,11 @@ import { Input } from '@/components/ui/input';
 
 // Color palette
 const palette = {
-    sand: '#DDD8C4',
-    sage: '#A3C9A8',
-    leaf: '#84B59F',
-    teal: '#69A297',
-    deep: '#50808E',
+    primary: '#059669',
+    secondary: '#10b981',
+    muted: '#64748b',
+    light: '#94a3b8',
+    lightest: '#cbd5e1',
 };
 
 interface Disease {
@@ -90,7 +90,7 @@ return diseases;
                     <div className="relative w-full sm:w-72">
                         <Search
                             className="absolute left-3 top-1/2 size-4 -translate-y-1/2"
-                            style={{ color: palette.teal }}
+                            style={{ color: palette.secondary }}
                         />
                         <Input
                             placeholder="Cari penyakit..."
@@ -98,9 +98,9 @@ return diseases;
                             onChange={(e) => setSearch(e.target.value)}
                             className="pl-9 transition-colors focus-visible:ring-1"
                             style={{
-                                borderColor: palette.sage,
+                                borderColor: palette.light,
                                 // @ts-expect-error CSS custom property
-                                '--tw-ring-color': palette.teal,
+                                '--tw-ring-color': palette.secondary,
                             }}
                         />
                     </div>
@@ -123,7 +123,7 @@ return diseases;
                                     variants={cardVariants}
                                     whileHover={{
                                         scale: 1.03,
-                                        boxShadow: `0 8px 30px ${palette.teal}30`,
+                                        boxShadow: `0 8px 30px ${palette.secondary}30`,
                                         transition: { duration: 0.25 },
                                     }}
                                     className="rounded-xl"
@@ -135,7 +135,7 @@ return diseases;
                                         <Card className="h-full overflow-hidden border transition-colors duration-200 hover:border-[var(--card-hover-border)]"
                                             style={{
                                                 // @ts-expect-error CSS custom property
-                                                '--card-hover-border': palette.sage,
+                                                '--card-hover-border': palette.light,
                                             }}
                                         >
                                             {disease.image && (
@@ -162,7 +162,7 @@ return diseases;
                                                     <Badge
                                                         variant="secondary"
                                                         className="shrink-0 text-white"
-                                                        style={{ backgroundColor: palette.teal }}
+                                                        style={{ backgroundColor: palette.secondary }}
                                                     >
                                                         <Bug className="size-3" />
                                                         {disease.detections_count} deteksi
@@ -177,7 +177,7 @@ return diseases;
                                             <CardFooter>
                                                 <span
                                                     className="text-sm font-medium group-hover:underline"
-                                                    style={{ color: palette.deep }}
+                                                    style={{ color: palette.primary }}
                                                 >
                                                     Lihat detail &rarr;
                                                 </span>
@@ -195,9 +195,9 @@ return diseases;
                             exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ duration: 0.3 }}
                             className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed py-16"
-                            style={{ borderColor: palette.sand }}
+                            style={{ borderColor: palette.lightest }}
                         >
-                            <BookOpen className="size-10" style={{ color: `${palette.teal}80` }} />
+                            <BookOpen className="size-10" style={{ color: `${palette.secondary}80` }} />
                             <p className="text-sm text-muted-foreground">
                                 {search.trim()
                                     ? `Tidak ditemukan penyakit untuk "${search}"`

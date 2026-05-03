@@ -30,21 +30,21 @@ import {
 } from '@/components/ui/table';
 
 const palette = {
-    sand: '#DDD8C4',
-    sage: '#A3C9A8',
-    leaf: '#84B59F',
-    teal: '#69A297',
-    deep: '#50808E',
+    primary: '#059669',
+    secondary: '#10b981',
+    muted: '#64748b',
+    light: '#94a3b8',
+    lightest: '#cbd5e1',
 };
 
 const roleBadgeColors: Record<string, string> = {
-    super_admin: palette.deep,
-    admin: palette.teal,
-    user: palette.sage,
+    super_admin: palette.primary,
+    admin: palette.secondary,
+    user: palette.light,
 };
 
 function getRoleBadgeColor(role: string): string {
-    return roleBadgeColors[role] || palette.leaf;
+    return roleBadgeColors[role] || palette.muted;
 }
 
 function formatRoleLabel(role: string): string {
@@ -190,8 +190,8 @@ return;
                     className="flex flex-col gap-1"
                 >
                     <div className="flex items-center gap-2">
-                        <Users className="size-5" style={{ color: palette.deep }} />
-                        <h1 className="text-2xl font-semibold tracking-tight" style={{ color: palette.deep }}>
+                        <Users className="size-5" style={{ color: palette.primary }} />
+                        <h1 className="text-2xl font-semibold tracking-tight" style={{ color: palette.primary }}>
                             Kelola User
                         </h1>
                     </div>
@@ -212,14 +212,14 @@ return;
                         <div className="relative">
                             <Search
                                 className="absolute left-3 top-1/2 size-4 -translate-y-1/2"
-                                style={{ color: palette.teal }}
+                                style={{ color: palette.secondary }}
                             />
                             <Input
                                 placeholder="Nama atau email..."
                                 defaultValue={filters.search || ''}
                                 onChange={(e) => handleSearchInput(e.target.value)}
                                 className="w-[220px] pl-9"
-                                style={{ borderColor: palette.sage }}
+                                style={{ borderColor: palette.light }}
                             />
                         </div>
                     </motion.div>
@@ -230,7 +230,7 @@ return;
                             value={filters.role || 'all'}
                             onValueChange={(value) => handleFilterChange('role', value)}
                         >
-                            <SelectTrigger className="w-[160px]" style={{ borderColor: palette.sage }}>
+                            <SelectTrigger className="w-[160px]" style={{ borderColor: palette.light }}>
                                 <SelectValue placeholder="Semua Role" />
                             </SelectTrigger>
                             <SelectContent>
@@ -250,9 +250,9 @@ return;
                             size="sm"
                             onClick={handleReset}
                             className="transition-colors hover:text-white"
-                            style={{ borderColor: palette.teal, color: palette.teal }}
+                            style={{ borderColor: palette.secondary, color: palette.secondary }}
                             onMouseEnter={(e) => {
-                                (e.currentTarget as HTMLButtonElement).style.backgroundColor = palette.teal;
+                                (e.currentTarget as HTMLButtonElement).style.backgroundColor = palette.secondary;
                             }}
                             onMouseLeave={(e) => {
                                 (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
@@ -270,7 +270,7 @@ return;
                         <motion.div
                             key="table"
                             className="overflow-hidden rounded-xl border"
-                            style={{ borderColor: palette.sand }}
+                            style={{ borderColor: palette.lightest }}
                             initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -16 }}
@@ -278,13 +278,13 @@ return;
                         >
                             <Table>
                                 <TableHeader>
-                                    <TableRow style={{ backgroundColor: `${palette.sand}33` }}>
-                                        <TableHead style={{ color: palette.deep }}>Nama</TableHead>
-                                        <TableHead style={{ color: palette.deep }}>Email</TableHead>
-                                        <TableHead style={{ color: palette.deep }}>Role</TableHead>
-                                        <TableHead style={{ color: palette.deep }}>Deteksi</TableHead>
-                                        <TableHead style={{ color: palette.deep }}>Terdaftar</TableHead>
-                                        <TableHead style={{ color: palette.deep }}>Aksi</TableHead>
+                                    <TableRow style={{ backgroundColor: `${palette.lightest}33` }}>
+                                        <TableHead style={{ color: palette.primary }}>Nama</TableHead>
+                                        <TableHead style={{ color: palette.primary }}>Email</TableHead>
+                                        <TableHead style={{ color: palette.primary }}>Role</TableHead>
+                                        <TableHead style={{ color: palette.primary }}>Deteksi</TableHead>
+                                        <TableHead style={{ color: palette.primary }}>Terdaftar</TableHead>
+                                        <TableHead style={{ color: palette.primary }}>Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -299,7 +299,7 @@ return;
                                                 exit={{ opacity: 0, x: 20 }}
                                                 transition={{ delay: index * 0.04 }}
                                                 whileHover={{
-                                                    backgroundColor: `${palette.sage}18`,
+                                                    backgroundColor: `${palette.light}18`,
                                                     transition: { duration: 0.15 },
                                                 }}
                                             >
@@ -318,7 +318,7 @@ return;
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <span className="font-mono text-sm" style={{ color: palette.deep }}>
+                                                    <span className="font-mono text-sm" style={{ color: palette.primary }}>
                                                         {user.detections_count}
                                                     </span>
                                                 </TableCell>
@@ -334,7 +334,7 @@ return;
                                                             asChild
                                                         >
                                                             <Link href={`/admin/users/${user.id}/edit`}>
-                                                                <Pencil className="size-4" style={{ color: palette.teal }} />
+                                                                <Pencil className="size-4" style={{ color: palette.secondary }} />
                                                             </Link>
                                                         </Button>
                                                         <Button
@@ -363,14 +363,14 @@ return;
                         <motion.div
                             key="empty"
                             className="flex flex-1 flex-col items-center justify-center rounded-xl border border-dashed py-16"
-                            style={{ borderColor: palette.sand }}
+                            style={{ borderColor: palette.lightest }}
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ duration: 0.4 }}
                         >
-                            <Inbox className="mb-4 size-12" style={{ color: `${palette.teal}66` }} />
-                            <h3 className="text-lg font-medium" style={{ color: palette.deep }}>
+                            <Inbox className="mb-4 size-12" style={{ color: `${palette.secondary}66` }} />
+                            <h3 className="text-lg font-medium" style={{ color: palette.primary }}>
                                 Tidak Ada User
                             </h3>
                             <p className="mt-1 text-sm text-muted-foreground">
@@ -400,7 +400,7 @@ return;
                                             variant="outline"
                                             size="icon"
                                             className="size-8"
-                                            style={{ borderColor: palette.sage }}
+                                            style={{ borderColor: palette.light }}
                                             disabled={!link.url}
                                             asChild={!!link.url}
                                         >
@@ -422,7 +422,7 @@ return;
                                             variant="outline"
                                             size="icon"
                                             className="size-8"
-                                            style={{ borderColor: palette.sage }}
+                                            style={{ borderColor: palette.light }}
                                             disabled={!link.url}
                                             asChild={!!link.url}
                                         >
@@ -445,8 +445,8 @@ return;
                                         className="size-8 text-white"
                                         style={
                                             link.active
-                                                ? { backgroundColor: palette.deep, borderColor: palette.deep }
-                                                : { borderColor: palette.sage }
+                                                ? { backgroundColor: palette.primary, borderColor: palette.primary }
+                                                : { borderColor: palette.light }
                                         }
                                         disabled={!link.url}
                                         asChild={!!link.url}

@@ -51,11 +51,13 @@ Route::prefix('private/api/v1')->middleware('auth:sanctum')->group(function () {
     Route::post('expert-system', [ExpertSystemApiController::class, 'store']);
 
     // ===================================================================
-    // KNOWLEDGE BASE MANAGEMENT (pakar + super_admin roles)
-    // Domain: Agricultural/Medical Data
+    // ADMIN ROUTES (admin + super_admin roles)
     // ===================================================================
     
-    Route::middleware('role:super_admin,pakar')->prefix('admin/knowledge-base')->group(function () {
+    Route::middleware('role:super_admin,admin')->prefix('admin')->group(function () {
+        // ===== Dashboard =====
+        Route::get('dashboard/stats', [DashboardApiController::class, 'stats']);
+        
         // ===== Diseases Management =====
         Route::get('diseases', [AdminApiController::class, 'diseases']);
         Route::post('diseases', [AdminApiController::class, 'storeDisease']);
@@ -73,32 +75,19 @@ Route::prefix('private/api/v1')->middleware('auth:sanctum')->group(function () {
         Route::post('treatments', [AdminApiController::class, 'storeTreatment']);
         Route::put('treatments/{treatment}', [AdminApiController::class, 'updateTreatment']);
         Route::delete('treatments/{treatment}', [AdminApiController::class, 'destroyTreatment']);
-    });
 
-    // ===================================================================
-    // SYSTEM MANAGEMENT (admin + super_admin roles)
-    // Domain: IT/System Operations
-    // ===================================================================
-    
-    Route::middleware('role:super_admin,admin')->prefix('admin/system')->group(function () {
-        // ===== Dashboard Stats =====
-        Route::get('dashboard/stats', [DashboardApiController::class, 'stats']);
-        
-        // ===== Users Management (super_admin only) =====
-        Route::middleware('role:super_admin')->group(function () {
-            Route::get('users', [AdminApiController::class, 'users']);
-            Route::put('users/{user}', [AdminApiController::class, 'updateUser']);
-            Route::delete('users/{user}', [AdminApiController::class, 'destroyUser']);
-        });
-    });
-
-    // ===================================================================
-    // SHARED ADMIN ROUTES (all admin-level roles)
-    // Accessible by: super_admin, admin, pakar
-    // ===================================================================
-    
-    Route::middleware('role:super_admin,admin,pakar')->prefix('admin')->group(function () {
         // ===== Detections Management =====
         Route::get('detections', [AdminApiController::class, 'detections']);
+    });
+
+    // ===================================================================
+    // SUPER ADMIN ONLY ROUTES
+    // ===================================================================
+    
+    Route::middleware('role:super_admin')->prefix('admin')->group(function () {
+        // ===== Users Management =====
+        Route::get('users', [AdminApiController::class, 'users']);
+        Route::put('users/{user}', [AdminApiController::class, 'updateUser']);
+        Route::delete('users/{user}', [AdminApiController::class, 'destroyUser']);
     });
 });

@@ -403,3 +403,164 @@ If you encounter issues during migration:
 **Last Updated:** 2026-04-30  
 **API Version:** v1  
 **Breaking Changes:** Yes (URL structure changed)
+
+---
+
+## 🔐 Role System Changes (2026-05-03)
+
+### What Changed
+
+Role system expanded from 3-tier to 4-tier with domain separation:
+
+**Old Roles (3-tier):**
+- `super_admin` - Full access
+- `admin` - IT + Medical management
+- `user` - End user
+
+**New Roles (4-tier):**
+- `super_admin` - Full system access
+- `admin` - IT/System operations (user management, system dashboard)
+- `pakar` - Domain expert pertanian (diseases, symptoms, treatments management)
+- `user` - End user/petani
+
+### API URL Changes
+
+Admin endpoints split by domain:
+
+#### Knowledge Base (Pakar Domain)
+```javascript
+// OLD
+fetch('/private/api/v1/admin/diseases')
+fetch('/private/api/v1/admin/symptoms')
+fetch('/private/api/v1/admin/treatments')
+
+// NEW
+fetch('/private/api/v1/admin/knowledge-base/diseases')
+fetch('/private/api/v1/admin/knowledge-base/symptoms')
+fetch('/private/api/v1/admin/knowledge-base/treatments')
+```
+
+#### System Management (Admin Domain)
+```javascript
+// OLD
+fetch('/private/api/v1/admin/dashboard/stats')
+fetch('/private/api/v1/admin/users')
+
+// NEW
+fetch('/private/api/v1/admin/system/dashboard/stats')
+fetch('/private/api/v1/admin/system/users')
+```
+
+#### Shared Admin (Unchanged)
+```javascript
+// No change
+fetch('/private/api/v1/admin/detections')
+```
+
+### Frontend Changes
+
+#### 1. Inertia Shared Props
+
+New permission flags available in `auth.user.permissions`:
+
+```typescript
+// OLD
+{auth.user.role === 'admin' && <AdminMenu />}
+
+// NEW
+{auth.user.permissions.canManageKnowledgeBase && <KnowledgeBaseMenu />}
+{auth.user.permissions.canManageSystem && <SystemMenu />}
+{auth.user.permissions.canViewAllDetections && <DetectionsMenu />}
+```
+
+#### 2. Route Names
+
+Web route names updated:
+
+```typescript
+// OLD
+route('admin.diseases.index')
+route('admin.symptoms.index')
+route('admin.treatments.index')
+route('admin.users.index')
+
+// NEW
+route('admin.knowledge-base.diseases.index')
+route('admin.knowledge-base.symptoms.index')
+route('admin.knowledge-base.treatments.index')
+route('admin.system.users.index')
+```
+
+#### 3. TypeScript Types
+
+User type now includes role and permissions:
+
+```typescript
+type User = {
+  id: number;
+  name: string;
+  email: string;
+  role: 'super_admin' | 'admin' | 'pakar' | 'user'; // NEW
+  permissions: {                                      // NEW
+    canManageKnowledgeBase: boolean;
+    canManageSystem: boolean;
+    canViewAllDetections: boolean;
+  };
+  // ... other fields
+};
+```
+
+### Migration Steps
+
+1. **Update API Calls**
+   ```bash
+   # Search for old admin URLs
+   grep -r "/admin/diseases\|/admin/symptoms\|/admin/treatments" resources/js/
+   
+   # Replace with new knowledge-base URLs
+   # /admin/diseases → /admin/knowledge-base/diseases
+   # /admin/symptoms → /admin/knowledge-base/symptoms
+   # /admin/treatments → /admin/knowledge-base/treatments
+   ```
+
+2. **Update Permission Checks**
+   ```typescript
+   // Replace role checks with permission checks
+   // OLD: auth.user.role === 'admin'
+   // NEW: auth.user.permissions.canManageKnowledgeBase
+   ```
+
+3. **Update Route Helpers**
+   ```bash
+   # Regenerate Wayfinder routes
+   php artisan wayfinder:generate
+   ```
+
+4. **Test All Roles**
+   - Login as `pakar@mapan.test` → Should access knowledge base only
+   - Login as `admin@mapan.test` → Should access system management only
+   - Login as `superadmin@mapan.test` → Should access everything
+
+### Test Users
+
+All test users have password: `"password"`
+
+| Email | Role | Access |
+|-------|------|--------|
+| `user@mapan.test` | user | Basic features only |
+| `pakar@mapan.test` | pakar | Knowledge base management |
+| `admin@mapan.test` | admin | System management |
+| `superadmin@mapan.test` | super_admin | Full access |
+
+### Breaking Changes
+
+⚠️ **Admin role no longer has access to knowledge base management**
+
+If you have existing admin users who need to manage diseases/symptoms/treatments, you need to:
+1. Change their role to `pakar`, OR
+2. Create a new user with `pakar` role for them
+
+---
+
+**Last Updated:** 2026-05-03  
+**RBAC Version:** 4-tier (super_admin, admin, pakar, user)

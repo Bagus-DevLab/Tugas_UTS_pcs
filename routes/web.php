@@ -40,9 +40,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('api/weather', [WeatherController::class, 'show'])->middleware('throttle:30,1')->name('api.weather');
 
     // ===================================================================
-    // Admin routes (admin + super_admin)
+    // Knowledge Base Management (pakar + super_admin)
     // ===================================================================
-    Route::middleware(['role:super_admin,admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware(['role:super_admin,pakar'])->prefix('admin/knowledge-base')->name('admin.knowledge-base.')->group(function () {
         // Disease Management (CRUD)
         Route::get('diseases', [DiseaseManagementController::class, 'index'])->name('diseases.index');
         Route::get('diseases/create', [DiseaseManagementController::class, 'create'])->name('diseases.create');
@@ -62,22 +62,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('treatments', [TreatmentManagementController::class, 'store'])->name('treatments.store');
         Route::put('treatments/{treatment}', [TreatmentManagementController::class, 'update'])->name('treatments.update');
         Route::delete('treatments/{treatment}', [TreatmentManagementController::class, 'destroy'])->name('treatments.destroy');
+    });
 
+    // ===================================================================
+    // System Management (admin + super_admin)
+    // ===================================================================
+    Route::middleware(['role:super_admin,admin'])->prefix('admin/system')->name('admin.system.')->group(function () {
+        // User Management (super_admin only)
+        Route::middleware(['role:super_admin'])->group(function () {
+            Route::get('users', [UserManagementController::class, 'index'])->name('users.index');
+            Route::get('users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
+            Route::put('users/{user}', [UserManagementController::class, 'update'])->name('users.update');
+            Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
+        });
+    });
+
+    // ===================================================================
+    // Shared Admin Routes (all admin-level roles)
+    // ===================================================================
+    Route::middleware(['role:super_admin,admin,pakar'])->prefix('admin')->name('admin.')->group(function () {
         // All Detections (view all users' detections)
         Route::get('detections', [DetectionManagementController::class, 'index'])->name('detections.index');
         Route::get('detections/{detection}', [DetectionManagementController::class, 'show'])->name('detections.show');
         Route::delete('detections/{detection}', [DetectionManagementController::class, 'destroy'])->name('detections.destroy');
-    });
-
-    // ===================================================================
-    // Super Admin only routes
-    // ===================================================================
-    Route::middleware(['role:super_admin'])->prefix('admin')->name('admin.')->group(function () {
-        // User Management
-        Route::get('users', [UserManagementController::class, 'index'])->name('users.index');
-        Route::get('users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
-        Route::put('users/{user}', [UserManagementController::class, 'update'])->name('users.update');
-        Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
     });
 });
 

@@ -25,11 +25,11 @@ import {
 } from '@/components/ui/table';
 
 const palette = {
-    deep: '#50808E',
-    teal: '#69A297',
-    leaf: '#84B59F',
-    sage: '#A3C9A8',
-    sand: '#DDD8C4',
+    primary: '#059669',
+    secondary: '#10b981',
+    muted: '#64748b',
+    light: '#94a3b8',
+    lightest: '#cbd5e1',
 };
 
 const TYPE_OPTIONS = [
@@ -40,10 +40,10 @@ const TYPE_OPTIONS = [
 ] as const;
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-    prevention: { bg: palette.deep, text: '#ffffff' },
+    prevention: { bg: palette.primary, text: '#ffffff' },
     chemical: { bg: '#dc2626', text: '#ffffff' },
-    biological: { bg: palette.leaf, text: '#ffffff' },
-    cultural: { bg: palette.teal, text: '#ffffff' },
+    biological: { bg: palette.muted, text: '#ffffff' },
+    cultural: { bg: palette.secondary, text: '#ffffff' },
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -208,7 +208,7 @@ return;
     }
 
     function getTypeBadge(type: string) {
-        const colors = TYPE_COLORS[type] ?? { bg: palette.sand, text: '#333' };
+        const colors = TYPE_COLORS[type] ?? { bg: palette.lightest, text: '#333' };
 
         return (
             <Badge
@@ -241,9 +241,9 @@ return;
                     <div className="flex items-center gap-2">
                         {/* Disease Filter */}
                         <div className="flex items-center gap-2">
-                            <Filter className="size-4" style={{ color: palette.teal }} />
+                            <Filter className="size-4" style={{ color: palette.secondary }} />
                             <Select value={filterDisease} onValueChange={setFilterDisease}>
-                                <SelectTrigger className="w-48" style={{ borderColor: palette.sage }}>
+                                <SelectTrigger className="w-48" style={{ borderColor: palette.light }}>
                                     <SelectValue placeholder="Filter penyakit" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -259,7 +259,7 @@ return;
                         <Button
                             onClick={() => setShowForm(!showForm)}
                             className="text-white"
-                            style={{ backgroundColor: showForm ? palette.teal : palette.deep }}
+                            style={{ backgroundColor: showForm ? palette.secondary : palette.primary }}
                         >
                             {showForm ? (
                                 <>
@@ -288,12 +288,12 @@ return;
                         >
                             <Card
                                 className="border-2"
-                                style={{ borderColor: `${palette.sage}80` }}
+                                style={{ borderColor: `${palette.light}80` }}
                             >
                                 <CardHeader>
                                     <CardTitle
                                         className="flex items-center gap-2 text-base"
-                                        style={{ color: palette.deep }}
+                                        style={{ color: palette.primary }}
                                     >
                                         <Pill className="size-5" />
                                         Tambah Penanganan Baru
@@ -312,7 +312,7 @@ return;
                                             >
                                                 <SelectTrigger
                                                     className="w-full"
-                                                    style={{ borderColor: palette.sage }}
+                                                    style={{ borderColor: palette.light }}
                                                 >
                                                     <SelectValue placeholder="Pilih penyakit" />
                                                 </SelectTrigger>
@@ -336,7 +336,7 @@ return;
                                             >
                                                 <SelectTrigger
                                                     className="w-full"
-                                                    style={{ borderColor: palette.sage }}
+                                                    style={{ borderColor: palette.light }}
                                                 >
                                                     <SelectValue placeholder="Pilih tipe" />
                                                 </SelectTrigger>
@@ -360,9 +360,9 @@ return;
                                                 }
                                                 required
                                                 style={{
-                                                    borderColor: palette.sage,
+                                                    borderColor: palette.light,
                                                     // @ts-expect-error CSS custom property
-                                                    '--tw-ring-color': palette.teal,
+                                                    '--tw-ring-color': palette.secondary,
                                                 }}
                                             />
                                         </div>
@@ -376,9 +376,9 @@ return;
                                                     setCreateData({ ...createData, dosage: e.target.value })
                                                 }
                                                 style={{
-                                                    borderColor: palette.sage,
+                                                    borderColor: palette.light,
                                                     // @ts-expect-error CSS custom property
-                                                    '--tw-ring-color': palette.teal,
+                                                    '--tw-ring-color': palette.secondary,
                                                 }}
                                             />
                                         </div>
@@ -392,9 +392,9 @@ return;
                                                     setCreateData({ ...createData, dosage_unit: e.target.value })
                                                 }
                                                 style={{
-                                                    borderColor: palette.sage,
+                                                    borderColor: palette.light,
                                                     // @ts-expect-error CSS custom property
-                                                    '--tw-ring-color': palette.teal,
+                                                    '--tw-ring-color': palette.secondary,
                                                 }}
                                             />
                                         </div>
@@ -411,9 +411,9 @@ return;
                                                 }
                                                 required
                                                 style={{
-                                                    borderColor: palette.sage,
+                                                    borderColor: palette.light,
                                                     // @ts-expect-error CSS custom property
-                                                    '--tw-ring-color': palette.teal,
+                                                    '--tw-ring-color': palette.secondary,
                                                 }}
                                             />
                                         </div>
@@ -422,7 +422,7 @@ return;
                                                 type="submit"
                                                 disabled={processing || !createData.disease_id || !createData.type}
                                                 className="w-full text-white sm:w-auto"
-                                                style={{ backgroundColor: palette.deep }}
+                                                style={{ backgroundColor: palette.primary }}
                                             >
                                                 <Plus className="size-4" />
                                                 Simpan Penanganan
@@ -443,12 +443,12 @@ return;
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead style={{ color: palette.deep }}>Penyakit</TableHead>
-                                            <TableHead style={{ color: palette.deep }}>Tipe</TableHead>
-                                            <TableHead style={{ color: palette.deep }}>Deskripsi</TableHead>
-                                            <TableHead style={{ color: palette.deep }}>Dosis</TableHead>
-                                            <TableHead style={{ color: palette.deep }}>Prioritas</TableHead>
-                                            <TableHead style={{ color: palette.deep }} className="text-right">
+                                            <TableHead style={{ color: palette.primary }}>Penyakit</TableHead>
+                                            <TableHead style={{ color: palette.primary }}>Tipe</TableHead>
+                                            <TableHead style={{ color: palette.primary }}>Deskripsi</TableHead>
+                                            <TableHead style={{ color: palette.primary }}>Dosis</TableHead>
+                                            <TableHead style={{ color: palette.primary }}>Prioritas</TableHead>
+                                            <TableHead style={{ color: palette.primary }} className="text-right">
                                                 Aksi
                                             </TableHead>
                                         </TableRow>
@@ -477,7 +477,7 @@ return;
                                                                 >
                                                                     <SelectTrigger
                                                                         className="h-8 w-36"
-                                                                        style={{ borderColor: palette.teal }}
+                                                                        style={{ borderColor: palette.secondary }}
                                                                     >
                                                                         <SelectValue />
                                                                     </SelectTrigger>
@@ -502,7 +502,7 @@ return;
                                                                 >
                                                                     <SelectTrigger
                                                                         className="h-8 w-32"
-                                                                        style={{ borderColor: palette.teal }}
+                                                                        style={{ borderColor: palette.secondary }}
                                                                     >
                                                                         <SelectValue />
                                                                     </SelectTrigger>
@@ -529,9 +529,9 @@ return;
                                                                     }
                                                                     className="h-8 min-w-[160px]"
                                                                     style={{
-                                                                        borderColor: palette.teal,
+                                                                        borderColor: palette.secondary,
                                                                         // @ts-expect-error CSS custom property
-                                                                        '--tw-ring-color': palette.teal,
+                                                                        '--tw-ring-color': palette.secondary,
                                                                     }}
                                                                 />
                                                             </TableCell>
@@ -548,9 +548,9 @@ return;
                                                                         placeholder="Dosis"
                                                                         className="h-8 w-16"
                                                                         style={{
-                                                                            borderColor: palette.teal,
+                                                                            borderColor: palette.secondary,
                                                                             // @ts-expect-error CSS custom property
-                                                                            '--tw-ring-color': palette.teal,
+                                                                            '--tw-ring-color': palette.secondary,
                                                                         }}
                                                                     />
                                                                     <Input
@@ -564,9 +564,9 @@ return;
                                                                         placeholder="Satuan"
                                                                         className="h-8 w-20"
                                                                         style={{
-                                                                            borderColor: palette.teal,
+                                                                            borderColor: palette.secondary,
                                                                             // @ts-expect-error CSS custom property
-                                                                            '--tw-ring-color': palette.teal,
+                                                                            '--tw-ring-color': palette.secondary,
                                                                         }}
                                                                     />
                                                                 </div>
@@ -584,9 +584,9 @@ return;
                                                                     }
                                                                     className="h-8 w-16"
                                                                     style={{
-                                                                        borderColor: palette.teal,
+                                                                        borderColor: palette.secondary,
                                                                         // @ts-expect-error CSS custom property
-                                                                        '--tw-ring-color': palette.teal,
+                                                                        '--tw-ring-color': palette.secondary,
                                                                     }}
                                                                 />
                                                             </TableCell>
@@ -600,7 +600,7 @@ return;
                                                                             handleUpdate(e, treatment.id)
                                                                         }
                                                                         className="size-8"
-                                                                        style={{ color: palette.leaf }}
+                                                                        style={{ color: palette.muted }}
                                                                     >
                                                                         <Check className="size-4" />
                                                                     </Button>
@@ -644,8 +644,8 @@ return;
                                                                 <Badge
                                                                     variant="outline"
                                                                     style={{
-                                                                        borderColor: palette.sage,
-                                                                        color: palette.deep,
+                                                                        borderColor: palette.light,
+                                                                        color: palette.primary,
                                                                     }}
                                                                 >
                                                                     #{treatment.priority}
@@ -658,7 +658,7 @@ return;
                                                                         variant="ghost"
                                                                         onClick={() => startEdit(treatment)}
                                                                         className="size-8"
-                                                                        style={{ color: palette.teal }}
+                                                                        style={{ color: palette.secondary }}
                                                                     >
                                                                         <Pencil className="size-4" />
                                                                     </Button>
@@ -687,9 +687,9 @@ return;
                             ) : (
                                 <div
                                     className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed py-16"
-                                    style={{ borderColor: palette.sand }}
+                                    style={{ borderColor: palette.lightest }}
                                 >
-                                    <Pill className="size-10" style={{ color: `${palette.teal}80` }} />
+                                    <Pill className="size-10" style={{ color: `${palette.secondary}80` }} />
                                     <p className="text-sm text-muted-foreground">
                                         {filterDisease !== 'all'
                                             ? 'Tidak ada penanganan untuk penyakit yang dipilih.'

@@ -37,9 +37,9 @@ export default function Login({
             <Head title="Masuk" />
 
             {status && (
-                <Alert className="border-[#84B59F]/40 bg-[#A3C9A8]/10">
-                    <CheckCircle2 className="h-4 w-4 text-[#69A297]" />
-                    <AlertDescription className="text-[#50808E]">
+                <Alert className="border-emerald-200 bg-emerald-50">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    <AlertDescription className="text-emerald-700">
                         {status}
                     </AlertDescription>
                 </Alert>
@@ -129,7 +129,7 @@ export default function Login({
 
                                 <Button
                                     type="submit"
-                                    className="mt-2 w-full bg-gradient-to-r from-[#50808E] to-[#69A297] text-white shadow-md shadow-[#50808E]/20 transition-all hover:from-[#50808E]/90 hover:to-[#69A297]/90 hover:shadow-lg"
+                                    className="mt-2 w-full"
                                     tabIndex={4}
                                     disabled={processing}
                                     data-test="login-button"

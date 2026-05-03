@@ -17,21 +17,21 @@ import {
 } from '@/components/ui/select';
 
 const palette = {
-    sand: '#DDD8C4',
-    sage: '#A3C9A8',
-    leaf: '#84B59F',
-    teal: '#69A297',
-    deep: '#50808E',
+    primary: '#059669',
+    secondary: '#10b981',
+    muted: '#64748b',
+    light: '#94a3b8',
+    lightest: '#cbd5e1',
 };
 
 const roleBadgeColors: Record<string, string> = {
-    super_admin: palette.deep,
-    admin: palette.teal,
-    user: palette.sage,
+    super_admin: palette.primary,
+    admin: palette.secondary,
+    user: palette.light,
 };
 
 function getRoleBadgeColor(role: string): string {
-    return roleBadgeColors[role] || palette.leaf;
+    return roleBadgeColors[role] || palette.muted;
 }
 
 function formatRoleLabel(role: string): string {
@@ -116,14 +116,14 @@ export default function AdminUsersEdit({ editUser, roles }: Props) {
                         variant="outline"
                         size="icon"
                         asChild
-                        style={{ borderColor: palette.teal, color: palette.teal }}
+                        style={{ borderColor: palette.secondary, color: palette.secondary }}
                     >
                         <Link href="/admin/users">
                             <ArrowLeft className="size-4" />
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-semibold tracking-tight" style={{ color: palette.deep }}>
+                        <h1 className="text-2xl font-semibold tracking-tight" style={{ color: palette.primary }}>
                             Edit User
                         </h1>
                         <p className="text-sm text-muted-foreground">
@@ -140,10 +140,10 @@ export default function AdminUsersEdit({ editUser, roles }: Props) {
                 >
                     {/* Form Card */}
                     <motion.div className="md:col-span-2" variants={cardVariants}>
-                        <Card className="border" style={{ borderColor: palette.sand }}>
+                        <Card className="border" style={{ borderColor: palette.lightest }}>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.deep }}>
-                                    <UserCog className="size-4" style={{ color: palette.teal }} />
+                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.primary }}>
+                                    <UserCog className="size-4" style={{ color: palette.secondary }} />
                                     Informasi User
                                 </CardTitle>
                             </CardHeader>
@@ -156,7 +156,7 @@ export default function AdminUsersEdit({ editUser, roles }: Props) {
                                             value={editUser.name}
                                             disabled
                                             className="bg-muted/50"
-                                            style={{ borderColor: palette.sage }}
+                                            style={{ borderColor: palette.light }}
                                         />
                                         <p className="text-xs text-muted-foreground">
                                             Nama tidak dapat diubah dari halaman ini.
@@ -170,7 +170,7 @@ export default function AdminUsersEdit({ editUser, roles }: Props) {
                                             value={editUser.email}
                                             disabled
                                             className="bg-muted/50"
-                                            style={{ borderColor: palette.sage }}
+                                            style={{ borderColor: palette.light }}
                                         />
                                         <p className="text-xs text-muted-foreground">
                                             Email tidak dapat diubah dari halaman ini.
@@ -183,7 +183,7 @@ export default function AdminUsersEdit({ editUser, roles }: Props) {
                                             <SelectTrigger
                                                 id="role"
                                                 className="w-full"
-                                                style={{ borderColor: palette.sage }}
+                                                style={{ borderColor: palette.light }}
                                             >
                                                 <SelectValue placeholder="Pilih role" />
                                             </SelectTrigger>
@@ -205,7 +205,7 @@ export default function AdminUsersEdit({ editUser, roles }: Props) {
                                             type="submit"
                                             disabled={processing || role === editUser.role}
                                             className="text-white"
-                                            style={{ backgroundColor: palette.deep }}
+                                            style={{ backgroundColor: palette.primary }}
                                         >
                                             <Save className="mr-1.5 size-4" />
                                             {processing ? 'Menyimpan...' : 'Simpan Perubahan'}
@@ -214,7 +214,7 @@ export default function AdminUsersEdit({ editUser, roles }: Props) {
                                             type="button"
                                             variant="outline"
                                             asChild
-                                            style={{ borderColor: palette.sage }}
+                                            style={{ borderColor: palette.light }}
                                         >
                                             <Link href="/admin/users">Batal</Link>
                                         </Button>
@@ -227,9 +227,9 @@ export default function AdminUsersEdit({ editUser, roles }: Props) {
                     {/* Info Sidebar */}
                     <motion.div className="flex flex-col gap-4" variants={cardVariants}>
                         {/* Current Role */}
-                        <Card className="border" style={{ borderColor: palette.sand }}>
+                        <Card className="border" style={{ borderColor: palette.lightest }}>
                             <CardHeader>
-                                <CardTitle className="text-sm" style={{ color: palette.deep }}>
+                                <CardTitle className="text-sm" style={{ color: palette.primary }}>
                                     Role Saat Ini
                                 </CardTitle>
                             </CardHeader>
@@ -260,17 +260,17 @@ export default function AdminUsersEdit({ editUser, roles }: Props) {
                         </Card>
 
                         {/* Detections Count */}
-                        <Card className="border" style={{ borderColor: palette.sand }}>
+                        <Card className="border" style={{ borderColor: palette.lightest }}>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.deep }}>
-                                    <Activity className="size-4" style={{ color: palette.teal }} />
+                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.primary }}>
+                                    <Activity className="size-4" style={{ color: palette.secondary }} />
                                     Jumlah Deteksi
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <motion.span
                                     className="text-3xl font-bold tabular-nums"
-                                    style={{ color: palette.deep }}
+                                    style={{ color: palette.primary }}
                                     initial={{ opacity: 0, scale: 0.5 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
@@ -284,15 +284,15 @@ export default function AdminUsersEdit({ editUser, roles }: Props) {
                         </Card>
 
                         {/* Registration Date */}
-                        <Card className="border" style={{ borderColor: palette.sand }}>
+                        <Card className="border" style={{ borderColor: palette.lightest }}>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.deep }}>
-                                    <Calendar className="size-4" style={{ color: palette.teal }} />
+                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.primary }}>
+                                    <Calendar className="size-4" style={{ color: palette.secondary }} />
                                     Tanggal Registrasi
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-sm font-medium" style={{ color: palette.deep }}>
+                                <p className="text-sm font-medium" style={{ color: palette.primary }}>
                                     {formatDate(editUser.created_at)}
                                 </p>
                             </CardContent>

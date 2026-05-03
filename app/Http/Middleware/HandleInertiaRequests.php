@@ -39,7 +39,22 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? [
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                    'role' => $request->user()->role,
+                    'email_verified_at' => $request->user()->email_verified_at,
+                    'two_factor_enabled' => ! is_null($request->user()->two_factor_secret),
+                    'two_factor_confirmed' => ! is_null($request->user()->two_factor_confirmed_at),
+                    
+                    // Permission flags for frontend
+                    'permissions' => [
+                        'canManageKnowledgeBase' => $request->user()->canManageKnowledgeBase(),
+                        'canManageSystem' => $request->user()->canManageSystem(),
+                        'canViewAllDetections' => $request->user()->isAtLeastAdmin(),
+                    ],
+                ] : null,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];

@@ -23,11 +23,11 @@ import {
 } from '@/components/ui/table';
 
 const palette = {
-    sand: '#DDD8C4',
-    sage: '#A3C9A8',
-    leaf: '#84B59F',
-    teal: '#69A297',
-    deep: '#50808E',
+    primary: '#059669',
+    secondary: '#10b981',
+    muted: '#64748b',
+    light: '#94a3b8',
+    lightest: '#cbd5e1',
 };
 
 interface Disease {
@@ -96,7 +96,7 @@ return;
                     <Button
                         asChild
                         className="text-white"
-                        style={{ backgroundColor: palette.deep }}
+                        style={{ backgroundColor: palette.primary }}
                     >
                         <Link href="/admin/diseases/create">
                             <Plus className="size-4" />
@@ -117,7 +117,7 @@ return;
                         >
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-base" style={{ color: palette.deep }}>
+                                    <CardTitle className="text-base" style={{ color: palette.primary }}>
                                         Daftar Penyakit
                                     </CardTitle>
                                 </CardHeader>
@@ -159,8 +159,8 @@ return;
                                                             <Badge
                                                                 variant="outline"
                                                                 style={{
-                                                                    borderColor: palette.sage,
-                                                                    color: palette.deep,
+                                                                    borderColor: palette.light,
+                                                                    color: palette.primary,
                                                                 }}
                                                             >
                                                                 {disease.symptoms_count}
@@ -170,8 +170,8 @@ return;
                                                             <Badge
                                                                 variant="outline"
                                                                 style={{
-                                                                    borderColor: palette.leaf,
-                                                                    color: palette.deep,
+                                                                    borderColor: palette.muted,
+                                                                    color: palette.primary,
                                                                 }}
                                                             >
                                                                 {disease.treatments_count}
@@ -181,7 +181,7 @@ return;
                                                             <Badge
                                                                 variant="secondary"
                                                                 className="text-white"
-                                                                style={{ backgroundColor: palette.teal }}
+                                                                style={{ backgroundColor: palette.secondary }}
                                                             >
                                                                 {disease.detections_count}
                                                             </Badge>
@@ -196,7 +196,7 @@ return;
                                                                     <Link href={`/admin/diseases/${disease.id}/edit`}>
                                                                         <Pencil
                                                                             className="size-4"
-                                                                            style={{ color: palette.teal }}
+                                                                            style={{ color: palette.secondary }}
                                                                         />
                                                                     </Link>
                                                                 </Button>
@@ -225,9 +225,9 @@ return;
                             exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ duration: 0.3 }}
                             className="flex flex-1 flex-col items-center justify-center gap-3 rounded-xl border border-dashed py-16"
-                            style={{ borderColor: palette.sand }}
+                            style={{ borderColor: palette.lightest }}
                         >
-                            <BookOpen className="size-10" style={{ color: `${palette.teal}80` }} />
+                            <BookOpen className="size-10" style={{ color: `${palette.secondary}80` }} />
                             <p className="text-sm text-muted-foreground">
                                 Belum ada data penyakit
                             </p>
@@ -235,7 +235,7 @@ return;
                                 asChild
                                 size="sm"
                                 className="mt-2 text-white"
-                                style={{ backgroundColor: palette.deep }}
+                                style={{ backgroundColor: palette.primary }}
                             >
                                 <Link href="/admin/diseases/create">
                                     <Plus className="size-4" />

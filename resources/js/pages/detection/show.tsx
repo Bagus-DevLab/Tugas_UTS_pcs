@@ -15,11 +15,11 @@ import {
 
 // Color palette
 const palette = {
-    sand: '#DDD8C4',
-    sage: '#A3C9A8',
-    leaf: '#84B59F',
-    teal: '#69A297',
-    deep: '#50808E',
+    primary: '#059669',
+    secondary: '#10b981',
+    muted: '#64748b',
+    light: '#94a3b8',
+    lightest: '#cbd5e1',
 };
 
 interface Treatment {
@@ -173,13 +173,13 @@ export default function DetectionShow({ detection }: Props) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 >
-                    <Button variant="outline" size="icon" asChild style={{ borderColor: palette.teal, color: palette.teal }}>
+                    <Button variant="outline" size="icon" asChild style={{ borderColor: palette.secondary, color: palette.secondary }}>
                         <Link href="/detection/history">
                             <ArrowLeft className="size-4" />
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-semibold tracking-tight" style={{ color: palette.deep }}>
+                        <h1 className="text-2xl font-semibold tracking-tight" style={{ color: palette.primary }}>
                             Detail Deteksi
                         </h1>
                         <p className="text-sm text-muted-foreground">
@@ -197,10 +197,10 @@ export default function DetectionShow({ detection }: Props) {
                 >
                     {/* 1. Citra Daun */}
                     <motion.div className="md:row-span-2" variants={cardVariants}>
-                        <Card className="h-full border" style={{ borderColor: `${palette.sand}` }}>
+                        <Card className="h-full border" style={{ borderColor: `${palette.lightest}` }}>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.deep }}>
-                                    <ImageIcon className="size-4" style={{ color: palette.teal }} />
+                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.primary }}>
+                                    <ImageIcon className="size-4" style={{ color: palette.secondary }} />
                                     Citra Daun
                                 </CardTitle>
                             </CardHeader>
@@ -208,7 +208,7 @@ export default function DetectionShow({ detection }: Props) {
                                 {detection.image_path ? (
                                     <motion.div
                                         className="overflow-hidden rounded-lg border"
-                                        style={{ borderColor: palette.sage }}
+                                        style={{ borderColor: palette.light }}
                                         whileHover={{ scale: 1.02 }}
                                         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                                     >
@@ -221,10 +221,10 @@ export default function DetectionShow({ detection }: Props) {
                                 ) : (
                                     <div
                                         className="flex aspect-square items-center justify-center rounded-lg border border-dashed"
-                                        style={{ borderColor: palette.sand, backgroundColor: `${palette.sand}22` }}
+                                        style={{ borderColor: palette.lightest, backgroundColor: `${palette.lightest}22` }}
                                     >
                                         <div className="text-center">
-                                            <ImageIcon className="mx-auto mb-2 size-10" style={{ color: `${palette.teal}55` }} />
+                                            <ImageIcon className="mx-auto mb-2 size-10" style={{ color: `${palette.secondary}55` }} />
                                             <p className="text-sm text-muted-foreground">
                                                 Tidak ada citra
                                             </p>
@@ -240,19 +240,19 @@ export default function DetectionShow({ detection }: Props) {
 
                     {/* 2. Label Penyakit */}
                     <motion.div className="md:col-span-1 lg:col-span-2" variants={cardVariants}>
-                        <Card className="h-full border" style={{ borderColor: `${palette.sand}` }}>
+                        <Card className="h-full border" style={{ borderColor: `${palette.lightest}` }}>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.deep }}>
-                                    <FlaskConical className="size-4" style={{ color: palette.teal }} />
+                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.primary }}>
+                                    <FlaskConical className="size-4" style={{ color: palette.secondary }} />
                                     Label Penyakit
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <h2 className="text-2xl font-bold tracking-tight" style={{ color: palette.deep }}>
+                                <h2 className="text-2xl font-bold tracking-tight" style={{ color: palette.primary }}>
                                     {detection.disease?.name || detection.label || 'Tidak Terdeteksi'}
                                 </h2>
                                 {detection.disease?.latin_name && (
-                                    <p className="mt-1 text-sm italic" style={{ color: palette.teal }}>
+                                    <p className="mt-1 text-sm italic" style={{ color: palette.secondary }}>
                                         {detection.disease.latin_name}
                                     </p>
                                 )}
@@ -267,10 +267,10 @@ export default function DetectionShow({ detection }: Props) {
 
                     {/* 3. Tingkat Akurasi */}
                     <motion.div variants={cardVariants}>
-                        <Card className="h-full border" style={{ borderColor: `${palette.sand}` }}>
+                        <Card className="h-full border" style={{ borderColor: `${palette.lightest}` }}>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.deep }}>
-                                    <Activity className="size-4" style={{ color: palette.teal }} />
+                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.primary }}>
+                                    <Activity className="size-4" style={{ color: palette.secondary }} />
                                     Tingkat Akurasi
                                 </CardTitle>
                             </CardHeader>
@@ -280,7 +280,7 @@ export default function DetectionShow({ detection }: Props) {
                                         <div className="mb-2 flex items-baseline gap-1">
                                             <motion.span
                                                 className="text-3xl font-bold tabular-nums"
-                                                style={{ color: palette.deep }}
+                                                style={{ color: palette.primary }}
                                                 initial={{ opacity: 0, scale: 0.5 }}
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
@@ -289,15 +289,15 @@ export default function DetectionShow({ detection }: Props) {
                                             </motion.span>
                                             <span className="text-lg text-muted-foreground">%</span>
                                         </div>
-                                        <div className="h-3 w-full overflow-hidden rounded-full" style={{ backgroundColor: `${palette.sand}88` }}>
+                                        <div className="h-3 w-full overflow-hidden rounded-full" style={{ backgroundColor: `${palette.lightest}88` }}>
                                             <motion.div
                                                 className="h-full rounded-full"
                                                 style={{
                                                     backgroundColor:
                                                         confidencePercent >= 80
-                                                            ? palette.sage
+                                                            ? palette.light
                                                             : confidencePercent >= 50
-                                                              ? palette.teal
+                                                              ? palette.secondary
                                                               : '#c47a7a',
                                                 }}
                                                 variants={barVariants}
@@ -323,10 +323,10 @@ export default function DetectionShow({ detection }: Props) {
 
                     {/* 4. Suhu */}
                     <motion.div variants={cardVariants}>
-                        <Card className="h-full border" style={{ borderColor: `${palette.sand}` }}>
+                        <Card className="h-full border" style={{ borderColor: `${palette.lightest}` }}>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.deep }}>
-                                    <Thermometer className="size-4" style={{ color: palette.teal }} />
+                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.primary }}>
+                                    <Thermometer className="size-4" style={{ color: palette.secondary }} />
                                     Suhu
                                 </CardTitle>
                             </CardHeader>
@@ -335,7 +335,7 @@ export default function DetectionShow({ detection }: Props) {
                                     <div className="flex items-baseline gap-1">
                                         <motion.span
                                             className="text-3xl font-bold tabular-nums"
-                                            style={{ color: palette.deep }}
+                                            style={{ color: palette.primary }}
                                             initial={{ opacity: 0, scale: 0.5 }}
                                             animate={{ opacity: 1, scale: 1 }}
                                             transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
@@ -353,15 +353,15 @@ export default function DetectionShow({ detection }: Props) {
 
                     {/* 5. Waktu Pemindaian */}
                     <motion.div variants={cardVariants}>
-                        <Card className="h-full border" style={{ borderColor: `${palette.sand}` }}>
+                        <Card className="h-full border" style={{ borderColor: `${palette.lightest}` }}>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.deep }}>
-                                    <Clock className="size-4" style={{ color: palette.teal }} />
+                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.primary }}>
+                                    <Clock className="size-4" style={{ color: palette.secondary }} />
                                     Waktu Pemindaian
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-sm font-medium" style={{ color: palette.deep }}>
+                                <p className="text-sm font-medium" style={{ color: palette.primary }}>
                                     {formatDateTime(detection.scanned_at || detection.created_at)}
                                 </p>
                                 {detection.scan_duration_ms !== null && (
@@ -375,10 +375,10 @@ export default function DetectionShow({ detection }: Props) {
 
                     {/* 6. Titik Koordinat */}
                     <motion.div variants={cardVariants}>
-                        <Card className="h-full border" style={{ borderColor: `${palette.sand}` }}>
+                        <Card className="h-full border" style={{ borderColor: `${palette.lightest}` }}>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.deep }}>
-                                    <MapPin className="size-4" style={{ color: palette.teal }} />
+                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.primary }}>
+                                    <MapPin className="size-4" style={{ color: palette.secondary }} />
                                     Titik Koordinat
                                 </CardTitle>
                             </CardHeader>
@@ -388,13 +388,13 @@ export default function DetectionShow({ detection }: Props) {
                                         <div className="flex flex-col gap-1">
                                             <div className="flex items-center gap-2 text-sm">
                                                 <span className="text-muted-foreground">Lat:</span>
-                                                <span className="font-mono font-medium" style={{ color: palette.deep }}>
+                                                <span className="font-mono font-medium" style={{ color: palette.primary }}>
                                                     {Number(detection.latitude).toFixed(6)}
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-2 text-sm">
                                                 <span className="text-muted-foreground">Long:</span>
-                                                <span className="font-mono font-medium" style={{ color: palette.deep }}>
+                                                <span className="font-mono font-medium" style={{ color: palette.primary }}>
                                                     {Number(detection.longitude).toFixed(6)}
                                                 </span>
                                             </div>
@@ -404,7 +404,7 @@ export default function DetectionShow({ detection }: Props) {
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium hover:underline"
-                                            style={{ color: palette.teal }}
+                                            style={{ color: palette.secondary }}
                                         >
                                             Buka di Google Maps
                                             <ExternalLink className="size-3" />
@@ -419,11 +419,11 @@ export default function DetectionShow({ detection }: Props) {
 
                     {/* 7. Status Koneksi */}
                     <motion.div variants={cardVariants}>
-                        <Card className="h-full border" style={{ borderColor: `${palette.sand}` }}>
+                        <Card className="h-full border" style={{ borderColor: `${palette.lightest}` }}>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.deep }}>
+                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.primary }}>
                                     {detection.connection_status === 'online' ? (
-                                        <Wifi className="size-4" style={{ color: palette.sage }} />
+                                        <Wifi className="size-4" style={{ color: palette.light }} />
                                     ) : (
                                         <WifiOff className="size-4" style={{ color: '#b45555' }} />
                                     )}
@@ -436,7 +436,7 @@ export default function DetectionShow({ detection }: Props) {
                                     style={{
                                         backgroundColor:
                                             detection.connection_status === 'online'
-                                                ? palette.sage
+                                                ? palette.light
                                                 : '#b45555',
                                     }}
                                 >
@@ -463,10 +463,10 @@ export default function DetectionShow({ detection }: Props) {
 
                     {/* 8. Rekomendasi Tindakan */}
                     <motion.div className="md:col-span-2 lg:col-span-3" variants={cardVariants}>
-                        <Card className="border" style={{ borderColor: `${palette.sand}` }}>
+                        <Card className="border" style={{ borderColor: `${palette.lightest}` }}>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.deep }}>
-                                    <FlaskConical className="size-4" style={{ color: palette.teal }} />
+                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.primary }}>
+                                    <FlaskConical className="size-4" style={{ color: palette.secondary }} />
                                     Rekomendasi Tindakan
                                 </CardTitle>
                             </CardHeader>
@@ -477,15 +477,15 @@ export default function DetectionShow({ detection }: Props) {
                                             <motion.div
                                                 key={treatment.id}
                                                 className="flex gap-3 rounded-lg border p-3"
-                                                style={{ borderColor: `${palette.sage}66` }}
+                                                style={{ borderColor: `${palette.light}66` }}
                                                 initial={{ opacity: 0, x: -12 }}
                                                 animate={{ opacity: 1, x: 0 }}
                                                 transition={{ delay: 0.6 + index * 0.08, type: 'spring', stiffness: 300, damping: 28 }}
-                                                whileHover={{ backgroundColor: `${palette.sage}12`, transition: { duration: 0.15 } }}
+                                                whileHover={{ backgroundColor: `${palette.light}12`, transition: { duration: 0.15 } }}
                                             >
                                                 <div
                                                     className="flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-                                                    style={{ backgroundColor: palette.teal }}
+                                                    style={{ backgroundColor: palette.secondary }}
                                                 >
                                                     {index + 1}
                                                 </div>
@@ -494,7 +494,7 @@ export default function DetectionShow({ detection }: Props) {
                                                         <Badge
                                                             variant="outline"
                                                             className="text-xs"
-                                                            style={{ borderColor: palette.leaf, color: palette.deep }}
+                                                            style={{ borderColor: palette.muted, color: palette.primary }}
                                                         >
                                                             {getTreatmentTypeLabel(treatment.type)}
                                                         </Badge>
@@ -517,24 +517,24 @@ export default function DetectionShow({ detection }: Props) {
 
                     {/* 9. Dosis */}
                     <motion.div className="md:col-span-2 lg:col-span-3" variants={cardVariants}>
-                        <Card className="border" style={{ borderColor: `${palette.sand}` }}>
+                        <Card className="border" style={{ borderColor: `${palette.lightest}` }}>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.deep }}>
-                                    <Pill className="size-4" style={{ color: palette.teal }} />
+                                <CardTitle className="flex items-center gap-2 text-sm" style={{ color: palette.primary }}>
+                                    <Pill className="size-4" style={{ color: palette.secondary }} />
                                     Dosis
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 {treatments.filter((t) => t.dosage).length > 0 ? (
-                                    <div className="overflow-hidden rounded-lg border" style={{ borderColor: `${palette.sage}66` }}>
+                                    <div className="overflow-hidden rounded-lg border" style={{ borderColor: `${palette.light}66` }}>
                                         <Table>
                                             <TableHeader>
-                                                <TableRow style={{ backgroundColor: `${palette.sand}33` }}>
-                                                    <TableHead style={{ color: palette.deep }}>No</TableHead>
-                                                    <TableHead style={{ color: palette.deep }}>Tindakan</TableHead>
-                                                    <TableHead style={{ color: palette.deep }}>Jenis</TableHead>
-                                                    <TableHead style={{ color: palette.deep }}>Dosis</TableHead>
-                                                    <TableHead style={{ color: palette.deep }}>Satuan</TableHead>
+                                                <TableRow style={{ backgroundColor: `${palette.lightest}33` }}>
+                                                    <TableHead style={{ color: palette.primary }}>No</TableHead>
+                                                    <TableHead style={{ color: palette.primary }}>Tindakan</TableHead>
+                                                    <TableHead style={{ color: palette.primary }}>Jenis</TableHead>
+                                                    <TableHead style={{ color: palette.primary }}>Dosis</TableHead>
+                                                    <TableHead style={{ color: palette.primary }}>Satuan</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
@@ -547,7 +547,7 @@ export default function DetectionShow({ detection }: Props) {
                                                             initial={{ opacity: 0, x: -10 }}
                                                             animate={{ opacity: 1, x: 0 }}
                                                             transition={{ delay: 0.8 + index * 0.06 }}
-                                                            whileHover={{ backgroundColor: `${palette.sage}12` }}
+                                                            whileHover={{ backgroundColor: `${palette.light}12` }}
                                                         >
                                                             <TableCell className="text-muted-foreground">
                                                                 {index + 1}
@@ -559,12 +559,12 @@ export default function DetectionShow({ detection }: Props) {
                                                                 <Badge
                                                                     variant="outline"
                                                                     className="text-xs"
-                                                                    style={{ borderColor: palette.leaf, color: palette.deep }}
+                                                                    style={{ borderColor: palette.muted, color: palette.primary }}
                                                                 >
                                                                     {getTreatmentTypeLabel(treatment.type)}
                                                                 </Badge>
                                                             </TableCell>
-                                                            <TableCell className="font-mono" style={{ color: palette.deep }}>
+                                                            <TableCell className="font-mono" style={{ color: palette.primary }}>
                                                                 {treatment.dosage}
                                                             </TableCell>
                                                             <TableCell className="text-muted-foreground">
@@ -592,9 +592,9 @@ export default function DetectionShow({ detection }: Props) {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.9, type: 'spring', stiffness: 200, damping: 25 }}
                     >
-                        <Card className="border" style={{ borderColor: `${palette.sand}` }}>
+                        <Card className="border" style={{ borderColor: `${palette.lightest}` }}>
                             <CardHeader>
-                                <CardTitle className="text-sm" style={{ color: palette.deep }}>Distribusi Prediksi</CardTitle>
+                                <CardTitle className="text-sm" style={{ color: palette.primary }}>Distribusi Prediksi</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-3">
@@ -612,22 +612,22 @@ export default function DetectionShow({ detection }: Props) {
                                                 <div className="mb-1 flex items-center justify-between text-sm">
                                                     <span
                                                         className={isTop ? 'font-semibold' : 'text-muted-foreground'}
-                                                        style={isTop ? { color: palette.deep } : undefined}
+                                                        style={isTop ? { color: palette.primary } : undefined}
                                                     >
                                                         {label}
                                                     </span>
                                                     <span
                                                         className={`font-mono text-xs ${isTop ? 'font-semibold' : 'text-muted-foreground'}`}
-                                                        style={isTop ? { color: palette.deep } : undefined}
+                                                        style={isTop ? { color: palette.primary } : undefined}
                                                     >
                                                         {percent}%
                                                     </span>
                                                 </div>
-                                                <div className="h-2.5 w-full overflow-hidden rounded-full" style={{ backgroundColor: `${palette.sand}88` }}>
+                                                <div className="h-2.5 w-full overflow-hidden rounded-full" style={{ backgroundColor: `${palette.lightest}88` }}>
                                                     <motion.div
                                                         className="h-full rounded-full"
                                                         style={{
-                                                            backgroundColor: isTop ? palette.teal : `${palette.leaf}55`,
+                                                            backgroundColor: isTop ? palette.secondary : `${palette.muted}55`,
                                                         }}
                                                         variants={barVariants}
                                                         initial="hidden"
@@ -651,9 +651,9 @@ export default function DetectionShow({ detection }: Props) {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.9, type: 'spring', stiffness: 200, damping: 25 }}
                     >
-                        <Card className="border" style={{ borderColor: `${palette.sand}` }}>
+                        <Card className="border" style={{ borderColor: `${palette.lightest}` }}>
                             <CardHeader>
-                                <CardTitle className="text-sm" style={{ color: palette.deep }}>Gejala yang Dipilih</CardTitle>
+                                <CardTitle className="text-sm" style={{ color: palette.primary }}>Gejala yang Dipilih</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -661,15 +661,15 @@ export default function DetectionShow({ detection }: Props) {
                                         <motion.div
                                             key={symptom.id}
                                             className="flex items-start gap-2 rounded-lg border p-3"
-                                            style={{ borderColor: `${palette.sage}66` }}
+                                            style={{ borderColor: `${palette.light}66` }}
                                             initial={{ opacity: 0, scale: 0.9 }}
                                             animate={{ opacity: 1, scale: 1 }}
                                             transition={{ delay: 1.0 + index * 0.05 }}
-                                            whileHover={{ backgroundColor: `${palette.sage}12` }}
+                                            whileHover={{ backgroundColor: `${palette.light}12` }}
                                         >
                                             <Badge
                                                 className="shrink-0 font-mono text-xs text-white"
-                                                style={{ backgroundColor: palette.leaf }}
+                                                style={{ backgroundColor: palette.muted }}
                                             >
                                                 {symptom.code}
                                             </Badge>
@@ -689,9 +689,9 @@ export default function DetectionShow({ detection }: Props) {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1.1 }}
                     >
-                        <Card className="border" style={{ borderColor: `${palette.sand}` }}>
+                        <Card className="border" style={{ borderColor: `${palette.lightest}` }}>
                             <CardHeader>
-                                <CardTitle className="text-sm" style={{ color: palette.deep }}>Catatan</CardTitle>
+                                <CardTitle className="text-sm" style={{ color: palette.primary }}>Catatan</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-sm leading-relaxed text-muted-foreground">

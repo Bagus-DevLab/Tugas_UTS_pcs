@@ -8,11 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 // Color palette
 const palette = {
-    sand: '#DDD8C4',
-    sage: '#A3C9A8',
-    leaf: '#84B59F',
-    teal: '#69A297',
-    deep: '#50808E',
+    primary: '#059669',
+    secondary: '#10b981',
+    muted: '#64748b',
+    light: '#94a3b8',
+    lightest: '#cbd5e1',
 };
 
 interface Symptom {
@@ -49,10 +49,10 @@ interface Props {
 }
 
 const treatmentTypes: Record<string, { label: string; icon: React.ElementType; color: string }> = {
-    prevention: { label: 'Pencegahan', icon: Shield, color: palette.deep },
+    prevention: { label: 'Pencegahan', icon: Shield, color: palette.primary },
     chemical: { label: 'Kimiawi', icon: FlaskConical, color: '#c0392b' },
-    biological: { label: 'Biologis', icon: Sprout, color: palette.leaf },
-    cultural: { label: 'Kultur Teknis', icon: Leaf, color: palette.teal },
+    biological: { label: 'Biologis', icon: Sprout, color: palette.muted },
+    cultural: { label: 'Kultur Teknis', icon: Leaf, color: palette.secondary },
 };
 
 // Animation variants
@@ -136,7 +136,7 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
                     {disease.image && (
                         <div
                             className="shrink-0 overflow-hidden rounded-xl border-2"
-                            style={{ borderColor: palette.sage }}
+                            style={{ borderColor: palette.light }}
                         >
                             <img
                                 src={disease.image}
@@ -150,7 +150,7 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
                             {disease.name}
                         </h1>
                         {disease.latin_name && (
-                            <p className="mt-1 text-base italic" style={{ color: palette.teal }}>
+                            <p className="mt-1 text-base italic" style={{ color: palette.secondary }}>
                                 {disease.latin_name}
                             </p>
                         )}
@@ -167,10 +167,10 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
                 >
                     <Card
                         className="border-t-4"
-                        style={{ borderTopColor: palette.sage }}
+                        style={{ borderTopColor: palette.light }}
                     >
                         <CardHeader>
-                            <CardTitle className="text-base" style={{ color: palette.deep }}>
+                            <CardTitle className="text-base" style={{ color: palette.primary }}>
                                 Deskripsi
                             </CardTitle>
                         </CardHeader>
@@ -182,10 +182,10 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
                     </Card>
                     <Card
                         className="border-t-4"
-                        style={{ borderTopColor: palette.teal }}
+                        style={{ borderTopColor: palette.secondary }}
                     >
                         <CardHeader>
-                            <CardTitle className="text-base" style={{ color: palette.deep }}>
+                            <CardTitle className="text-base" style={{ color: palette.primary }}>
                                 Penyebab
                             </CardTitle>
                         </CardHeader>
@@ -207,7 +207,7 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
                     >
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-base" style={{ color: palette.deep }}>
+                                <CardTitle className="text-base" style={{ color: palette.primary }}>
                                     Gejala
                                 </CardTitle>
                             </CardHeader>
@@ -244,8 +244,8 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
                                                         <Badge
                                                             variant="outline"
                                                             style={{
-                                                                borderColor: palette.teal,
-                                                                color: palette.deep,
+                                                                borderColor: palette.secondary,
+                                                                color: palette.primary,
                                                             }}
                                                         >
                                                             {symptom.code}
@@ -267,12 +267,12 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
                                                         <div className="flex items-center gap-3">
                                                             <div
                                                                 className="h-2.5 w-24 overflow-hidden rounded-full"
-                                                                style={{ backgroundColor: `${palette.sand}` }}
+                                                                style={{ backgroundColor: `${palette.lightest}` }}
                                                             >
                                                                 <motion.div
                                                                     className="h-full rounded-full"
                                                                     style={{
-                                                                        background: `linear-gradient(90deg, ${palette.sage}, ${palette.teal})`,
+                                                                        background: `linear-gradient(90deg, ${palette.light}, ${palette.secondary})`,
                                                                     }}
                                                                     initial={{ width: 0 }}
                                                                     animate={{
@@ -311,7 +311,7 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
                         <Card>
                             <CardHeader>
                                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                                    <CardTitle className="text-base" style={{ color: palette.deep }}>
+                                    <CardTitle className="text-base" style={{ color: palette.primary }}>
                                         Penanganan
                                     </CardTitle>
                                     <div className="flex flex-wrap gap-1.5">
@@ -319,8 +319,8 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
                                             onClick={() => setActiveTab('all')}
                                             className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
                                             style={{
-                                                backgroundColor: activeTab === 'all' ? palette.deep : palette.sand,
-                                                color: activeTab === 'all' ? '#fff' : palette.deep,
+                                                backgroundColor: activeTab === 'all' ? palette.primary : palette.lightest,
+                                                color: activeTab === 'all' ? '#fff' : palette.primary,
                                             }}
                                         >
                                             Semua
@@ -340,8 +340,8 @@ return null;
                                                     onClick={() => setActiveTab(type)}
                                                     className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
                                                     style={{
-                                                        backgroundColor: activeTab === type ? config.color : palette.sand,
-                                                        color: activeTab === type ? '#fff' : palette.deep,
+                                                        backgroundColor: activeTab === type ? config.color : palette.lightest,
+                                                        color: activeTab === type ? '#fff' : palette.primary,
                                                     }}
                                                 >
                                                     <Icon className="size-3" />
@@ -373,7 +373,7 @@ return null;
                                                     initial="hidden"
                                                     animate="visible"
                                                     className="flex gap-3 rounded-lg border p-4 transition-colors hover:bg-muted/30"
-                                                    style={{ borderLeftWidth: 3, borderLeftColor: config?.color ?? palette.teal }}
+                                                    style={{ borderLeftWidth: 3, borderLeftColor: config?.color ?? palette.secondary }}
                                                 >
                                                     {config && (
                                                         <div
@@ -406,7 +406,7 @@ return null;
                                                         </p>
                                                         {(treatment.dosage || treatment.dosage_unit) && (
                                                             <div className="mt-2 flex items-center gap-1.5">
-                                                                <Pill className="size-3.5" style={{ color: palette.teal }} />
+                                                                <Pill className="size-3.5" style={{ color: palette.secondary }} />
                                                                 <span className="text-xs font-medium text-muted-foreground">
                                                                     Dosis:{' '}
                                                                     <span className="text-foreground">

@@ -38,11 +38,11 @@ import { dashboard } from '@/routes';
 // ---------------------------------------------------------------------------
 
 const PALETTE = {
-    sand: '#DDD8C4',
-    sage: '#A3C9A8',
-    leaf: '#84B59F',
-    teal: '#69A297',
-    deep: '#50808E',
+    primary: '#059669',
+    secondary: '#10b981',
+    muted: '#64748b',
+    light: '#94a3b8',
+    lightest: '#cbd5e1',
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -74,12 +74,12 @@ const dropZoneVariants = {
         backgroundColor: 'rgba(80,128,142,0)',
     },
     hover: {
-        borderColor: PALETTE.teal,
+        borderColor: PALETTE.secondary,
         backgroundColor: 'rgba(80,128,142,0.05)',
         transition: { duration: 0.2 },
     },
     dragging: {
-        borderColor: PALETTE.deep,
+        borderColor: PALETTE.primary,
         backgroundColor: 'rgba(80,128,142,0.1)',
         scale: 1.01,
         transition: { duration: 0.2 },
@@ -128,14 +128,14 @@ function formatTimestamp(iso: string): string {
 
 function confidenceTextClass(confidence: number): string {
     if (confidence >= 80) {
-return 'text-green-600 dark:text-green-400';
+return 'text-green-600';
 }
 
     if (confidence >= 50) {
-return 'text-yellow-600 dark:text-yellow-400';
+return 'text-yellow-600';
 }
 
-    return 'text-red-600 dark:text-red-400';
+    return 'text-red-600';
 }
 
 // ---------------------------------------------------------------------------
@@ -151,11 +151,11 @@ function PredictionBar({ prediction, index }: { prediction: Prediction; index: n
             transition={{ delay: index * 0.06, duration: 0.4, ease: 'easeOut' }}
         >
             <span className="w-32 shrink-0 truncate text-muted-foreground">{prediction.label}</span>
-            <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#DDD8C4]/40 dark:bg-[#DDD8C4]/10">
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-200">
                 <motion.div
                     className="h-full rounded-full"
                     style={{
-                        background: `linear-gradient(90deg, ${PALETTE.teal}, ${PALETTE.deep})`,
+                        background: `linear-gradient(90deg, ${PALETTE.secondary}, ${PALETTE.primary})`,
                     }}
                     initial={{ width: 0 }}
                     animate={{ width: `${Math.max(prediction.confidence, 0.5)}%` }}
@@ -482,7 +482,7 @@ return;
                     <Badge
                         variant={connectionStatus === 'online' ? 'default' : 'destructive'}
                         className="gap-1.5"
-                        style={connectionStatus === 'online' ? { backgroundColor: PALETTE.deep } : undefined}
+                        style={connectionStatus === 'online' ? { backgroundColor: PALETTE.primary } : undefined}
                     >
                         {connectionStatus === 'online' ? <Wifi className="size-3" /> : <WifiOff className="size-3" />}
                         {connectionStatus === 'online' ? 'Online' : 'Offline'}
@@ -494,7 +494,7 @@ return;
                             Mengambil data lokasi...
                         </Badge>
                     ) : envData?.position ? (
-                        <Badge variant="outline" className="gap-1.5" style={{ borderColor: PALETTE.teal, color: PALETTE.deep }}>
+                        <Badge variant="outline" className="gap-1.5" style={{ borderColor: PALETTE.secondary, color: PALETTE.primary }}>
                             <MapPin className="size-3" />
                             {formatCoordinates(envData.position.latitude, envData.position.longitude)}
                         </Badge>
@@ -506,7 +506,7 @@ return;
                     )}
 
                     {envData?.weather ? (
-                        <Badge variant="outline" className="gap-1.5" style={{ borderColor: PALETTE.sage, color: PALETTE.deep }}>
+                        <Badge variant="outline" className="gap-1.5" style={{ borderColor: PALETTE.light, color: PALETTE.primary }}>
                             <Thermometer className="size-3" />
                             {envData.weather.temperature}°C
                         </Badge>
@@ -561,10 +561,10 @@ return;
                             exit={{ opacity: 0, y: -20, transition: { duration: 0.25 } }}
                             transition={{ duration: 0.5, ease: 'easeOut' }}
                         >
-                            <Card className="overflow-hidden border-[#DDD8C4]/50 dark:border-[#50808E]/20">
+                            <Card className="overflow-hidden border-slate-200">
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <Camera className="size-5" style={{ color: PALETTE.deep }} />
+                                        <Camera className="size-5" style={{ color: PALETTE.primary }} />
                                         Unggah Citra Daun Padi
                                     </CardTitle>
                                     <CardDescription>
@@ -584,7 +584,7 @@ return;
                                         onMouseLeave={() => setIsHovering(false)}
                                         onClick={() => fileInputRef.current?.click()}
                                         className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 transition-shadow hover:shadow-md"
-                                        style={{ borderColor: PALETTE.teal + '40' }}
+                                        style={{ borderColor: PALETTE.secondary + '40' }}
                                     >
                                         <motion.div
                                             animate={isDragging ? { scale: 1.15, rotate: 5 } : { scale: 1, rotate: 0 }}
@@ -593,16 +593,16 @@ return;
                                             <div className="relative mb-4">
                                                 <motion.div
                                                     className="absolute inset-0 rounded-full"
-                                                    style={{ backgroundColor: PALETTE.teal + '20' }}
+                                                    style={{ backgroundColor: PALETTE.secondary + '20' }}
                                                     variants={pulseRing}
                                                     initial="initial"
                                                     animate={isDragging ? 'animate' : 'initial'}
                                                 />
                                                 <div
                                                     className="flex size-16 items-center justify-center rounded-full"
-                                                    style={{ backgroundColor: PALETTE.sand + '60' }}
+                                                    style={{ backgroundColor: PALETTE.lightest + '60' }}
                                                 >
-                                                    <Upload className="size-7" style={{ color: PALETTE.deep }} />
+                                                    <Upload className="size-7" style={{ color: PALETTE.primary }} />
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -636,11 +636,11 @@ return;
                             exit={{ opacity: 0, scale: 0.97, y: -16, transition: { duration: 0.25 } }}
                             transition={{ duration: 0.45, ease: 'easeOut' }}
                         >
-                            <Card className="overflow-hidden border-[#DDD8C4]/50 dark:border-[#50808E]/20">
+                            <Card className="overflow-hidden border-slate-200">
                                 <CardHeader>
                                     <div className="flex items-center justify-between">
                                         <CardTitle className="flex items-center gap-2">
-                                            <ImageIcon className="size-5" style={{ color: PALETTE.teal }} />
+                                            <ImageIcon className="size-5" style={{ color: PALETTE.secondary }} />
                                             Pratinjau Gambar
                                         </CardTitle>
                                         <Button variant="ghost" size="icon" onClick={resetAll}>
@@ -660,7 +660,7 @@ return;
                                             src={previewUrl}
                                             alt="Pratinjau daun padi"
                                             className="max-h-80 rounded-lg border object-contain shadow-sm"
-                                            style={{ borderColor: PALETTE.sand }}
+                                            style={{ borderColor: PALETTE.lightest }}
                                         />
                                     </motion.div>
                                     {selectedFile && (
@@ -680,7 +680,7 @@ return;
                                     </Button>
                                     <Button
                                         onClick={runAnalysis}
-                                        style={{ backgroundColor: PALETTE.deep }}
+                                        style={{ backgroundColor: PALETTE.primary }}
                                         className="text-white hover:opacity-90"
                                     >
                                         <ScanLine className="size-4" />
@@ -702,7 +702,7 @@ return;
                             exit={{ opacity: 0, y: -16, transition: { duration: 0.2 } }}
                             transition={{ duration: 0.4 }}
                         >
-                            <Card className="overflow-hidden border-[#DDD8C4]/50 dark:border-[#50808E]/20">
+                            <Card className="overflow-hidden border-slate-200">
                                 <CardContent className="flex flex-col items-center justify-center py-16">
                                     <motion.div
                                         className="relative mb-6"
@@ -711,11 +711,11 @@ return;
                                     >
                                         <div
                                             className="size-16 rounded-full border-4 border-t-transparent"
-                                            style={{ borderColor: PALETTE.sand, borderTopColor: 'transparent' }}
+                                            style={{ borderColor: PALETTE.lightest, borderTopColor: 'transparent' }}
                                         />
                                         <div
                                             className="absolute inset-1 rounded-full border-4 border-b-transparent"
-                                            style={{ borderColor: PALETTE.teal, borderBottomColor: 'transparent' }}
+                                            style={{ borderColor: PALETTE.secondary, borderBottomColor: 'transparent' }}
                                         />
                                     </motion.div>
                                     <motion.p
@@ -737,11 +737,11 @@ return;
                                     {/* Animated progress bar */}
                                     <motion.div
                                         className="mt-6 h-1.5 w-48 overflow-hidden rounded-full"
-                                        style={{ backgroundColor: PALETTE.sand + '40' }}
+                                        style={{ backgroundColor: PALETTE.lightest + '40' }}
                                     >
                                         <motion.div
                                             className="h-full rounded-full"
-                                            style={{ background: `linear-gradient(90deg, ${PALETTE.sage}, ${PALETTE.deep})` }}
+                                            style={{ background: `linear-gradient(90deg, ${PALETTE.light}, ${PALETTE.primary})` }}
                                             initial={{ width: '0%' }}
                                             animate={{ width: '100%' }}
                                             transition={{ duration: 4, ease: 'easeInOut' }}
@@ -771,7 +771,7 @@ return;
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.4 }}
                             >
-                                <CheckCircle2 className="size-5" style={{ color: PALETTE.sage }} />
+                                <CheckCircle2 className="size-5" style={{ color: PALETTE.light }} />
                                 <h2 className="text-lg font-semibold">Hasil Deteksi</h2>
                             </motion.div>
 
@@ -784,10 +784,10 @@ return;
                             >
                                 {/* VAR 1: Citra Daun */}
                                 <motion.div variants={staggerItem} transition={{ duration: 0.4 }} className="md:row-span-2">
-                                    <Card className="h-full overflow-hidden border-[#DDD8C4]/50 dark:border-[#50808E]/20">
+                                    <Card className="h-full overflow-hidden border-slate-200">
                                         <CardHeader className="pb-3">
                                             <CardTitle className="flex items-center gap-2 text-sm">
-                                                <ImageIcon className="size-4" style={{ color: PALETTE.teal }} />
+                                                <ImageIcon className="size-4" style={{ color: PALETTE.secondary }} />
                                                 Citra Daun
                                             </CardTitle>
                                         </CardHeader>
@@ -796,7 +796,7 @@ return;
                                                 src={scanResult.imagePreviewUrl}
                                                 alt="Citra daun padi"
                                                 className="w-full rounded-lg border object-cover shadow-sm"
-                                                style={{ borderColor: PALETTE.sand }}
+                                                style={{ borderColor: PALETTE.lightest }}
                                                 initial={{ opacity: 0, scale: 0.95 }}
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 transition={{ duration: 0.5, delay: 0.2 }}
@@ -812,10 +812,10 @@ return;
 
                                 {/* VAR 2: Label Penyakit */}
                                 <motion.div variants={staggerItem} transition={{ duration: 0.4 }}>
-                                    <Card className="h-full overflow-hidden border-[#DDD8C4]/50 dark:border-[#50808E]/20">
+                                    <Card className="h-full overflow-hidden border-slate-200">
                                         <CardHeader className="pb-3">
                                             <CardTitle className="flex items-center gap-2 text-sm">
-                                                <Leaf className="size-4" style={{ color: PALETTE.leaf }} />
+                                                <Leaf className="size-4" style={{ color: PALETTE.muted }} />
                                                 Label Penyakit
                                             </CardTitle>
                                         </CardHeader>
@@ -836,7 +836,7 @@ return;
                                             {isHealthy ? (
                                                 <Badge
                                                     className="mt-2 gap-1"
-                                                    style={{ backgroundColor: PALETTE.sage, color: '#fff' }}
+                                                    style={{ backgroundColor: PALETTE.light, color: '#fff' }}
                                                 >
                                                     <ShieldCheck className="size-3" />
                                                     Sehat
@@ -852,10 +852,10 @@ return;
 
                                 {/* VAR 3: Tingkat Akurasi */}
                                 <motion.div variants={staggerItem} transition={{ duration: 0.4 }}>
-                                    <Card className="h-full overflow-hidden border-[#DDD8C4]/50 dark:border-[#50808E]/20">
+                                    <Card className="h-full overflow-hidden border-slate-200">
                                         <CardHeader className="pb-3">
                                             <CardTitle className="flex items-center gap-2 text-sm">
-                                                <ScanLine className="size-4" style={{ color: PALETTE.deep }} />
+                                                <ScanLine className="size-4" style={{ color: PALETTE.primary }} />
                                                 Tingkat Akurasi
                                             </CardTitle>
                                         </CardHeader>
@@ -880,10 +880,10 @@ return;
 
                                 {/* VAR 4: Suhu */}
                                 <motion.div variants={staggerItem} transition={{ duration: 0.4 }}>
-                                    <Card className="h-full overflow-hidden border-[#DDD8C4]/50 dark:border-[#50808E]/20">
+                                    <Card className="h-full overflow-hidden border-slate-200">
                                         <CardHeader className="pb-3">
                                             <CardTitle className="flex items-center gap-2 text-sm">
-                                                <Thermometer className="size-4" style={{ color: PALETTE.teal }} />
+                                                <Thermometer className="size-4" style={{ color: PALETTE.secondary }} />
                                                 Suhu
                                             </CardTitle>
                                         </CardHeader>
@@ -911,10 +911,10 @@ return;
 
                                 {/* VAR 5: Waktu Pemindaian */}
                                 <motion.div variants={staggerItem} transition={{ duration: 0.4 }}>
-                                    <Card className="h-full overflow-hidden border-[#DDD8C4]/50 dark:border-[#50808E]/20">
+                                    <Card className="h-full overflow-hidden border-slate-200">
                                         <CardHeader className="pb-3">
                                             <CardTitle className="flex items-center gap-2 text-sm">
-                                                <Clock className="size-4" style={{ color: PALETTE.deep }} />
+                                                <Clock className="size-4" style={{ color: PALETTE.primary }} />
                                                 Waktu Pemindaian
                                             </CardTitle>
                                         </CardHeader>
@@ -929,10 +929,10 @@ return;
 
                                 {/* VAR 6: Titik Koordinat */}
                                 <motion.div variants={staggerItem} transition={{ duration: 0.4 }}>
-                                    <Card className="h-full overflow-hidden border-[#DDD8C4]/50 dark:border-[#50808E]/20">
+                                    <Card className="h-full overflow-hidden border-slate-200">
                                         <CardHeader className="pb-3">
                                             <CardTitle className="flex items-center gap-2 text-sm">
-                                                <MapPin className="size-4" style={{ color: PALETTE.teal }} />
+                                                <MapPin className="size-4" style={{ color: PALETTE.secondary }} />
                                                 Titik Koordinat
                                             </CardTitle>
                                         </CardHeader>
@@ -947,7 +947,7 @@ return;
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="mt-1 inline-block text-xs hover:underline"
-                                                        style={{ color: PALETTE.deep }}
+                                                        style={{ color: PALETTE.primary }}
                                                     >
                                                         Lihat di Google Maps
                                                     </a>
@@ -961,11 +961,11 @@ return;
 
                                 {/* VAR 7: Status Koneksi */}
                                 <motion.div variants={staggerItem} transition={{ duration: 0.4 }}>
-                                    <Card className="h-full overflow-hidden border-[#DDD8C4]/50 dark:border-[#50808E]/20">
+                                    <Card className="h-full overflow-hidden border-slate-200">
                                         <CardHeader className="pb-3">
                                             <CardTitle className="flex items-center gap-2 text-sm">
                                                 {connectionStatus === 'online' ? (
-                                                    <Wifi className="size-4" style={{ color: PALETTE.sage }} />
+                                                    <Wifi className="size-4" style={{ color: PALETTE.light }} />
                                                 ) : (
                                                     <CloudOff className="size-4" />
                                                 )}
@@ -977,12 +977,12 @@ return;
                                                 <motion.span
                                                     className="inline-block size-2.5 rounded-full"
                                                     style={{
-                                                        backgroundColor: connectionStatus === 'online' ? PALETTE.sage : '#ef4444',
+                                                        backgroundColor: connectionStatus === 'online' ? PALETTE.light : '#ef4444',
                                                     }}
                                                     animate={connectionStatus === 'online' ? {
                                                         boxShadow: [
-                                                            `0 0 0 0 ${PALETTE.sage}40`,
-                                                            `0 0 0 6px ${PALETTE.sage}00`,
+                                                            `0 0 0 0 ${PALETTE.light}40`,
+                                                            `0 0 0 6px ${PALETTE.light}00`,
                                                         ],
                                                     } : {}}
                                                     transition={{ duration: 1.5, repeat: Infinity }}
@@ -1002,10 +1002,10 @@ return;
 
                                 {/* VAR 8: Rekomendasi Tindakan */}
                                 <motion.div variants={staggerItem} transition={{ duration: 0.4 }} className="md:col-span-2 lg:col-span-2">
-                                    <Card className="h-full overflow-hidden border-[#DDD8C4]/50 dark:border-[#50808E]/20">
+                                    <Card className="h-full overflow-hidden border-slate-200">
                                         <CardHeader className="pb-3">
                                             <CardTitle className="flex items-center gap-2 text-sm">
-                                                <ShieldCheck className="size-4" style={{ color: PALETTE.leaf }} />
+                                                <ShieldCheck className="size-4" style={{ color: PALETTE.muted }} />
                                                 Rekomendasi Tindakan
                                             </CardTitle>
                                         </CardHeader>
@@ -1028,7 +1028,7 @@ return;
                                                                 <Badge
                                                                     variant="outline"
                                                                     className="mr-1.5 text-[10px]"
-                                                                    style={{ borderColor: PALETTE.teal, color: PALETTE.deep }}
+                                                                    style={{ borderColor: PALETTE.secondary, color: PALETTE.primary }}
                                                                 >
                                                                     {t.type}
                                                                 </Badge>
@@ -1047,10 +1047,10 @@ return;
 
                                 {/* VAR 9: Dosis */}
                                 <motion.div variants={staggerItem} transition={{ duration: 0.4 }}>
-                                    <Card className="h-full overflow-hidden border-[#DDD8C4]/50 dark:border-[#50808E]/20">
+                                    <Card className="h-full overflow-hidden border-slate-200">
                                         <CardHeader className="pb-3">
                                             <CardTitle className="flex items-center gap-2 text-sm">
-                                                <AlertCircle className="size-4" style={{ color: PALETTE.teal }} />
+                                                <AlertCircle className="size-4" style={{ color: PALETTE.secondary }} />
                                                 Dosis
                                             </CardTitle>
                                         </CardHeader>
@@ -1086,7 +1086,7 @@ return;
                                 <Button
                                     onClick={handleSave}
                                     disabled={saving || !envData}
-                                    style={{ backgroundColor: PALETTE.deep }}
+                                    style={{ backgroundColor: PALETTE.primary }}
                                     className="text-white hover:opacity-90 disabled:opacity-50"
                                     title={!envData ? 'Menunggu data lingkungan...' : undefined}
                                 >

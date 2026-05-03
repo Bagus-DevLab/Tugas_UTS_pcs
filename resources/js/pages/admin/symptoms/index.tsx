@@ -18,11 +18,11 @@ import {
 } from '@/components/ui/table';
 
 const palette = {
-    deep: '#50808E',
-    teal: '#69A297',
-    leaf: '#84B59F',
-    sage: '#A3C9A8',
-    sand: '#DDD8C4',
+    primary: '#059669',
+    secondary: '#10b981',
+    muted: '#64748b',
+    light: '#94a3b8',
+    lightest: '#cbd5e1',
 };
 
 interface Symptom {
@@ -129,7 +129,7 @@ return;
                     <Button
                         onClick={() => setShowForm(!showForm)}
                         className="text-white"
-                        style={{ backgroundColor: showForm ? palette.teal : palette.deep }}
+                        style={{ backgroundColor: showForm ? palette.secondary : palette.primary }}
                     >
                         {showForm ? (
                             <>
@@ -157,12 +157,12 @@ return;
                         >
                             <Card
                                 className="border-2"
-                                style={{ borderColor: `${palette.sage}80` }}
+                                style={{ borderColor: `${palette.light}80` }}
                             >
                                 <CardHeader>
                                     <CardTitle
                                         className="flex items-center gap-2 text-base"
-                                        style={{ color: palette.deep }}
+                                        style={{ color: palette.primary }}
                                     >
                                         <Stethoscope className="size-5" />
                                         Tambah Gejala Baru
@@ -181,9 +181,9 @@ return;
                                                 }
                                                 required
                                                 style={{
-                                                    borderColor: palette.sage,
+                                                    borderColor: palette.light,
                                                     // @ts-expect-error CSS custom property
-                                                    '--tw-ring-color': palette.teal,
+                                                    '--tw-ring-color': palette.secondary,
                                                 }}
                                             />
                                         </div>
@@ -198,9 +198,9 @@ return;
                                                 }
                                                 required
                                                 style={{
-                                                    borderColor: palette.sage,
+                                                    borderColor: palette.light,
                                                     // @ts-expect-error CSS custom property
-                                                    '--tw-ring-color': palette.teal,
+                                                    '--tw-ring-color': palette.secondary,
                                                 }}
                                             />
                                         </div>
@@ -214,9 +214,9 @@ return;
                                                     setCreateData({ ...createData, description: e.target.value })
                                                 }
                                                 style={{
-                                                    borderColor: palette.sage,
+                                                    borderColor: palette.light,
                                                     // @ts-expect-error CSS custom property
-                                                    '--tw-ring-color': palette.teal,
+                                                    '--tw-ring-color': palette.secondary,
                                                 }}
                                             />
                                         </div>
@@ -225,7 +225,7 @@ return;
                                                 type="submit"
                                                 disabled={processing}
                                                 className="w-full text-white"
-                                                style={{ backgroundColor: palette.deep }}
+                                                style={{ backgroundColor: palette.primary }}
                                             >
                                                 <Plus className="size-4" />
                                                 Simpan
@@ -246,13 +246,13 @@ return;
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead style={{ color: palette.deep }}>Kode</TableHead>
-                                            <TableHead style={{ color: palette.deep }}>Nama</TableHead>
-                                            <TableHead style={{ color: palette.deep }}>Deskripsi</TableHead>
-                                            <TableHead style={{ color: palette.deep }}>
+                                            <TableHead style={{ color: palette.primary }}>Kode</TableHead>
+                                            <TableHead style={{ color: palette.primary }}>Nama</TableHead>
+                                            <TableHead style={{ color: palette.primary }}>Deskripsi</TableHead>
+                                            <TableHead style={{ color: palette.primary }}>
                                                 Penyakit Terkait
                                             </TableHead>
-                                            <TableHead style={{ color: palette.deep }} className="text-right">
+                                            <TableHead style={{ color: palette.primary }} className="text-right">
                                                 Aksi
                                             </TableHead>
                                         </TableRow>
@@ -283,9 +283,9 @@ return;
                                                                     }
                                                                     className="h-8 w-20"
                                                                     style={{
-                                                                        borderColor: palette.teal,
+                                                                        borderColor: palette.secondary,
                                                                         // @ts-expect-error CSS custom property
-                                                                        '--tw-ring-color': palette.teal,
+                                                                        '--tw-ring-color': palette.secondary,
                                                                     }}
                                                                 />
                                                             </TableCell>
@@ -300,9 +300,9 @@ return;
                                                                     }
                                                                     className="h-8"
                                                                     style={{
-                                                                        borderColor: palette.teal,
+                                                                        borderColor: palette.secondary,
                                                                         // @ts-expect-error CSS custom property
-                                                                        '--tw-ring-color': palette.teal,
+                                                                        '--tw-ring-color': palette.secondary,
                                                                     }}
                                                                 />
                                                             </TableCell>
@@ -317,9 +317,9 @@ return;
                                                                     }
                                                                     className="h-8"
                                                                     style={{
-                                                                        borderColor: palette.teal,
+                                                                        borderColor: palette.secondary,
                                                                         // @ts-expect-error CSS custom property
-                                                                        '--tw-ring-color': palette.teal,
+                                                                        '--tw-ring-color': palette.secondary,
                                                                     }}
                                                                 />
                                                             </TableCell>
@@ -327,7 +327,7 @@ return;
                                                                 <Badge
                                                                     variant="secondary"
                                                                     className="text-white"
-                                                                    style={{ backgroundColor: palette.teal }}
+                                                                    style={{ backgroundColor: palette.secondary }}
                                                                 >
                                                                     {symptom.diseases_count}
                                                                 </Badge>
@@ -342,7 +342,7 @@ return;
                                                                             handleUpdate(e, symptom.id)
                                                                         }
                                                                         className="size-8"
-                                                                        style={{ color: palette.leaf }}
+                                                                        style={{ color: palette.muted }}
                                                                     >
                                                                         <Check className="size-4" />
                                                                     </Button>
@@ -363,8 +363,8 @@ return;
                                                                 <Badge
                                                                     variant="outline"
                                                                     style={{
-                                                                        borderColor: palette.sage,
-                                                                        color: palette.deep,
+                                                                        borderColor: palette.light,
+                                                                        color: palette.primary,
                                                                     }}
                                                                 >
                                                                     {symptom.code}
@@ -380,7 +380,7 @@ return;
                                                                 <Badge
                                                                     variant="secondary"
                                                                     className="text-white"
-                                                                    style={{ backgroundColor: palette.teal }}
+                                                                    style={{ backgroundColor: palette.secondary }}
                                                                 >
                                                                     {symptom.diseases_count} penyakit
                                                                 </Badge>
@@ -392,7 +392,7 @@ return;
                                                                         variant="ghost"
                                                                         onClick={() => startEdit(symptom)}
                                                                         className="size-8"
-                                                                        style={{ color: palette.teal }}
+                                                                        style={{ color: palette.secondary }}
                                                                     >
                                                                         <Pencil className="size-4" />
                                                                     </Button>
@@ -421,11 +421,11 @@ return;
                             ) : (
                                 <div
                                     className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed py-16"
-                                    style={{ borderColor: palette.sand }}
+                                    style={{ borderColor: palette.lightest }}
                                 >
                                     <Stethoscope
                                         className="size-10"
-                                        style={{ color: `${palette.teal}80` }}
+                                        style={{ color: `${palette.secondary}80` }}
                                     />
                                     <p className="text-sm text-muted-foreground">
                                         Belum ada data gejala. Klik &quot;Tambah Gejala&quot; untuk memulai.

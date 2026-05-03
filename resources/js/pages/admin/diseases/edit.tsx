@@ -10,11 +10,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 const palette = {
-    sand: '#DDD8C4',
-    sage: '#A3C9A8',
-    leaf: '#84B59F',
-    teal: '#69A297',
-    deep: '#50808E',
+    primary: '#059669',
+    secondary: '#10b981',
+    muted: '#64748b',
+    light: '#94a3b8',
+    lightest: '#cbd5e1',
 };
 
 interface SymptomPivot {
@@ -166,10 +166,10 @@ export default function AdminDiseasesEdit({ disease, symptoms }: Props) {
                     >
                         <Card
                             className="border-t-4"
-                            style={{ borderTopColor: palette.sage }}
+                            style={{ borderTopColor: palette.light }}
                         >
                             <CardHeader>
-                                <CardTitle className="text-base" style={{ color: palette.deep }}>
+                                <CardTitle className="text-base" style={{ color: palette.primary }}>
                                     Informasi Dasar
                                 </CardTitle>
                             </CardHeader>
@@ -185,7 +185,7 @@ export default function AdminDiseasesEdit({ disease, symptoms }: Props) {
                                             onChange={(e) => setData('name', e.target.value)}
                                             placeholder="Contoh: Blast"
                                             style={{
-                                                borderColor: errors.name ? undefined : palette.sage,
+                                                borderColor: errors.name ? undefined : palette.light,
                                             }}
                                         />
                                         <InputError message={errors.name} />
@@ -198,7 +198,7 @@ export default function AdminDiseasesEdit({ disease, symptoms }: Props) {
                                             onChange={(e) => setData('latin_name', e.target.value)}
                                             placeholder="Contoh: Pyricularia oryzae"
                                             style={{
-                                                borderColor: errors.latin_name ? undefined : palette.sage,
+                                                borderColor: errors.latin_name ? undefined : palette.light,
                                             }}
                                         />
                                         <InputError message={errors.latin_name} />
@@ -217,7 +217,7 @@ export default function AdminDiseasesEdit({ disease, symptoms }: Props) {
                                         placeholder="Deskripsi lengkap mengenai penyakit..."
                                         className="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 flex w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
                                         style={{
-                                            borderColor: errors.description ? undefined : palette.sage,
+                                            borderColor: errors.description ? undefined : palette.light,
                                         }}
                                     />
                                     <InputError message={errors.description} />
@@ -235,7 +235,7 @@ export default function AdminDiseasesEdit({ disease, symptoms }: Props) {
                                         placeholder="Penyebab penyakit..."
                                         className="border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 flex w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
                                         style={{
-                                            borderColor: errors.cause ? undefined : palette.sage,
+                                            borderColor: errors.cause ? undefined : palette.light,
                                         }}
                                     />
                                     <InputError message={errors.cause} />
@@ -253,16 +253,16 @@ export default function AdminDiseasesEdit({ disease, symptoms }: Props) {
                     >
                         <Card
                             className="border-t-4"
-                            style={{ borderTopColor: palette.teal }}
+                            style={{ borderTopColor: palette.secondary }}
                         >
                             <CardHeader>
                                 <div className="flex items-center justify-between">
-                                    <CardTitle className="text-base" style={{ color: palette.deep }}>
+                                    <CardTitle className="text-base" style={{ color: palette.primary }}>
                                         Gejala Terkait
                                     </CardTitle>
                                     <Badge
                                         variant="outline"
-                                        style={{ borderColor: palette.teal, color: palette.deep }}
+                                        style={{ borderColor: palette.secondary, color: palette.primary }}
                                     >
                                         {Object.keys(data.symptoms).length} dipilih
                                     </Badge>
@@ -289,8 +289,8 @@ export default function AdminDiseasesEdit({ disease, symptoms }: Props) {
                                                     }}
                                                     className="rounded-lg border p-3 transition-colors"
                                                     style={{
-                                                        borderColor: isSelected ? palette.teal : undefined,
-                                                        backgroundColor: isSelected ? `${palette.teal}08` : undefined,
+                                                        borderColor: isSelected ? palette.secondary : undefined,
+                                                        backgroundColor: isSelected ? `${palette.secondary}08` : undefined,
                                                     }}
                                                 >
                                                     <div className="flex items-start gap-3">
@@ -310,8 +310,8 @@ export default function AdminDiseasesEdit({ disease, symptoms }: Props) {
                                                                 <Badge
                                                                     variant="outline"
                                                                     style={{
-                                                                        borderColor: palette.sage,
-                                                                        color: palette.deep,
+                                                                        borderColor: palette.light,
+                                                                        color: palette.primary,
                                                                     }}
                                                                 >
                                                                     {symptom.code}
@@ -344,13 +344,13 @@ export default function AdminDiseasesEdit({ disease, symptoms }: Props) {
                                                                         }
                                                                         className="h-2 flex-1 cursor-pointer appearance-none rounded-full outline-none"
                                                                         style={{
-                                                                            background: `linear-gradient(to right, ${palette.teal} 0%, ${palette.teal} ${weight * 100}%, ${palette.sand} ${weight * 100}%, ${palette.sand} 100%)`,
-                                                                            accentColor: palette.teal,
+                                                                            background: `linear-gradient(to right, ${palette.secondary} 0%, ${palette.secondary} ${weight * 100}%, ${palette.lightest} ${weight * 100}%, ${palette.lightest} 100%)`,
+                                                                            accentColor: palette.secondary,
                                                                         }}
                                                                     />
                                                                     <span
                                                                         className="min-w-[3.5rem] rounded-md px-2 py-1 text-center text-xs font-semibold text-white"
-                                                                        style={{ backgroundColor: palette.deep }}
+                                                                        style={{ backgroundColor: palette.primary }}
                                                                     >
                                                                         {(weight * 100).toFixed(0)}%
                                                                     </span>
@@ -381,16 +381,16 @@ export default function AdminDiseasesEdit({ disease, symptoms }: Props) {
                         >
                             <Card
                                 className="border-t-4"
-                                style={{ borderTopColor: palette.leaf }}
+                                style={{ borderTopColor: palette.muted }}
                             >
                                 <CardHeader>
                                     <div className="flex items-center justify-between">
-                                        <CardTitle className="text-base" style={{ color: palette.deep }}>
+                                        <CardTitle className="text-base" style={{ color: palette.primary }}>
                                             Penanganan Terdaftar
                                         </CardTitle>
                                         <Badge
                                             variant="outline"
-                                            style={{ borderColor: palette.leaf, color: palette.deep }}
+                                            style={{ borderColor: palette.muted, color: palette.primary }}
                                         >
                                             {disease.treatments.length} penanganan
                                         </Badge>
@@ -409,7 +409,7 @@ export default function AdminDiseasesEdit({ disease, symptoms }: Props) {
                                                     ease: 'easeOut',
                                                 }}
                                                 className="flex items-start gap-3 rounded-lg border p-3"
-                                                style={{ borderLeftWidth: 3, borderLeftColor: palette.leaf }}
+                                                style={{ borderLeftWidth: 3, borderLeftColor: palette.muted }}
                                             >
                                                 <div className="min-w-0 flex-1">
                                                     <div className="mb-1 flex items-center gap-2">
@@ -417,8 +417,8 @@ export default function AdminDiseasesEdit({ disease, symptoms }: Props) {
                                                             variant="outline"
                                                             className="text-xs"
                                                             style={{
-                                                                borderColor: palette.teal,
-                                                                color: palette.teal,
+                                                                borderColor: palette.secondary,
+                                                                color: palette.secondary,
                                                             }}
                                                         >
                                                             {treatmentTypeLabels[treatment.type] ?? treatment.type}
@@ -457,7 +457,7 @@ export default function AdminDiseasesEdit({ disease, symptoms }: Props) {
                             type="submit"
                             disabled={processing}
                             className="text-white"
-                            style={{ backgroundColor: palette.deep }}
+                            style={{ backgroundColor: palette.primary }}
                         >
                             <Save className="size-4" />
                             {processing ? 'Menyimpan...' : 'Perbarui Penyakit'}

@@ -5,15 +5,8 @@ import { useRef, useState, useEffect } from 'react';
 import { dashboard, login, register } from '@/routes';
 
 // ---------------------------------------------------------------------------
-// Palette
+// Tailwind slate + emerald palette — no custom hex needed
 // ---------------------------------------------------------------------------
-const P = {
-    sand: '#DDD8C4',
-    sage: '#A3C9A8',
-    leaf: '#84B59F',
-    teal: '#69A297',
-    deep: '#50808E',
-} as const;
 
 // ---------------------------------------------------------------------------
 // Animated counter component
@@ -68,7 +61,7 @@ function FloatingLeaf({ delay, x, size, speed }: { delay: number; x: number; siz
                 ease: 'linear',
             }}
         >
-            <Leaf className="text-[#84B59F]/30 dark:text-[#84B59F]/15" style={{ width: size, height: size }} />
+            <Leaf className="text-emerald-500/20" style={{ width: size, height: size }} />
         </motion.div>
     );
 }
@@ -98,26 +91,26 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
     // Data
     // -----------------------------------------------------------------------
     const features = [
-        { icon: ScanLine, title: 'Deteksi Citra Daun', desc: 'Upload atau ambil foto daun padi langsung dari kamera. Model deep learning menganalisis citra secara instan.', color: P.deep },
-        { icon: BrainCircuit, title: 'Sistem Pakar Cerdas', desc: 'Diagnosis penyakit berdasarkan gejala menggunakan metode Forward Chaining dan Certainty Factor.', color: P.teal },
-        { icon: Zap, title: 'On-Device ML', desc: 'Model machine learning berjalan langsung di browser. Tidak perlu koneksi server untuk inferensi.', color: P.leaf },
-        { icon: Shield, title: 'Akurasi Tinggi', desc: 'Arsitektur MobileNetV2 yang di-fine-tune khusus untuk klasifikasi 5 jenis penyakit padi.', color: P.sage },
-        { icon: Smartphone, title: 'Mobile-First', desc: 'Dioptimalkan untuk penggunaan di lapangan. Akses dari smartphone, tablet, atau desktop.', color: P.teal },
-        { icon: Database, title: 'Knowledge Base', desc: 'Basis pengetahuan lengkap: penyakit, gejala, penyebab, rekomendasi penanganan, dan dosis.', color: P.deep },
+        { icon: ScanLine, title: 'Deteksi Citra Daun', desc: 'Upload atau ambil foto daun padi langsung dari kamera. Model deep learning menganalisis citra secara instan.' },
+        { icon: BrainCircuit, title: 'Sistem Pakar Cerdas', desc: 'Diagnosis penyakit berdasarkan gejala menggunakan metode Forward Chaining dan Certainty Factor.' },
+        { icon: Zap, title: 'On-Device ML', desc: 'Model machine learning berjalan langsung di browser. Tidak perlu koneksi server untuk inferensi.' },
+        { icon: Shield, title: 'Akurasi Tinggi', desc: 'Arsitektur MobileNetV2 yang di-fine-tune khusus untuk klasifikasi 5 jenis penyakit padi.' },
+        { icon: Smartphone, title: 'Mobile-First', desc: 'Dioptimalkan untuk penggunaan di lapangan. Akses dari smartphone, tablet, atau desktop.' },
+        { icon: Database, title: 'Knowledge Base', desc: 'Basis pengetahuan lengkap: penyakit, gejala, penyebab, rekomendasi penanganan, dan dosis.' },
     ];
 
     const diseases = [
-        { name: 'Blast', latin: 'Pyricularia oryzae', color: P.deep },
-        { name: 'Brown Spot', latin: 'Bipolaris oryzae', color: P.leaf },
-        { name: 'Tungro', latin: 'Rice Tungro Virus', color: P.teal },
-        { name: 'BLB', latin: 'Xanthomonas oryzae pv. oryzae', color: P.sage },
-        { name: 'Hispa', latin: 'Dicladispa armigera', color: P.deep },
-        { name: 'Dead Heart', latin: 'Scirpophaga incertulas', color: P.teal },
-        { name: 'Downy Mildew', latin: 'Sclerophthora macrospora', color: P.leaf },
-        { name: 'Leaf Streak', latin: 'X. oryzae pv. oryzicola', color: P.sage },
-        { name: 'Panicle Blight', latin: 'Burkholderia glumae', color: P.deep },
-        { name: 'Leaf Smut', latin: 'Entyloma oryzae', color: P.teal },
-        { name: 'Healthy', latin: 'Tanaman Sehat', color: P.sand },
+        { name: 'Blast', latin: 'Pyricularia oryzae' },
+        { name: 'Brown Spot', latin: 'Bipolaris oryzae' },
+        { name: 'Tungro', latin: 'Rice Tungro Virus' },
+        { name: 'BLB', latin: 'Xanthomonas oryzae pv. oryzae' },
+        { name: 'Hispa', latin: 'Dicladispa armigera' },
+        { name: 'Dead Heart', latin: 'Scirpophaga incertulas' },
+        { name: 'Downy Mildew', latin: 'Sclerophthora macrospora' },
+        { name: 'Leaf Streak', latin: 'X. oryzae pv. oryzicola' },
+        { name: 'Panicle Blight', latin: 'Burkholderia glumae' },
+        { name: 'Leaf Smut', latin: 'Entyloma oryzae' },
+        { name: 'Healthy', latin: 'Tanaman Sehat' },
     ];
 
     const variables = [
@@ -142,7 +135,7 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
             </Head>
 
-            <div className="min-h-screen overflow-x-hidden bg-[#FAFAF7] text-[#1a2e2a] dark:bg-[#0f1a18] dark:text-[#e8f0eb]">
+            <div className="min-h-screen overflow-x-hidden bg-white text-slate-900">
                 {/* Floating leaves background */}
                 <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
                     {[
@@ -160,21 +153,21 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                     initial={{ opacity: 0, y: -30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                    className="fixed top-0 z-50 w-full border-b border-[#DDD8C4]/40 bg-[#FAFAF7]/70 backdrop-blur-xl dark:border-[#243835]/40 dark:bg-[#0f1a18]/70"
+                    className="fixed top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-sm shadow-sm"
                 >
                     <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
                         <motion.div className="flex items-center gap-2.5" whileHover={{ scale: 1.02 }}>
-                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#50808E] to-[#69A297] shadow-md shadow-[#50808E]/20">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 shadow-md">
                                 <Leaf className="h-5 w-5 text-white" />
                             </div>
-                            <span className="text-xl font-bold tracking-tight">Mapan</span>
+                            <span className="text-xl font-bold tracking-tight text-slate-900">Mapan</span>
                         </motion.div>
                         <div className="flex items-center gap-3">
                             {auth.user ? (
                                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                                     <Link
                                         href={dashboard()}
-                                        className="rounded-xl bg-gradient-to-r from-[#50808E] to-[#69A297] px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#50808E]/25 transition-shadow hover:shadow-xl hover:shadow-[#50808E]/30"
+                                        className="rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-emerald-700 hover:shadow-lg"
                                     >
                                         Dashboard
                                     </Link>
@@ -183,7 +176,7 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                 <>
                                     <Link
                                         href={login()}
-                                        className="rounded-xl px-5 py-2.5 text-sm font-medium transition-colors hover:bg-[#DDD8C4]/40 dark:hover:bg-[#1e2e2b]"
+                                        className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:shadow-md"
                                     >
                                         Masuk
                                     </Link>
@@ -191,7 +184,7 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                         <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                                             <Link
                                                 href={register()}
-                                                className="rounded-xl bg-gradient-to-r from-[#50808E] to-[#69A297] px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#50808E]/25 transition-shadow hover:shadow-xl"
+                                                className="rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-emerald-700 hover:shadow-lg"
                                             >
                                                 Daftar
                                             </Link>
@@ -211,19 +204,8 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                     style={{ opacity: heroOpacity, scale: heroScale }}
                     className="relative flex min-h-screen items-center pt-20"
                 >
-                    {/* Gradient orbs */}
-                    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                        <motion.div
-                            animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
-                            transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-                            className="absolute -top-32 right-0 h-[700px] w-[700px] rounded-full bg-gradient-to-br from-[#A3C9A8]/25 to-[#50808E]/10 blur-[100px]"
-                        />
-                        <motion.div
-                            animate={{ x: [0, -20, 0], y: [0, 30, 0] }}
-                            transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-                            className="absolute -bottom-32 -left-32 h-[500px] w-[500px] rounded-full bg-gradient-to-tr from-[#DDD8C4]/30 to-[#84B59F]/15 blur-[80px]"
-                        />
-                    </div>
+                    {/* Subtle gradient background */}
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-slate-50 to-white" />
 
                     <div className="relative z-10 mx-auto max-w-6xl px-6">
                         <div className="grid items-center gap-16 lg:grid-cols-2">
@@ -233,7 +215,7 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2, duration: 0.6 }}
-                                    className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#A3C9A8]/30 bg-[#A3C9A8]/10 px-4 py-1.5 text-sm font-medium text-[#50808E] dark:text-[#A3C9A8]"
+                                    className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-4 py-1.5 text-sm font-medium text-emerald-700"
                                 >
                                     <motion.div animate={{ rotate: [0, 15, -15, 0] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}>
                                         <Sparkles className="h-3.5 w-3.5" />
@@ -247,11 +229,11 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                     transition={{ delay: 0.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                                     className="mb-6 text-5xl font-bold leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl"
                                 >
-                                    <span className="bg-gradient-to-r from-[#50808E] via-[#69A297] to-[#84B59F] bg-clip-text text-transparent">
+                                    <span className="text-emerald-600">
                                         Mapan
                                     </span>
                                     <br />
-                                    <span className="text-3xl font-semibold leading-snug text-[#1a2e2a] sm:text-4xl lg:text-5xl dark:text-[#e8f0eb]">
+                                    <span className="text-3xl font-semibold leading-snug text-slate-900 sm:text-4xl lg:text-5xl">
                                         Deteksi Penyakit Tanaman Padi
                                     </span>
                                 </motion.h1>
@@ -260,7 +242,7 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.5, duration: 0.6 }}
-                                    className="mb-8 max-w-lg text-lg leading-relaxed text-[#5f7a74] dark:text-[#8aa89e]"
+                                    className="mb-8 max-w-lg text-lg leading-relaxed text-slate-600"
                                 >
                                     Sistem pakar berbasis AI yang berjalan langsung di perangkat Anda.
                                     Identifikasi penyakit padi dari foto daun dan dapatkan rekomendasi penanganan instan.
@@ -275,7 +257,7 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                     <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
                                         <Link
                                             href={auth.user ? dashboard() : register()}
-                                            className="group inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#50808E] to-[#69A297] px-8 py-4 text-sm font-bold text-white shadow-xl shadow-[#50808E]/25 transition-shadow hover:shadow-2xl hover:shadow-[#50808E]/35"
+                                            className="group inline-flex items-center gap-2.5 rounded-2xl bg-emerald-600 px-8 py-4 text-sm font-bold text-white shadow-md transition-all hover:bg-emerald-700 hover:shadow-lg"
                                         >
                                             {auth.user ? 'Buka Dashboard' : 'Mulai Sekarang'}
                                             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -285,7 +267,7 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                         <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
                                             <Link
                                                 href={login()}
-                                                className="inline-flex items-center gap-2 rounded-2xl border-2 border-[#DDD8C4] px-8 py-4 text-sm font-bold transition-all hover:border-[#84B59F] hover:bg-[#84B59F]/5 dark:border-[#243835] dark:hover:border-[#69A297]"
+                                                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-8 py-4 text-sm font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:shadow-md"
                                             >
                                                 Masuk
                                             </Link>
@@ -306,10 +288,10 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                         { value: 9, suffix: '', label: 'Variabel Data' },
                                     ].map((stat, i) => (
                                         <div key={i}>
-                                            <p className="text-2xl font-bold text-[#50808E] dark:text-[#84B59F]">
+                                            <p className="text-2xl font-bold text-slate-900">
                                                 <Counter target={stat.value} suffix={stat.suffix} />
                                             </p>
-                                            <p className="text-xs text-[#5f7a74] dark:text-[#8aa89e]">{stat.label}</p>
+                                            <p className="text-xs text-slate-500">{stat.label}</p>
                                         </div>
                                     ))}
                                 </motion.div>
@@ -323,40 +305,40 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                 className="relative hidden lg:block"
                             >
                                 <div className="relative mx-auto w-[430px]">
-                                    {/* Glow behind card */}
-                                    <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-br from-[#50808E]/20 to-[#A3C9A8]/20 blur-2xl" />
+                                    {/* Subtle shadow behind card */}
+                                    <div className="absolute inset-0 -z-10 rounded-3xl bg-slate-200/50 blur-2xl" />
 
                                     {/* Main card */}
                                     <motion.div
                                         animate={{ y: [0, -6, 0] }}
                                         transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-                                        className="rounded-3xl border border-[#DDD8C4]/50 bg-white/90 p-7 shadow-2xl shadow-[#50808E]/10 backdrop-blur-md dark:border-[#243835]/60 dark:bg-[#162220]/90"
+                                        className="rounded-3xl border border-slate-100 bg-white p-7 shadow-xl"
                                     >
                                         <div className="mb-5 flex items-center gap-3">
-                                            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#50808E] to-[#69A297]">
+                                            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-600">
                                                 <ScanLine className="h-5 w-5 text-white" />
                                             </div>
                                             <div>
-                                                <p className="text-sm font-bold">Hasil Analisis</p>
-                                                <p className="text-xs text-[#5f7a74]">Pemindaian selesai - 1.2 detik</p>
+                                                <p className="text-sm font-bold text-slate-800">Hasil Analisis</p>
+                                                <p className="text-xs text-slate-500">Pemindaian selesai - 1.2 detik</p>
                                             </div>
                                             <motion.div
                                                 animate={{ scale: [1, 1.2, 1] }}
                                                 transition={{ duration: 2, repeat: Infinity }}
-                                                className="ml-auto flex h-8 w-8 items-center justify-center rounded-full bg-[#84B59F]/15"
+                                                className="ml-auto flex h-8 w-8 items-center justify-center rounded-full bg-emerald-50"
                                             >
-                                                <CheckCircle2 className="h-4 w-4 text-[#84B59F]" />
+                                                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                                             </motion.div>
                                         </div>
 
                                         {/* Animated bars */}
                                         <div className="space-y-3">
                                             {[
-                                                { label: 'Healthy', pct: 92, color: `linear-gradient(90deg, ${P.leaf}, ${P.sage})` },
-                                                { label: 'Blast', pct: 5, color: `linear-gradient(90deg, ${P.deep}, ${P.teal})` },
-                                                { label: 'Brown Spot', pct: 2, color: `linear-gradient(90deg, ${P.teal}, ${P.leaf})` },
-                                                { label: 'Tungro', pct: 0.7, color: P.sage },
-                                                { label: 'BLB', pct: 0.3, color: P.sand },
+                                                { label: 'Healthy', pct: 92, color: '#10b981' },
+                                                { label: 'Blast', pct: 5, color: '#64748b' },
+                                                { label: 'Brown Spot', pct: 2, color: '#94a3b8' },
+                                                { label: 'Tungro', pct: 0.7, color: '#cbd5e1' },
+                                                { label: 'BLB', pct: 0.3, color: '#e2e8f0' },
                                             ].map((item, i) => (
                                                 <motion.div
                                                     key={item.label}
@@ -365,10 +347,10 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                                     transition={{ delay: 0.9 + i * 0.12 }}
                                                 >
                                                     <div className="mb-1 flex justify-between text-xs">
-                                                        <span className="font-medium">{item.label}</span>
-                                                        <span className="font-mono text-[#5f7a74]">{item.pct}%</span>
+                                                        <span className="font-medium text-slate-700">{item.label}</span>
+                                                        <span className="font-mono text-slate-500">{item.pct}%</span>
                                                     </div>
-                                                    <div className="h-2.5 overflow-hidden rounded-full bg-[#DDD8C4]/25 dark:bg-[#243835]">
+                                                    <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
                                                         <motion.div
                                                             className="h-full rounded-full"
                                                             style={{ background: item.color }}
@@ -386,13 +368,13 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                             initial={{ opacity: 0, scale: 0.9 }}
                                             animate={{ opacity: 1, scale: 1 }}
                                             transition={{ delay: 1.8, type: 'spring', stiffness: 200 }}
-                                            className="mt-5 flex items-center justify-between rounded-2xl bg-gradient-to-r from-[#84B59F]/10 to-[#50808E]/5 px-5 py-4"
+                                            className="mt-5 flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4"
                                         >
                                             <div>
-                                                <p className="text-[10px] font-semibold uppercase tracking-wider text-[#5f7a74]">Tingkat Akurasi</p>
-                                                <p className="text-3xl font-black text-[#50808E] dark:text-[#84B59F]">92.0%</p>
+                                                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Tingkat Akurasi</p>
+                                                <p className="text-3xl font-black text-slate-900">92.0%</p>
                                             </div>
-                                            <div className="rounded-xl bg-[#84B59F]/20 px-4 py-2 text-sm font-bold text-[#50808E]">
+                                            <div className="rounded-xl bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-700">
                                                 Sehat
                                             </div>
                                         </motion.div>
@@ -402,22 +384,22 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                     <motion.div
                                         animate={{ y: [0, -10, 0], rotate: [0, 2, 0] }}
                                         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                                        className="absolute -top-5 -right-5 rounded-2xl border border-[#DDD8C4]/50 bg-white px-4 py-2.5 shadow-xl dark:border-[#243835] dark:bg-[#162220]"
+                                        className="absolute -top-5 -right-5 rounded-2xl border border-slate-100 bg-white px-4 py-2.5 shadow-lg"
                                     >
                                         <div className="flex items-center gap-2">
-                                            <div className="h-2 w-2 rounded-full bg-[#84B59F]" />
-                                            <p className="text-xs font-bold text-[#50808E]">11 Kelas Penyakit</p>
+                                            <div className="h-2 w-2 rounded-full bg-emerald-500" />
+                                            <p className="text-xs font-bold text-slate-700">11 Kelas Penyakit</p>
                                         </div>
                                     </motion.div>
 
                                     <motion.div
                                         animate={{ y: [0, 10, 0], rotate: [0, -2, 0] }}
                                         transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
-                                        className="absolute -bottom-5 -left-5 rounded-2xl border border-[#DDD8C4]/50 bg-white px-4 py-2.5 shadow-xl dark:border-[#243835] dark:bg-[#162220]"
+                                        className="absolute -bottom-5 -left-5 rounded-2xl border border-slate-100 bg-white px-4 py-2.5 shadow-lg"
                                     >
                                         <div className="flex items-center gap-2">
-                                            <motion.div animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }} className="h-2 w-2 rounded-full bg-[#69A297]" />
-                                            <p className="text-xs font-bold text-[#69A297]">On-Device Processing</p>
+                                            <motion.div animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }} className="h-2 w-2 rounded-full bg-emerald-500" />
+                                            <p className="text-xs font-bold text-emerald-700">On-Device Processing</p>
                                         </div>
                                     </motion.div>
                                 </div>
@@ -434,7 +416,7 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                             <motion.div
                                 animate={{ y: [0, 10, 0] }}
                                 transition={{ duration: 2, repeat: Infinity }}
-                                className="flex flex-col items-center gap-1.5 text-[#5f7a74]"
+                                className="flex flex-col items-center gap-1.5 text-slate-400"
                             >
                                 <span className="text-[10px] font-medium uppercase tracking-widest">Scroll</span>
                                 <ChevronDown className="h-4 w-4" />
@@ -463,18 +445,18 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                     viewport={{ once: true }}
                                     transition={{ delay: i * 0.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                                     whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                                    className="group relative overflow-hidden rounded-3xl border border-[#DDD8C4]/50 bg-white p-8 transition-shadow hover:shadow-2xl hover:shadow-[#50808E]/8 dark:border-[#243835] dark:bg-[#162220]"
+                                    className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-sm transition-shadow hover:shadow-xl"
                                 >
                                     {/* Background number */}
-                                    <span className="absolute -right-4 -top-6 text-[120px] font-black leading-none text-[#DDD8C4]/20 transition-colors group-hover:text-[#84B59F]/15 dark:text-[#243835]/40">
+                                    <span className="absolute -right-4 -top-6 text-[120px] font-black leading-none text-slate-100 transition-colors group-hover:text-emerald-50">
                                         {step.num}
                                     </span>
                                     <div className="relative">
-                                        <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#50808E]/10 to-[#84B59F]/10 transition-colors group-hover:from-[#50808E]/20 group-hover:to-[#84B59F]/20">
-                                            <step.icon className="h-7 w-7 text-[#50808E] dark:text-[#84B59F]" />
+                                        <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 transition-colors group-hover:bg-emerald-100">
+                                            <step.icon className="h-7 w-7 text-emerald-600" />
                                         </div>
-                                        <h3 className="mb-2 text-lg font-bold">{step.title}</h3>
-                                        <p className="text-sm leading-relaxed text-[#5f7a74] dark:text-[#8aa89e]">{step.desc}</p>
+                                        <h3 className="mb-2 text-lg font-bold text-slate-900">{step.title}</h3>
+                                        <p className="text-sm leading-relaxed text-slate-600">{step.desc}</p>
                                     </div>
                                 </motion.div>
                             ))}
@@ -485,7 +467,7 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                 {/* ============================================================ */}
                 {/* Features - Interactive carousel                               */}
                 {/* ============================================================ */}
-                <section className="relative bg-gradient-to-b from-[#f0efe8]/60 to-[#FAFAF7] py-28 dark:from-[#121f1d] dark:to-[#0f1a18]">
+                <section className="relative bg-slate-50 py-28">
                     <div className="mx-auto max-w-6xl px-6">
                         <SectionHeader badge="Fitur Unggulan" title="Teknologi Terdepan untuk Petani" />
 
@@ -502,18 +484,19 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                         transition={{ delay: i * 0.08 }}
                                         className={`flex w-full items-start gap-4 rounded-2xl border p-5 text-left transition-all ${
                                             activeFeature === i
-                                                ? 'border-[#50808E]/30 bg-[#50808E]/5 shadow-lg shadow-[#50808E]/5 dark:border-[#69A297]/30 dark:bg-[#69A297]/5'
-                                                : 'border-transparent hover:border-[#DDD8C4]/50 hover:bg-white/50 dark:hover:border-[#243835] dark:hover:bg-[#162220]/50'
+                                                ? 'border-emerald-200 bg-emerald-50 shadow-md'
+                                                : 'border-transparent hover:border-slate-200 hover:bg-white'
                                         }`}
                                     >
                                         <div
-                                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors"
-                                            style={{ backgroundColor: activeFeature === i ? `${feature.color}20` : `${P.sand}40` }}
+                                            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors ${
+                                                activeFeature === i ? 'bg-emerald-100' : 'bg-slate-100'
+                                            }`}
                                         >
-                                            <feature.icon className="h-5 w-5" style={{ color: activeFeature === i ? feature.color : P.teal }} />
+                                            <feature.icon className={`h-5 w-5 ${activeFeature === i ? 'text-emerald-600' : 'text-slate-500'}`} />
                                         </div>
                                         <div>
-                                            <h3 className="text-sm font-bold">{feature.title}</h3>
+                                            <h3 className="text-sm font-bold text-slate-900">{feature.title}</h3>
                                             <AnimatePresence mode="wait">
                                                 {activeFeature === i && (
                                                     <motion.p
@@ -521,7 +504,7 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                                         animate={{ opacity: 1, height: 'auto' }}
                                                         exit={{ opacity: 0, height: 0 }}
                                                         transition={{ duration: 0.3 }}
-                                                        className="mt-1 text-xs leading-relaxed text-[#5f7a74] dark:text-[#8aa89e]"
+                                                        className="mt-1 text-xs leading-relaxed text-slate-600"
                                                     >
                                                         {feature.desc}
                                                     </motion.p>
@@ -541,22 +524,21 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                         animate={{ opacity: 1, scale: 1, rotateY: 0 }}
                                         exit={{ opacity: 0, scale: 0.9, rotateY: 10 }}
                                         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                                        className="flex h-72 w-full max-w-sm flex-col items-center justify-center rounded-3xl border border-[#DDD8C4]/50 bg-white p-10 shadow-xl dark:border-[#243835] dark:bg-[#162220]"
+                                        className="flex h-72 w-full max-w-sm flex-col items-center justify-center rounded-3xl border border-slate-200 bg-white p-10 shadow-lg"
                                     >
                                         <motion.div
                                             animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
                                             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                                            className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl"
-                                            style={{ backgroundColor: `${features[activeFeature].color}15` }}
+                                            className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-emerald-50"
                                         >
                                             {(() => {
                                                 const Icon = features[activeFeature].icon;
 
-                                                return <Icon className="h-10 w-10" style={{ color: features[activeFeature].color }} />;
+                                                return <Icon className="h-10 w-10 text-emerald-600" />;
                                             })()}
                                         </motion.div>
-                                        <h3 className="mb-2 text-xl font-bold">{features[activeFeature].title}</h3>
-                                        <p className="text-center text-sm text-[#5f7a74] dark:text-[#8aa89e]">{features[activeFeature].desc}</p>
+                                        <h3 className="mb-2 text-xl font-bold text-slate-900">{features[activeFeature].title}</h3>
+                                        <p className="text-center text-sm text-slate-600">{features[activeFeature].desc}</p>
                                     </motion.div>
                                 </AnimatePresence>
                             </div>
@@ -580,18 +562,17 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                     viewport={{ once: true }}
                                     transition={{ delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                                     whileHover={{ y: -8, scale: 1.03, transition: { duration: 0.25 } }}
-                                    className="group relative overflow-hidden rounded-3xl border border-[#DDD8C4]/50 bg-white p-7 text-center shadow-sm transition-shadow hover:shadow-xl hover:shadow-[#50808E]/8 dark:border-[#243835] dark:bg-[#162220]"
+                                    className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-7 text-center shadow-sm transition-shadow hover:shadow-lg"
                                 >
                                     <motion.div
-                                        className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl"
-                                        style={{ backgroundColor: disease.color }}
+                                        className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-600"
                                         whileHover={{ rotate: [0, -10, 10, 0] }}
                                         transition={{ duration: 0.5 }}
                                     >
                                         <Leaf className="h-8 w-8 text-white" />
                                     </motion.div>
-                                    <h3 className="mb-1 text-sm font-bold">{disease.name}</h3>
-                                    <p className="text-[11px] italic text-[#5f7a74] dark:text-[#8aa89e]">{disease.latin}</p>
+                                    <h3 className="mb-1 text-sm font-bold text-slate-900">{disease.name}</h3>
+                                    <p className="text-[11px] italic text-slate-500">{disease.latin}</p>
                                 </motion.div>
                             ))}
                         </div>
@@ -601,7 +582,7 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                 {/* ============================================================ */}
                 {/* 9 Variables                                                   */}
                 {/* ============================================================ */}
-                <section className="bg-gradient-to-b from-[#f0efe8]/60 to-[#FAFAF7] py-28 dark:from-[#121f1d] dark:to-[#0f1a18]">
+                <section className="bg-slate-50 py-28">
                     <div className="mx-auto max-w-6xl px-6">
                         <SectionHeader
                             badge="Data Komprehensif"
@@ -618,14 +599,14 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                     viewport={{ once: true }}
                                     transition={{ delay: i * 0.05, duration: 0.4 }}
                                     whileHover={{ scale: 1.02, y: -4, transition: { duration: 0.2 } }}
-                                    className="flex gap-4 rounded-2xl border border-[#DDD8C4]/50 bg-white p-5 transition-shadow hover:shadow-lg hover:shadow-[#50808E]/5 dark:border-[#243835] dark:bg-[#162220]"
+                                    className="flex gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
                                 >
-                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#50808E] to-[#69A297] text-sm font-black text-white shadow-md shadow-[#50808E]/20">
+                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-sm font-black text-white shadow-md">
                                         {v.num}
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-bold">{v.title}</h3>
-                                        <p className="text-xs font-semibold text-[#84B59F]">{v.unit}</p>
+                                        <h3 className="text-sm font-bold text-slate-900">{v.title}</h3>
+                                        <p className="text-xs font-semibold text-emerald-600">{v.unit}</p>
                                     </div>
                                 </motion.div>
                             ))}
@@ -643,7 +624,7 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                            className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#50808E] via-[#5d8f96] to-[#69A297] p-14 text-center text-white sm:p-20"
+                            className="relative overflow-hidden rounded-[2rem] bg-emerald-600 p-14 text-center text-white sm:p-20"
                         >
                             {/* Decorative */}
                             <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
@@ -671,7 +652,7 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                 <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.97 }}>
                                     <Link
                                         href={auth.user ? dashboard() : register()}
-                                        className="group inline-flex items-center gap-2.5 rounded-2xl bg-white px-10 py-5 text-sm font-bold text-[#50808E] shadow-2xl transition-shadow hover:shadow-3xl"
+                                        className="group inline-flex items-center gap-2.5 rounded-2xl bg-white px-10 py-5 text-sm font-bold text-emerald-700 shadow-xl transition-all hover:shadow-2xl"
                                     >
                                         {auth.user ? 'Buka Dashboard' : 'Daftar Gratis'}
                                         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -685,16 +666,16 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                 {/* ============================================================ */}
                 {/* Footer                                                        */}
                 {/* ============================================================ */}
-                <footer className="border-t border-[#DDD8C4]/40 py-10 dark:border-[#243835]/40">
+                <footer className="border-t border-slate-200 bg-slate-50 py-10">
                     <div className="mx-auto max-w-6xl px-6">
                         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                             <div className="flex items-center gap-2.5">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#50808E] to-[#69A297]">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600">
                                     <Leaf className="h-4 w-4 text-white" />
                                 </div>
-                                <span className="text-sm font-bold">Mapan</span>
+                                <span className="text-sm font-bold text-slate-900">Mapan</span>
                             </div>
-                            <p className="text-xs text-[#5f7a74] dark:text-[#8aa89e]">
+                            <p className="text-xs text-slate-500">
                                 Sistem Pakar Deteksi Penyakit Tanaman Padi Berbasis On-Device Machine Learning
                             </p>
                         </div>
@@ -717,12 +698,12 @@ function SectionHeader({ badge, title, subtitle }: { badge: string; title: strin
             transition={{ duration: 0.6 }}
             className="mb-14 text-center"
         >
-            <span className="mb-3 inline-block rounded-full bg-[#50808E]/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#50808E] dark:text-[#84B59F]">
+            <span className="mb-3 inline-block rounded-full border border-emerald-100 bg-emerald-50 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-emerald-700">
                 {badge}
             </span>
-            <h2 className="text-3xl font-bold sm:text-4xl">{title}</h2>
+            <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">{title}</h2>
             {subtitle && (
-                <p className="mx-auto mt-4 max-w-2xl text-[#5f7a74] dark:text-[#8aa89e]">{subtitle}</p>
+                <p className="mx-auto mt-4 max-w-2xl text-slate-600">{subtitle}</p>
             )}
         </motion.div>
     );

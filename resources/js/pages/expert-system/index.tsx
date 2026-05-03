@@ -52,11 +52,11 @@ interface Props {
 // ---------------------------------------------------------------------------
 
 const palette = {
-    sand: '#DDD8C4',
-    sage: '#A3C9A8',
-    leaf: '#84B59F',
-    teal: '#69A297',
-    deep: '#50808E',
+    primary: '#059669',
+    secondary: '#10b981',
+    muted: '#64748b',
+    light: '#94a3b8',
+    lightest: '#cbd5e1',
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -165,22 +165,22 @@ return 'Kurang Yakin';
 
 function cfColorHex(cf: number): string {
     if (cf >= 80) {
-return palette.deep;
+return palette.primary;
 }
 
     if (cf >= 60) {
-return palette.teal;
+return palette.secondary;
 }
 
     if (cf >= 40) {
-return palette.leaf;
+return palette.muted;
 }
 
     if (cf >= 20) {
-return palette.sage;
+return palette.light;
 }
 
-    return palette.sand;
+    return palette.lightest;
 }
 
 // ---------------------------------------------------------------------------
@@ -197,7 +197,7 @@ function AnimatedCFBar({
     return (
         <div
             className={`${height} w-full overflow-hidden rounded-full`}
-            style={{ backgroundColor: `${palette.sand}40` }}
+            style={{ backgroundColor: `${palette.lightest}40` }}
         >
             <motion.div
                 className={`${height} rounded-full`}
@@ -403,7 +403,7 @@ return;
                 >
                     <h1
                         className="text-xl font-semibold tracking-tight"
-                        style={{ color: palette.deep }}
+                        style={{ color: palette.primary }}
                     >
                         Sistem Pakar Diagnosa Penyakit Padi
                     </h1>
@@ -424,12 +424,12 @@ return;
                 >
                     <Card
                         className="overflow-hidden border-t-4"
-                        style={{ borderTopColor: palette.teal }}
+                        style={{ borderTopColor: palette.secondary }}
                     >
                         <CardHeader>
                             <CardTitle
                                 className="text-base"
-                                style={{ color: palette.deep }}
+                                style={{ color: palette.primary }}
                             >
                                 Data Lingkungan
                             </CardTitle>
@@ -511,7 +511,7 @@ return;
                                                 'online'
                                                     ? {
                                                           backgroundColor:
-                                                              palette.teal,
+                                                              palette.secondary,
                                                           color: '#fff',
                                                       }
                                                     : undefined
@@ -531,7 +531,7 @@ return;
                             )}
 
                             {envData?.error && (
-                                <p className="mt-3 text-xs text-orange-600 dark:text-orange-400">
+                                <p className="mt-3 text-xs text-orange-600">
                                     {envData.error}
                                 </p>
                             )}
@@ -549,12 +549,12 @@ return;
                 >
                     <Card
                         className="overflow-hidden border-t-4"
-                        style={{ borderTopColor: palette.leaf }}
+                        style={{ borderTopColor: palette.muted }}
                     >
                         <CardHeader>
                             <CardTitle
                                 className="text-base"
-                                style={{ color: palette.deep }}
+                                style={{ color: palette.primary }}
                             >
                                 Pilih Gejala
                             </CardTitle>
@@ -563,7 +563,7 @@ return;
                                 Anda (
                                 <span
                                     className="font-semibold"
-                                    style={{ color: palette.teal }}
+                                    style={{ color: palette.secondary }}
                                 >
                                     {selectedIds.length}
                                 </span>{' '}
@@ -596,11 +596,11 @@ return;
                                             style={
                                                 checked
                                                     ? {
-                                                          borderColor: `${palette.sage}80`,
-                                                          backgroundColor: `${palette.sage}15`,
+                                                          borderColor: `${palette.light}80`,
+                                                          backgroundColor: `${palette.light}15`,
                                                       }
                                                     : {
-                                                          backgroundColor: `${palette.sand}20`,
+                                                          backgroundColor: `${palette.lightest}20`,
                                                       }
                                             }
                                         >
@@ -618,8 +618,8 @@ return;
                                                         className="font-mono text-[10px]"
                                                         style={{
                                                             borderColor:
-                                                                palette.teal,
-                                                            color: palette.deep,
+                                                                palette.secondary,
+                                                            color: palette.primary,
                                                         }}
                                                     >
                                                         {symptom.code}
@@ -660,7 +660,7 @@ return;
                                             selectedIds.length === 0 ||
                                             diagnosing
                                                 ? undefined
-                                                : palette.deep,
+                                                : palette.primary,
                                     }}
                                 >
                                     {diagnosing && (
@@ -712,7 +712,7 @@ return;
                                                 className="overflow-hidden border-l-4"
                                                 style={{
                                                     borderLeftColor:
-                                                        palette.deep,
+                                                        palette.primary,
                                                 }}
                                             >
                                                 <CardHeader>
@@ -720,7 +720,7 @@ return;
                                                         <CardTitle
                                                             className="text-lg"
                                                             style={{
-                                                                color: palette.deep,
+                                                                color: palette.primary,
                                                             }}
                                                         >
                                                             Hasil Diagnosa Utama
@@ -744,8 +744,8 @@ return;
                                                                 <Badge
                                                                     variant="secondary"
                                                                     style={{
-                                                                        backgroundColor: `${palette.sage}30`,
-                                                                        color: palette.deep,
+                                                                        backgroundColor: `${palette.light}30`,
+                                                                        color: palette.primary,
                                                                     }}
                                                                 >
                                                                     Tervalidasi
@@ -766,7 +766,7 @@ return;
                                                             <h3
                                                                 className="text-xl font-bold"
                                                                 style={{
-                                                                    color: palette.deep,
+                                                                    color: palette.primary,
                                                                 }}
                                                             >
                                                                 {
@@ -795,7 +795,7 @@ return;
                                                                 <span
                                                                     className="font-medium"
                                                                     style={{
-                                                                        color: palette.teal,
+                                                                        color: palette.secondary,
                                                                     }}
                                                                 >
                                                                     Certainty
@@ -839,7 +839,7 @@ return;
                                                         <h4
                                                             className="text-sm font-semibold"
                                                             style={{
-                                                                color: palette.teal,
+                                                                color: palette.secondary,
                                                             }}
                                                         >
                                                             Deskripsi
@@ -861,7 +861,7 @@ return;
                                                         <h4
                                                             className="text-sm font-semibold"
                                                             style={{
-                                                                color: palette.teal,
+                                                                color: palette.secondary,
                                                             }}
                                                         >
                                                             Penyebab
@@ -883,7 +883,7 @@ return;
                                                         <h4
                                                             className="text-sm font-semibold"
                                                             style={{
-                                                                color: palette.teal,
+                                                                color: palette.secondary,
                                                             }}
                                                         >
                                                             Gejala yang Cocok
@@ -923,8 +923,8 @@ return;
                                                                             variant="outline"
                                                                             className="gap-1.5"
                                                                             style={{
-                                                                                borderColor: `${palette.leaf}80`,
-                                                                                backgroundColor: `${palette.leaf}10`,
+                                                                                borderColor: `${palette.muted}80`,
+                                                                                backgroundColor: `${palette.muted}10`,
                                                                             }}
                                                                         >
                                                                             <span className="font-mono text-[10px]">
@@ -962,7 +962,7 @@ return;
                                                             <h4
                                                                 className="text-sm font-semibold"
                                                                 style={{
-                                                                    color: palette.teal,
+                                                                    color: palette.secondary,
                                                                 }}
                                                             >
                                                                 Penanganan &amp;
@@ -989,7 +989,7 @@ return;
                                                                                 }
                                                                                 className="rounded-lg border p-3"
                                                                                 style={{
-                                                                                    backgroundColor: `${palette.sand}15`,
+                                                                                    backgroundColor: `${palette.lightest}15`,
                                                                                 }}
                                                                                 initial={{
                                                                                     opacity: 0,
@@ -1056,14 +1056,14 @@ return;
                                         <Card
                                             className="overflow-hidden border-t-4"
                                             style={{
-                                                borderTopColor: palette.sage,
+                                                borderTopColor: palette.light,
                                             }}
                                         >
                                             <CardHeader>
                                                 <CardTitle
                                                     className="text-base"
                                                     style={{
-                                                        color: palette.deep,
+                                                        color: palette.primary,
                                                     }}
                                                 >
                                                     Semua Kemungkinan Penyakit
@@ -1091,8 +1091,8 @@ return;
                                                                 style={
                                                                     index === 0
                                                                         ? {
-                                                                              borderColor: `${palette.teal}50`,
-                                                                              backgroundColor: `${palette.teal}08`,
+                                                                              borderColor: `${palette.secondary}50`,
+                                                                              backgroundColor: `${palette.secondary}08`,
                                                                           }
                                                                         : undefined
                                                                 }
@@ -1122,11 +1122,11 @@ return;
                                                                                 backgroundColor:
                                                                                     index ===
                                                                                     0
-                                                                                        ? palette.deep
+                                                                                        ? palette.primary
                                                                                         : index ===
                                                                                             1
-                                                                                          ? palette.teal
-                                                                                          : palette.leaf,
+                                                                                          ? palette.secondary
+                                                                                          : palette.muted,
                                                                             }}
                                                                         >
                                                                             {index +
@@ -1169,14 +1169,14 @@ return;
                                                                                 60
                                                                                     ? {
                                                                                           backgroundColor:
-                                                                                              palette.deep,
+                                                                                              palette.primary,
                                                                                           color: '#fff',
                                                                                       }
                                                                                     : result.certaintyFactor >=
                                                                                         30
                                                                                       ? {
-                                                                                            backgroundColor: `${palette.sage}40`,
-                                                                                            color: palette.deep,
+                                                                                            backgroundColor: `${palette.light}40`,
+                                                                                            color: palette.primary,
                                                                                         }
                                                                                       : undefined
                                                                             }
@@ -1226,14 +1226,14 @@ return;
                                         <Card
                                             className="overflow-hidden border-t-4"
                                             style={{
-                                                borderTopColor: palette.sand,
+                                                borderTopColor: palette.lightest,
                                             }}
                                         >
                                             <CardHeader>
                                                 <CardTitle
                                                     className="text-base"
                                                     style={{
-                                                        color: palette.deep,
+                                                        color: palette.primary,
                                                     }}
                                                 >
                                                     Ringkasan 9 Variabel
@@ -1353,7 +1353,7 @@ return;
                                                 style={{
                                                     backgroundColor: saving
                                                         ? undefined
-                                                        : palette.teal,
+                                                        : palette.secondary,
                                                 }}
                                             >
                                                 {saving && (
@@ -1381,16 +1381,16 @@ function VariableItem({ label, value }: { label: string; value: string }) {
     return (
         <motion.div
             className="rounded-lg border p-3"
-            style={{ backgroundColor: `${palette.sand}15` }}
+            style={{ backgroundColor: `${palette.lightest}15` }}
             variants={symptomItemVariants}
             whileHover={{
                 scale: 1.02,
-                backgroundColor: `${palette.sage}18`,
+                backgroundColor: `${palette.light}18`,
             }}
         >
             <p
                 className="text-xs font-medium"
-                style={{ color: palette.teal }}
+                style={{ color: palette.secondary }}
             >
                 {label}
             </p>

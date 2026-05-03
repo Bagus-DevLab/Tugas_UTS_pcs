@@ -37,22 +37,21 @@ interface Props {
     }>;
 }
 
-// Palette: Sand #DDD8C4, Sage #A3C9A8, Leaf #84B59F, Teal #69A297, Deep #50808E
 const COLORS = {
-    sand: '#DDD8C4',
-    sage: '#A3C9A8',
-    leaf: '#84B59F',
-    teal: '#69A297',
-    deep: '#50808E',
+    primary: '#059669',
+    secondary: '#10b981',
+    muted: '#64748b',
+    light: '#94a3b8',
+    lightest: '#cbd5e1',
 } as const;
 
-const CHART_COLORS = [COLORS.deep, COLORS.leaf, COLORS.sage, COLORS.teal, COLORS.sand];
+const CHART_COLORS = [COLORS.primary, COLORS.muted, COLORS.light, COLORS.secondary, COLORS.lightest];
 
 const STAT_CARDS_META = [
-    { icon: Activity, color: COLORS.deep, bg: 'rgba(80,128,142,0.10)', gradient: 'linear-gradient(135deg, rgba(80,128,142,0.06) 0%, rgba(80,128,142,0.02) 100%)' },
-    { icon: TrendingUp, color: COLORS.teal, bg: 'rgba(105,162,151,0.10)', gradient: 'linear-gradient(135deg, rgba(105,162,151,0.06) 0%, rgba(105,162,151,0.02) 100%)' },
-    { icon: BarChart3, color: COLORS.leaf, bg: 'rgba(132,181,159,0.10)', gradient: 'linear-gradient(135deg, rgba(132,181,159,0.06) 0%, rgba(132,181,159,0.02) 100%)' },
-    { icon: Bug, color: COLORS.sage, bg: 'rgba(163,201,168,0.10)', gradient: 'linear-gradient(135deg, rgba(163,201,168,0.06) 0%, rgba(163,201,168,0.02) 100%)' },
+    { icon: Activity, color: COLORS.primary, bg: 'rgba(80,128,142,0.10)', gradient: 'linear-gradient(135deg, rgba(80,128,142,0.06) 0%, rgba(80,128,142,0.02) 100%)' },
+    { icon: TrendingUp, color: COLORS.secondary, bg: 'rgba(105,162,151,0.10)', gradient: 'linear-gradient(135deg, rgba(105,162,151,0.06) 0%, rgba(105,162,151,0.02) 100%)' },
+    { icon: BarChart3, color: COLORS.muted, bg: 'rgba(132,181,159,0.10)', gradient: 'linear-gradient(135deg, rgba(132,181,159,0.06) 0%, rgba(132,181,159,0.02) 100%)' },
+    { icon: Bug, color: COLORS.light, bg: 'rgba(163,201,168,0.10)', gradient: 'linear-gradient(135deg, rgba(163,201,168,0.06) 0%, rgba(163,201,168,0.02) 100%)' },
 ] as const;
 
 const containerVariants = {
@@ -129,8 +128,8 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
         });
 
         return [
-            { name: 'Deteksi Gambar', count: counts.image, fill: COLORS.deep },
-            { name: 'Sistem Pakar', count: counts.expert_system, fill: COLORS.teal },
+            { name: 'Deteksi Gambar', count: counts.image, fill: COLORS.primary },
+            { name: 'Sistem Pakar', count: counts.expert_system, fill: COLORS.secondary },
         ];
     }, [recentDetections]);
 
@@ -247,7 +246,7 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                                                     <Tooltip
                                                         contentStyle={{
                                                             borderRadius: '8px',
-                                                            border: `1px solid ${COLORS.sand}`,
+                                                            border: `1px solid ${COLORS.lightest}`,
                                                             boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                                                             fontSize: '13px',
                                                         }}
@@ -256,7 +255,7 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                                             </ResponsiveContainer>
                                             <ResponsiveContainer width="100%" height={260}>
                                                 <BarChart data={diseaseDistribution} layout="vertical">
-                                                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={COLORS.sand} />
+                                                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={COLORS.lightest} />
                                                     <XAxis type="number" allowDecimals={false} />
                                                     <YAxis
                                                         type="category"
@@ -267,7 +266,7 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                                                     <Tooltip
                                                         contentStyle={{
                                                             borderRadius: '8px',
-                                                            border: `1px solid ${COLORS.sand}`,
+                                                            border: `1px solid ${COLORS.lightest}`,
                                                             boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                                                             fontSize: '13px',
                                                         }}
@@ -299,13 +298,13 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                                     {recentDetections.length > 0 ? (
                                         <ResponsiveContainer width="100%" height={280}>
                                             <BarChart data={methodDistribution} barCategoryGap="30%">
-                                                <CartesianGrid strokeDasharray="3 3" stroke={COLORS.sand} />
+                                                <CartesianGrid strokeDasharray="3 3" stroke={COLORS.lightest} />
                                                 <XAxis dataKey="name" tick={{ fontSize: 13 }} />
                                                 <YAxis allowDecimals={false} />
                                                 <Tooltip
                                                     contentStyle={{
                                                         borderRadius: '8px',
-                                                        border: `1px solid ${COLORS.sand}`,
+                                                        border: `1px solid ${COLORS.lightest}`,
                                                         boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                                                         fontSize: '13px',
                                                     }}
@@ -342,7 +341,7 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                             <Button
                                 asChild
                                 className="w-full justify-start text-white transition-all hover:brightness-110"
-                                style={{ backgroundColor: COLORS.deep }}
+                                style={{ backgroundColor: COLORS.primary }}
                             >
                                 <Link href="/detection">
                                     <ScanLine className="mr-2 h-4 w-4" />
@@ -353,10 +352,10 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                                 asChild
                                 variant="outline"
                                 className="w-full justify-start transition-all hover:bg-[rgba(105,162,151,0.08)]"
-                                style={{ borderColor: COLORS.teal, color: COLORS.deep }}
+                                style={{ borderColor: COLORS.secondary, color: COLORS.primary }}
                             >
                                 <Link href="/expert-system">
-                                    <BrainCircuit className="mr-2 h-4 w-4" style={{ color: COLORS.teal }} />
+                                    <BrainCircuit className="mr-2 h-4 w-4" style={{ color: COLORS.secondary }} />
                                     Sistem Pakar
                                 </Link>
                             </Button>
@@ -364,10 +363,10 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                                 asChild
                                 variant="outline"
                                 className="w-full justify-start transition-all hover:bg-[rgba(132,181,159,0.08)]"
-                                style={{ borderColor: COLORS.leaf, color: COLORS.deep }}
+                                style={{ borderColor: COLORS.muted, color: COLORS.primary }}
                             >
                                 <Link href="/diseases">
-                                    <Bug className="mr-2 h-4 w-4" style={{ color: COLORS.leaf }} />
+                                    <Bug className="mr-2 h-4 w-4" style={{ color: COLORS.muted }} />
                                     Knowledge Base
                                 </Link>
                             </Button>
@@ -445,7 +444,7 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                                                                     <Link
                                                                         href={`/diseases/${detection.disease.slug}`}
                                                                         className="font-medium underline-offset-4 transition-colors hover:underline"
-                                                                        style={{ color: COLORS.deep }}
+                                                                        style={{ color: COLORS.primary }}
                                                                     >
                                                                         {detection.disease.name}
                                                                     </Link>
@@ -453,7 +452,7 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                                                                 <HoverCardContent className="w-72" side="top">
                                                                     <div className="space-y-2">
                                                                         <div className="flex items-center gap-2">
-                                                                            <Bug className="h-4 w-4" style={{ color: COLORS.leaf }} />
+                                                                            <Bug className="h-4 w-4" style={{ color: COLORS.muted }} />
                                                                             <p className="text-sm font-semibold">{detection.disease.name}</p>
                                                                         </div>
                                                                         <Separator />
@@ -497,8 +496,8 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                                                         <Badge
                                                             variant="outline"
                                                             style={{
-                                                                borderColor: detection.method === 'image' ? COLORS.deep : COLORS.teal,
-                                                                color: detection.method === 'image' ? COLORS.deep : COLORS.teal,
+                                                                borderColor: detection.method === 'image' ? COLORS.primary : COLORS.secondary,
+                                                                color: detection.method === 'image' ? COLORS.primary : COLORS.secondary,
                                                             }}
                                                         >
                                                             {detection.method === 'image' ? (

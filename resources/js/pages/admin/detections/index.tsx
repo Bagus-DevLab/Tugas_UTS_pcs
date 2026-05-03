@@ -30,11 +30,11 @@ import {
 } from '@/components/ui/table';
 
 const palette = {
-    sand: '#DDD8C4',
-    sage: '#A3C9A8',
-    leaf: '#84B59F',
-    teal: '#69A297',
-    deep: '#50808E',
+    primary: '#059669',
+    secondary: '#10b981',
+    muted: '#64748b',
+    light: '#94a3b8',
+    lightest: '#cbd5e1',
 };
 
 interface Detection {
@@ -187,8 +187,8 @@ return;
                     className="flex flex-col gap-1"
                 >
                     <div className="flex items-center gap-2">
-                        <ShieldCheck className="size-5" style={{ color: palette.deep }} />
-                        <h1 className="text-2xl font-semibold tracking-tight" style={{ color: palette.deep }}>
+                        <ShieldCheck className="size-5" style={{ color: palette.primary }} />
+                        <h1 className="text-2xl font-semibold tracking-tight" style={{ color: palette.primary }}>
                             Semua Deteksi
                         </h1>
                     </div>
@@ -210,7 +210,7 @@ return;
                             value={filters.method || 'all'}
                             onValueChange={(value) => handleFilterChange('method', value)}
                         >
-                            <SelectTrigger className="w-[160px]" style={{ borderColor: palette.sage }}>
+                            <SelectTrigger className="w-[160px]" style={{ borderColor: palette.light }}>
                                 <SelectValue placeholder="Semua Metode" />
                             </SelectTrigger>
                             <SelectContent>
@@ -226,14 +226,14 @@ return;
                         <div className="relative">
                             <Search
                                 className="absolute left-3 top-1/2 size-4 -translate-y-1/2"
-                                style={{ color: palette.teal }}
+                                style={{ color: palette.secondary }}
                             />
                             <Input
                                 placeholder="Nama atau email..."
                                 defaultValue={filters.user_search || ''}
                                 onChange={(e) => handleSearchInput(e.target.value)}
                                 className="w-[220px] pl-9"
-                                style={{ borderColor: palette.sage }}
+                                style={{ borderColor: palette.light }}
                             />
                         </div>
                     </motion.div>
@@ -244,9 +244,9 @@ return;
                             size="sm"
                             onClick={handleReset}
                             className="transition-colors hover:text-white"
-                            style={{ borderColor: palette.teal, color: palette.teal }}
+                            style={{ borderColor: palette.secondary, color: palette.secondary }}
                             onMouseEnter={(e) => {
-                                (e.currentTarget as HTMLButtonElement).style.backgroundColor = palette.teal;
+                                (e.currentTarget as HTMLButtonElement).style.backgroundColor = palette.secondary;
                             }}
                             onMouseLeave={(e) => {
                                 (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
@@ -264,7 +264,7 @@ return;
                         <motion.div
                             key="table"
                             className="overflow-hidden rounded-xl border"
-                            style={{ borderColor: palette.sand }}
+                            style={{ borderColor: palette.lightest }}
                             initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -16 }}
@@ -272,14 +272,14 @@ return;
                         >
                             <Table>
                                 <TableHeader>
-                                    <TableRow style={{ backgroundColor: `${palette.sand}33` }}>
-                                        <TableHead style={{ color: palette.deep }}>User</TableHead>
-                                        <TableHead style={{ color: palette.deep }}>Email</TableHead>
-                                        <TableHead style={{ color: palette.deep }}>Label</TableHead>
-                                        <TableHead style={{ color: palette.deep }}>Akurasi</TableHead>
-                                        <TableHead style={{ color: palette.deep }}>Metode</TableHead>
-                                        <TableHead style={{ color: palette.deep }}>Tanggal</TableHead>
-                                        <TableHead style={{ color: palette.deep }}>Aksi</TableHead>
+                                    <TableRow style={{ backgroundColor: `${palette.lightest}33` }}>
+                                        <TableHead style={{ color: palette.primary }}>User</TableHead>
+                                        <TableHead style={{ color: palette.primary }}>Email</TableHead>
+                                        <TableHead style={{ color: palette.primary }}>Label</TableHead>
+                                        <TableHead style={{ color: palette.primary }}>Akurasi</TableHead>
+                                        <TableHead style={{ color: palette.primary }}>Metode</TableHead>
+                                        <TableHead style={{ color: palette.primary }}>Tanggal</TableHead>
+                                        <TableHead style={{ color: palette.primary }}>Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -294,7 +294,7 @@ return;
                                                 exit={{ opacity: 0, x: 20 }}
                                                 transition={{ delay: index * 0.04 }}
                                                 whileHover={{
-                                                    backgroundColor: `${palette.sage}18`,
+                                                    backgroundColor: `${palette.light}18`,
                                                     transition: { duration: 0.15 },
                                                 }}
                                             >
@@ -313,7 +313,7 @@ return;
                                                 </TableCell>
                                                 <TableCell>
                                                     {detection.confidence !== null ? (
-                                                        <span className="font-mono text-sm" style={{ color: palette.deep }}>
+                                                        <span className="font-mono text-sm" style={{ color: palette.primary }}>
                                                             {formatConfidence(detection.confidence)}
                                                         </span>
                                                     ) : (
@@ -326,8 +326,8 @@ return;
                                                         style={{
                                                             backgroundColor:
                                                                 detection.method === 'image'
-                                                                    ? palette.teal
-                                                                    : palette.leaf,
+                                                                    ? palette.secondary
+                                                                    : palette.muted,
                                                         }}
                                                     >
                                                         {getMethodLabel(detection.method)}
@@ -345,7 +345,7 @@ return;
                                                             asChild
                                                         >
                                                             <Link href={`/admin/detections/${detection.id}`}>
-                                                                <Eye className="size-4" style={{ color: palette.teal }} />
+                                                                <Eye className="size-4" style={{ color: palette.secondary }} />
                                                             </Link>
                                                         </Button>
                                                         <Button
@@ -368,14 +368,14 @@ return;
                         <motion.div
                             key="empty"
                             className="flex flex-1 flex-col items-center justify-center rounded-xl border border-dashed py-16"
-                            style={{ borderColor: palette.sand }}
+                            style={{ borderColor: palette.lightest }}
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ duration: 0.4 }}
                         >
-                            <Inbox className="mb-4 size-12" style={{ color: `${palette.teal}66` }} />
-                            <h3 className="text-lg font-medium" style={{ color: palette.deep }}>
+                            <Inbox className="mb-4 size-12" style={{ color: `${palette.secondary}66` }} />
+                            <h3 className="text-lg font-medium" style={{ color: palette.primary }}>
                                 Tidak Ada Data Deteksi
                             </h3>
                             <p className="mt-1 text-sm text-muted-foreground">
@@ -405,7 +405,7 @@ return;
                                             variant="outline"
                                             size="icon"
                                             className="size-8"
-                                            style={{ borderColor: palette.sage }}
+                                            style={{ borderColor: palette.light }}
                                             disabled={!link.url}
                                             asChild={!!link.url}
                                         >
@@ -427,7 +427,7 @@ return;
                                             variant="outline"
                                             size="icon"
                                             className="size-8"
-                                            style={{ borderColor: palette.sage }}
+                                            style={{ borderColor: palette.light }}
                                             disabled={!link.url}
                                             asChild={!!link.url}
                                         >
@@ -450,8 +450,8 @@ return;
                                         className="size-8 text-white"
                                         style={
                                             link.active
-                                                ? { backgroundColor: palette.deep, borderColor: palette.deep }
-                                                : { borderColor: palette.sage }
+                                                ? { backgroundColor: palette.primary, borderColor: palette.primary }
+                                                : { borderColor: palette.light }
                                         }
                                         disabled={!link.url}
                                         asChild={!!link.url}

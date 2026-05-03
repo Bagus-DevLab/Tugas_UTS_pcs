@@ -20,16 +20,16 @@ export default function AuthCardLayout({
     description?: string;
 }>) {
     return (
-        <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+        <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-slate-50 p-6 md:p-10">
             <div className="flex w-full max-w-md flex-col gap-6">
                 <Link
                     href={home()}
                     className="flex flex-col items-center gap-2 self-center font-medium"
                 >
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#50808E] to-[#69A297] shadow-lg shadow-[#50808E]/25">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-600 shadow-md">
                         <Leaf className="h-7 w-7 text-white" />
                     </div>
-                    <span className="text-xl font-bold tracking-tight">Mapan</span>
+                    <span className="text-xl font-bold tracking-tight text-slate-900">Mapan</span>
                 </Link>
 
                 <div className="flex flex-col gap-6">
