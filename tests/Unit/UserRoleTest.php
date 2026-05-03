@@ -5,8 +5,9 @@ use App\Models\User;
 it('has correct role constants', function () {
     expect(User::ROLE_SUPER_ADMIN)->toBe('super_admin')
         ->and(User::ROLE_ADMIN)->toBe('admin')
+        ->and(User::ROLE_PAKAR)->toBe('pakar')
         ->and(User::ROLE_USER)->toBe('user')
-        ->and(User::ROLES)->toBe(['super_admin', 'admin', 'user']);
+        ->and(User::ROLES)->toBe(['super_admin', 'admin', 'pakar', 'user']);
 });
 
 it('isSuperAdmin returns true only for super_admin', function () {

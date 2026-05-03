@@ -28,7 +28,7 @@ class SymptomManagementController extends Controller
 
         Symptom::create($validated);
 
-        return redirect()->route('admin.symptoms.index')
+        return redirect()->route('admin.knowledge-base.symptoms.index')
             ->with('success', 'Gejala berhasil ditambahkan.');
     }
 
@@ -42,7 +42,7 @@ class SymptomManagementController extends Controller
 
         $symptom->update($validated);
 
-        return redirect()->route('admin.symptoms.index')
+        return redirect()->route('admin.knowledge-base.symptoms.index')
             ->with('success', 'Gejala berhasil diperbarui.');
     }
 
@@ -50,7 +50,7 @@ class SymptomManagementController extends Controller
     {
         $symptom->delete();
 
-        return redirect()->route('admin.symptoms.index')
+        return redirect()->route('admin.knowledge-base.symptoms.index')
             ->with('success', 'Gejala berhasil dihapus.');
     }
 }
