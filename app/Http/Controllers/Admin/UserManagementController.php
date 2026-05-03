@@ -60,7 +60,7 @@ class UserManagementController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route('admin.users.index')
+        return redirect()->route('admin.system.users.index')
             ->with('success', "User {$user->name} berhasil diperbarui.");
     }
 
@@ -80,7 +80,7 @@ class UserManagementController extends Controller
 
         $user->delete();
 
-        return redirect()->route('admin.users.index')
+        return redirect()->route('admin.system.users.index')
             ->with('success', 'User berhasil dihapus.');
     }
 }

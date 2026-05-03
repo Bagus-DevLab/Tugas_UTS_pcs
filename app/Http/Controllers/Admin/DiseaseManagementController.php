@@ -58,7 +58,7 @@ class DiseaseManagementController extends Controller
             }
         }
 
-        return redirect()->route('admin.diseases.index')
+        return redirect()->route('admin.knowledge-base.diseases.index')
             ->with('success', 'Penyakit berhasil ditambahkan.');
     }
 
@@ -102,7 +102,7 @@ class DiseaseManagementController extends Controller
         }
         $disease->symptoms()->sync($syncData);
 
-        return redirect()->route('admin.diseases.index')
+        return redirect()->route('admin.knowledge-base.diseases.index')
             ->with('success', 'Penyakit berhasil diperbarui.');
     }
 
@@ -110,7 +110,7 @@ class DiseaseManagementController extends Controller
     {
         $disease->delete();
 
-        return redirect()->route('admin.diseases.index')
+        return redirect()->route('admin.knowledge-base.diseases.index')
             ->with('success', 'Penyakit berhasil dihapus.');
     }
 }

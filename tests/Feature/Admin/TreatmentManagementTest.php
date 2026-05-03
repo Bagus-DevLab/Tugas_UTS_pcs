@@ -8,15 +8,15 @@ beforeEach(function () {
     Disease::create(['name' => 'Blast', 'slug' => 'blast', 'description' => 'Test', 'cause' => 'Test']);
 });
 
-it('admin can view treatment management page', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
+it('pakar can view treatment management page', function () {
+    $pakar = User::factory()->create(['role' => 'pakar']);
     $disease = Disease::where('slug', 'blast')->first();
     Treatment::create([
         'disease_id' => $disease->id, 'type' => 'chemical',
         'description' => 'Fungisida', 'dosage' => '0.6', 'dosage_unit' => 'gram/L', 'priority' => 1,
     ]);
 
-    $response = $this->actingAs($admin)->get('/admin/treatments');
+    $response = $this->actingAs($pakar)->get('/admin/knowledge-base/treatments');
 
     $response->assertStatus(200)
         ->assertInertia(fn ($page) => $page
@@ -26,11 +26,11 @@ it('admin can view treatment management page', function () {
         );
 });
 
-it('admin can create a treatment with dosage', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
+it('pakar can create a treatment with dosage', function () {
+    $pakar = User::factory()->create(['role' => 'pakar']);
     $disease = Disease::where('slug', 'blast')->first();
 
-    $response = $this->actingAs($admin)->post('/admin/treatments', [
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/treatments', [
         'disease_id' => $disease->id,
         'type' => 'chemical',
         'description' => 'Aplikasi fungisida baru',
@@ -39,7 +39,7 @@ it('admin can create a treatment with dosage', function () {
         'priority' => 1,
     ]);
 
-    $response->assertRedirect('/admin/treatments');
+    $response->assertRedirect('/admin/knowledge-base/treatments');
 
     $treatment = Treatment::where('description', 'Aplikasi fungisida baru')->first();
     expect($treatment)->not->toBeNull()
@@ -48,18 +48,18 @@ it('admin can create a treatment with dosage', function () {
         ->and($treatment->type)->toBe('chemical');
 });
 
-it('admin can create a treatment without dosage', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
+it('pakar can create a treatment without dosage', function () {
+    $pakar = User::factory()->create(['role' => 'pakar']);
     $disease = Disease::where('slug', 'blast')->first();
 
-    $response = $this->actingAs($admin)->post('/admin/treatments', [
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/treatments', [
         'disease_id' => $disease->id,
         'type' => 'prevention',
         'description' => 'Gunakan varietas tahan',
         'priority' => 1,
     ]);
 
-    $response->assertRedirect('/admin/treatments');
+    $response->assertRedirect('/admin/knowledge-base/treatments');
 
     $treatment = Treatment::where('description', 'Gunakan varietas tahan')->first();
     expect($treatment->dosage)->toBeNull()
@@ -67,10 +67,10 @@ it('admin can create a treatment without dosage', function () {
 });
 
 it('validates type must be valid enum', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
+    $pakar = User::factory()->create(['role' => 'pakar']);
     $disease = Disease::where('slug', 'blast')->first();
 
-    $response = $this->actingAs($admin)->post('/admin/treatments', [
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/treatments', [
         'disease_id' => $disease->id,
         'type' => 'invalid_type',
         'description' => 'Test',
@@ -81,10 +81,10 @@ it('validates type must be valid enum', function () {
 });
 
 it('validates dosage_unit required when dosage is set', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
+    $pakar = User::factory()->create(['role' => 'pakar']);
     $disease = Disease::where('slug', 'blast')->first();
 
-    $response = $this->actingAs($admin)->post('/admin/treatments', [
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/treatments', [
         'disease_id' => $disease->id,
         'type' => 'chemical',
         'description' => 'Test',
@@ -96,15 +96,15 @@ it('validates dosage_unit required when dosage is set', function () {
     $response->assertSessionHasErrors(['dosage_unit']);
 });
 
-it('admin can update a treatment', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
+it('pakar can update a treatment', function () {
+    $pakar = User::factory()->create(['role' => 'pakar']);
     $disease = Disease::where('slug', 'blast')->first();
     $treatment = Treatment::create([
         'disease_id' => $disease->id, 'type' => 'chemical',
         'description' => 'Old', 'priority' => 1,
     ]);
 
-    $response = $this->actingAs($admin)->put("/admin/treatments/{$treatment->id}", [
+    $response = $this->actingAs($pakar)->put("/admin/knowledge-base/treatments/{$treatment->id}", [
         'disease_id' => $disease->id,
         'type' => 'biological',
         'description' => 'Updated treatment',
@@ -113,7 +113,7 @@ it('admin can update a treatment', function () {
         'priority' => 2,
     ]);
 
-    $response->assertRedirect('/admin/treatments');
+    $response->assertRedirect('/admin/knowledge-base/treatments');
 
     $fresh = $treatment->fresh();
     expect($fresh->type)->toBe('biological')
@@ -121,23 +121,23 @@ it('admin can update a treatment', function () {
         ->and($fresh->dosage)->toBe('5');
 });
 
-it('admin can delete a treatment', function () {
-    $admin = User::factory()->create(['role' => 'admin']);
+it('pakar can delete a treatment', function () {
+    $pakar = User::factory()->create(['role' => 'pakar']);
     $disease = Disease::where('slug', 'blast')->first();
     $treatment = Treatment::create([
         'disease_id' => $disease->id, 'type' => 'chemical',
         'description' => 'To delete', 'priority' => 1,
     ]);
 
-    $response = $this->actingAs($admin)->delete("/admin/treatments/{$treatment->id}");
+    $response = $this->actingAs($pakar)->delete("/admin/knowledge-base/treatments/{$treatment->id}");
 
-    $response->assertRedirect('/admin/treatments');
+    $response->assertRedirect('/admin/knowledge-base/treatments');
     expect(Treatment::find($treatment->id))->toBeNull();
 });
 
 it('regular user cannot access treatment management', function () {
     $user = User::factory()->create(['role' => 'user']);
 
-    $this->actingAs($user)->get('/admin/treatments')->assertStatus(403);
-    $this->actingAs($user)->post('/admin/treatments', [])->assertStatus(403);
+    $this->actingAs($user)->get('/admin/knowledge-base/treatments')->assertStatus(403);
+    $this->actingAs($user)->post('/admin/knowledge-base/treatments', [])->assertStatus(403);
 });

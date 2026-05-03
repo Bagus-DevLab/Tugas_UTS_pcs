@@ -39,7 +39,7 @@ class TreatmentManagementController extends Controller
 
         Treatment::create($validated);
 
-        return redirect()->route('admin.treatments.index')
+        return redirect()->route('admin.knowledge-base.treatments.index')
             ->with('success', 'Penanganan berhasil ditambahkan.');
     }
 
@@ -56,7 +56,7 @@ class TreatmentManagementController extends Controller
 
         $treatment->update($validated);
 
-        return redirect()->route('admin.treatments.index')
+        return redirect()->route('admin.knowledge-base.treatments.index')
             ->with('success', 'Penanganan berhasil diperbarui.');
     }
 
@@ -64,7 +64,7 @@ class TreatmentManagementController extends Controller
     {
         $treatment->delete();
 
-        return redirect()->route('admin.treatments.index')
+        return redirect()->route('admin.knowledge-base.treatments.index')
             ->with('success', 'Penanganan berhasil dihapus.');
     }
 }
