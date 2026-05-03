@@ -21,9 +21,15 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::factory()->create([
-            'name' => 'Admin',
+            'name' => 'Admin Sistem',
             'email' => 'admin@mapan.test',
             'role' => User::ROLE_ADMIN,
+        ]);
+
+        User::factory()->create([
+            'name' => 'Pakar Pertanian',
+            'email' => 'pakar@mapan.test',
+            'role' => User::ROLE_PAKAR,
         ]);
 
         User::factory()->create([

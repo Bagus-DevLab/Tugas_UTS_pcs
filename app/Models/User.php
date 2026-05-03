@@ -27,11 +27,14 @@ class User extends Authenticatable
 
     public const ROLE_ADMIN = 'admin';
 
+    public const ROLE_PAKAR = 'pakar';
+
     public const ROLE_USER = 'user';
 
     public const ROLES = [
         self::ROLE_SUPER_ADMIN,
         self::ROLE_ADMIN,
+        self::ROLE_PAKAR,
         self::ROLE_USER,
     ];
 
@@ -68,16 +71,47 @@ class User extends Authenticatable
         return $this->role === self::ROLE_ADMIN;
     }
 
+    public function isPakar(): bool
+    {
+        return $this->role === self::ROLE_PAKAR;
+    }
+
     public function isUser(): bool
     {
         return $this->role === self::ROLE_USER;
     }
 
     /**
-     * Check if user is at least admin (admin or super_admin).
+     * Check if user is at least admin (admin, pakar, or super_admin).
      */
     public function isAtLeastAdmin(): bool
     {
-        return in_array($this->role, [self::ROLE_SUPER_ADMIN, self::ROLE_ADMIN]);
+        return in_array($this->role, [
+            self::ROLE_SUPER_ADMIN,
+            self::ROLE_ADMIN,
+            self::ROLE_PAKAR,
+        ]);
+    }
+
+    /**
+     * Check if user can manage knowledge base (diseases, symptoms, treatments).
+     */
+    public function canManageKnowledgeBase(): bool
+    {
+        return in_array($this->role, [
+            self::ROLE_SUPER_ADMIN,
+            self::ROLE_PAKAR,
+        ]);
+    }
+
+    /**
+     * Check if user can manage system (users, system config).
+     */
+    public function canManageSystem(): bool
+    {
+        return in_array($this->role, [
+            self::ROLE_SUPER_ADMIN,
+            self::ROLE_ADMIN,
+        ]);
     }
 }
