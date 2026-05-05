@@ -151,3 +151,97 @@ it('requires authentication', function () {
     $this->get('/expert-system')->assertRedirect('/login');
     $this->postJson('/expert-system/diagnose', [])->assertStatus(401);
 });
+
+// =============================================================================
+// BVA: symptom_ids (array, min:1 element)
+// =============================================================================
+
+it('accepts symptom_ids at minimum array size (1 element)', function () {
+    $user = User::factory()->create();
+    $g01 = Symptom::where('code', 'G01')->first();
+
+    $response = $this->actingAs($user)->postJson('/expert-system/diagnose', [
+        'symptom_ids' => [$g01->id],
+    ]);
+
+    $response->assertStatus(200);
+});
+
+it('accepts symptom_ids with multiple elements', function () {
+    $user = User::factory()->create();
+    $symptoms = Symptom::all();
+
+    $response = $this->actingAs($user)->postJson('/expert-system/diagnose', [
+        'symptom_ids' => $symptoms->pluck('id')->toArray(),
+    ]);
+
+    $response->assertStatus(200);
+});
+
+it('rejects symptom_ids below minimum (empty array)', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->postJson('/expert-system/diagnose', [
+        'symptom_ids' => [],
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['symptom_ids']);
+});
+
+// =============================================================================
+// EP: symptom_ids type validation
+// =============================================================================
+
+it('rejects symptom_ids with invalid types', function (mixed $value) {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->postJson('/expert-system/diagnose', [
+        'symptom_ids' => $value,
+    ]);
+
+    $response->assertStatus(422);
+})->with([
+    'string instead of array' => ['not-an-array'],
+    'integer instead of array' => [123],
+    'null' => [null],
+]);
+
+// =============================================================================
+// EP: store detection - confidence boundaries (reuses detection validation)
+// =============================================================================
+
+it('accepts expert system store with valid confidence boundaries', function (float|int $confidence) {
+    $user = User::factory()->create();
+    $blast = Disease::where('slug', 'blast')->first();
+
+    $response = $this->actingAs($user)->post('/expert-system', [
+        'disease_id' => $blast->id,
+        'label' => 'Blast',
+        'confidence' => $confidence,
+        'selected_symptoms' => json_encode([1]),
+    ]);
+
+    $response->assertSessionDoesntHaveErrors(['confidence']);
+})->with([
+    'at minimum (0)' => [0],
+    'nominal (50)' => [50],
+    'at maximum (100)' => [100],
+]);
+
+it('rejects expert system store with invalid confidence', function (float|int $confidence) {
+    $user = User::factory()->create();
+    $blast = Disease::where('slug', 'blast')->first();
+
+    $response = $this->actingAs($user)->post('/expert-system', [
+        'disease_id' => $blast->id,
+        'label' => 'Blast',
+        'confidence' => $confidence,
+        'selected_symptoms' => json_encode([1]),
+    ]);
+
+    $response->assertSessionHasErrors(['confidence']);
+})->with([
+    'below minimum (-0.01)' => [-0.01],
+    'above maximum (100.01)' => [100.01],
+]);

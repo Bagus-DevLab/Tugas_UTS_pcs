@@ -96,3 +96,80 @@ it('regular user cannot access symptom management', function () {
     $this->actingAs($user)->get('/admin/knowledge-base/symptoms')->assertStatus(403);
     $this->actingAs($user)->post('/admin/knowledge-base/symptoms', [])->assertStatus(403);
 });
+
+// =============================================================================
+// BVA: code (string, max:10)
+// =============================================================================
+
+it('accepts symptom code at valid length boundaries', function (string $code) {
+    $pakar = User::factory()->create(['role' => 'pakar']);
+
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/symptoms', [
+        'code' => $code,
+        'name' => 'Test symptom',
+    ]);
+
+    $response->assertSessionDoesntHaveErrors(['code']);
+})->with([
+    'single char (1)' => ['G'],
+    'at max (10 chars)' => ['G123456789'],
+    'just below max (9 chars)' => ['G12345678'],
+]);
+
+it('rejects symptom code exceeding max length', function (string $code) {
+    $pakar = User::factory()->create(['role' => 'pakar']);
+
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/symptoms', [
+        'code' => $code,
+        'name' => 'Test symptom',
+    ]);
+
+    $response->assertSessionHasErrors(['code']);
+})->with([
+    'above max (11 chars)' => ['G1234567890'],
+    'far above max (20 chars)' => ['G1234567890123456789'],
+]);
+
+// =============================================================================
+// BVA: name (string, max:255)
+// =============================================================================
+
+it('accepts symptom name at max length boundary', function () {
+    $pakar = User::factory()->create(['role' => 'pakar']);
+
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/symptoms', [
+        'code' => 'G50',
+        'name' => str_repeat('a', 255),
+    ]);
+
+    $response->assertSessionDoesntHaveErrors(['name']);
+});
+
+it('rejects symptom name exceeding max length', function () {
+    $pakar = User::factory()->create(['role' => 'pakar']);
+
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/symptoms', [
+        'code' => 'G50',
+        'name' => str_repeat('a', 256),
+    ]);
+
+    $response->assertSessionHasErrors(['name']);
+});
+
+// =============================================================================
+// EP: required fields validation
+// =============================================================================
+
+it('validates required fields on symptom create', function (string $field) {
+    $pakar = User::factory()->create(['role' => 'pakar']);
+
+    $data = ['code' => 'G50', 'name' => 'Test'];
+    unset($data[$field]);
+
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/symptoms', $data);
+
+    $response->assertSessionHasErrors([$field]);
+})->with([
+    'code required' => ['code'],
+    'name required' => ['name'],
+]);

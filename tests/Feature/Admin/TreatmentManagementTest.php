@@ -141,3 +141,137 @@ it('regular user cannot access treatment management', function () {
     $this->actingAs($user)->get('/admin/knowledge-base/treatments')->assertStatus(403);
     $this->actingAs($user)->post('/admin/knowledge-base/treatments', [])->assertStatus(403);
 });
+
+// =============================================================================
+// EP: type field (enum: prevention, chemical, biological, cultural)
+// =============================================================================
+
+it('accepts all valid treatment type values', function (string $type) {
+    $pakar = User::factory()->create(['role' => 'pakar']);
+    $disease = Disease::where('slug', 'blast')->first();
+
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/treatments', [
+        'disease_id' => $disease->id,
+        'type' => $type,
+        'description' => 'Test treatment',
+        'priority' => 1,
+    ]);
+
+    $response->assertSessionDoesntHaveErrors(['type']);
+})->with([
+    'prevention' => ['prevention'],
+    'chemical' => ['chemical'],
+    'biological' => ['biological'],
+    'cultural' => ['cultural'],
+]);
+
+it('rejects invalid treatment type values', function (string $type) {
+    $pakar = User::factory()->create(['role' => 'pakar']);
+    $disease = Disease::where('slug', 'blast')->first();
+
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/treatments', [
+        'disease_id' => $disease->id,
+        'type' => $type,
+        'description' => 'Test treatment',
+        'priority' => 1,
+    ]);
+
+    $response->assertSessionHasErrors(['type']);
+})->with([
+    'organic (invalid)' => ['organic'],
+    'mechanical (invalid)' => ['mechanical'],
+    'empty string' => [''],
+    'uppercase' => ['CHEMICAL'],
+]);
+
+// =============================================================================
+// BVA: priority (integer, min:0)
+// =============================================================================
+
+it('accepts priority at valid boundaries', function (int $priority) {
+    $pakar = User::factory()->create(['role' => 'pakar']);
+    $disease = Disease::where('slug', 'blast')->first();
+
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/treatments', [
+        'disease_id' => $disease->id,
+        'type' => 'chemical',
+        'description' => 'Test treatment',
+        'priority' => $priority,
+    ]);
+
+    $response->assertSessionDoesntHaveErrors(['priority']);
+})->with([
+    'at minimum (0)' => [0],
+    'just above minimum (1)' => [1],
+    'nominal (5)' => [5],
+    'large value (100)' => [100],
+]);
+
+it('rejects priority below minimum', function (int $priority) {
+    $pakar = User::factory()->create(['role' => 'pakar']);
+    $disease = Disease::where('slug', 'blast')->first();
+
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/treatments', [
+        'disease_id' => $disease->id,
+        'type' => 'chemical',
+        'description' => 'Test treatment',
+        'priority' => $priority,
+    ]);
+
+    $response->assertSessionHasErrors(['priority']);
+})->with([
+    'below minimum (-1)' => [-1],
+    'far below minimum (-10)' => [-10],
+]);
+
+// =============================================================================
+// BVA: dosage (string, max:50) and dosage_unit (required_with:dosage, max:50)
+// =============================================================================
+
+it('accepts dosage at max length boundary', function () {
+    $pakar = User::factory()->create(['role' => 'pakar']);
+    $disease = Disease::where('slug', 'blast')->first();
+
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/treatments', [
+        'disease_id' => $disease->id,
+        'type' => 'chemical',
+        'description' => 'Test',
+        'dosage' => str_repeat('x', 50),
+        'dosage_unit' => 'ml/L',
+        'priority' => 1,
+    ]);
+
+    $response->assertSessionDoesntHaveErrors(['dosage']);
+});
+
+it('rejects dosage exceeding max length', function () {
+    $pakar = User::factory()->create(['role' => 'pakar']);
+    $disease = Disease::where('slug', 'blast')->first();
+
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/treatments', [
+        'disease_id' => $disease->id,
+        'type' => 'chemical',
+        'description' => 'Test',
+        'dosage' => str_repeat('x', 51),
+        'dosage_unit' => 'ml/L',
+        'priority' => 1,
+    ]);
+
+    $response->assertSessionHasErrors(['dosage']);
+});
+
+it('rejects dosage_unit exceeding max length', function () {
+    $pakar = User::factory()->create(['role' => 'pakar']);
+    $disease = Disease::where('slug', 'blast')->first();
+
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/treatments', [
+        'disease_id' => $disease->id,
+        'type' => 'chemical',
+        'description' => 'Test',
+        'dosage' => '2.5',
+        'dosage_unit' => str_repeat('u', 51),
+        'priority' => 1,
+    ]);
+
+    $response->assertSessionHasErrors(['dosage_unit']);
+});
