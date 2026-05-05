@@ -83,3 +83,113 @@ test('correct password must be provided to delete account', function () {
 
     expect($user->fresh())->not->toBeNull();
 });
+
+// =============================================================================
+// BVA: name (string, max:255)
+// =============================================================================
+
+test('profile update accepts name at max length boundary (255)', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->patch(route('profile.update'), [
+        'name' => str_repeat('a', 255),
+        'email' => $user->email,
+    ]);
+
+    $response->assertSessionDoesntHaveErrors(['name']);
+});
+
+test('profile update rejects name exceeding max length (256)', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->patch(route('profile.update'), [
+        'name' => str_repeat('a', 256),
+        'email' => $user->email,
+    ]);
+
+    $response->assertSessionHasErrors(['name']);
+});
+
+// =============================================================================
+// BVA: email (string, max:255)
+// =============================================================================
+
+test('profile update accepts email at max length boundary (255)', function () {
+    $user = User::factory()->create();
+    $localPart = str_repeat('a', 243); // 243 + @example.com (12) = 255
+    $email = $localPart . '@example.com';
+
+    $response = $this->actingAs($user)->patch(route('profile.update'), [
+        'name' => $user->name,
+        'email' => $email,
+    ]);
+
+    $response->assertSessionDoesntHaveErrors(['email']);
+});
+
+test('profile update rejects email exceeding max length (256)', function () {
+    $user = User::factory()->create();
+    $localPart = str_repeat('a', 244); // 244 + @example.com (12) = 256
+    $email = $localPart . '@example.com';
+
+    $response = $this->actingAs($user)->patch(route('profile.update'), [
+        'name' => $user->name,
+        'email' => $email,
+    ]);
+
+    $response->assertSessionHasErrors(['email']);
+});
+
+// =============================================================================
+// EP: email format validation
+// =============================================================================
+
+test('profile update rejects invalid email formats', function (string $email) {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->patch(route('profile.update'), [
+        'name' => $user->name,
+        'email' => $email,
+    ]);
+
+    $response->assertSessionHasErrors(['email']);
+})->with([
+    'no @ symbol' => ['invalidemail.com'],
+    'no domain' => ['user@'],
+    'no local part' => ['@domain.com'],
+    'plain string' => ['not-an-email'],
+]);
+
+// =============================================================================
+// EP: email uniqueness on profile update
+// =============================================================================
+
+test('profile update rejects email already taken by another user', function () {
+    $user = User::factory()->create();
+    User::factory()->create(['email' => 'taken@example.com']);
+
+    $response = $this->actingAs($user)->patch(route('profile.update'), [
+        'name' => $user->name,
+        'email' => 'taken@example.com',
+    ]);
+
+    $response->assertSessionHasErrors(['email']);
+});
+
+// =============================================================================
+// EP: required fields
+// =============================================================================
+
+test('profile update validates required fields', function (string $field) {
+    $user = User::factory()->create();
+
+    $data = ['name' => 'Updated', 'email' => 'new@example.com'];
+    $data[$field] = '';
+
+    $response = $this->actingAs($user)->patch(route('profile.update'), $data);
+
+    $response->assertSessionHasErrors([$field]);
+})->with([
+    'name required' => ['name'],
+    'email required' => ['email'],
+]);
