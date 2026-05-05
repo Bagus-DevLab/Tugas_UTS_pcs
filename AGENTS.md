@@ -48,7 +48,7 @@ npm run types:check  # TypeScript (no emit)
 ### Testing API
 - **Bruno collection:** `bruno/Mapan_API/` (organized as Public/ and Private/ folders)
 - **Environments:** Local8000, Local6000 (blocked in Chrome), Ngrok
-- **Migration guide:** `MIGRATION_GUIDE.md` for frontend URL changes
+- **Migration guide:** `docs/MIGRATION_GUIDE.md` for frontend URL changes
 
 ### Route Verification
 ```bash
@@ -118,7 +118,7 @@ Model output: `public/models/model.onnx` (used by ONNX Runtime Web in browser)
 1. **Port 6000 blocked by Chrome** - Use 8000, 3000, or Firefox
 2. **API prefix is empty** - Routes define full paths (`/public/api/v1/*`, `/private/api/v1/*`)
 3. **Bruno collection updated** - Old structure deprecated, use Public/Private folders
-4. **Frontend migration needed** - POST/PUT/DELETE changed from `/public` to `/private` (see `MIGRATION_GUIDE.md`)
+4. **Frontend migration needed** - POST/PUT/DELETE changed from `/public` to `/private` (see `docs/MIGRATION_GUIDE.md`)
 5. **SQLite database** - `database/database.sqlite` created by migrations
 6. **Test users seeded** - 4 users with different roles (all password: "password")
    - user@mapan.test (user)
@@ -130,14 +130,14 @@ Model output: `public/models/model.onnx` (used by ONNX Runtime Web in browser)
 
 ## Session Context
 
-See `MEMORY.md` for recent API refactoring work (public/private split completed, 100% tested).
+See `docs/MEMORY.md` for recent API refactoring work (public/private split completed, 100% tested).
 
 ---
 
 ## Agent SOPs (Standard Operating Procedures)
 
 ### Memory Update
-Setiap selesai mengimplementasikan fitur baru, melakukan refactor, atau mengubah URL endpoint di frontend, kamu WAJIB mencatat perubahannya di `MEMORY.md`.
+Setiap selesai mengimplementasikan fitur baru, melakukan refactor, atau mengubah URL endpoint di frontend, kamu WAJIB mencatat perubahannya di `docs/MEMORY.md`.
 
 ### Testing Discipline
 Sebelum melaporkan sebuah task selesai, selalu jalankan `composer test` untuk backend atau `npm run test` untuk frontend untuk memastikan tidak ada code yang breaking.

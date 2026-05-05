@@ -157,7 +157,7 @@ Gunakan **Bruno** collection di folder `bruno/Mapan_API/`:
 
 Lihat `bruno/README.md` untuk dokumentasi lengkap.
 
-**Migration Guide:** Jika Anda mengupdate dari versi sebelumnya, baca `MIGRATION_GUIDE.md` untuk panduan migrasi frontend.
+**Migration Guide:** Jika Anda mengupdate dari versi sebelumnya, baca `docs/MIGRATION_GUIDE.md` untuk panduan migrasi frontend.
 
 ## Prasyarat
 
