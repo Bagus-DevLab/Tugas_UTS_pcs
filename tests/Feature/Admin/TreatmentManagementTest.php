@@ -275,3 +275,65 @@ it('rejects dosage_unit exceeding max length', function () {
 
     $response->assertSessionHasErrors(['dosage_unit']);
 });
+
+// =============================================================================
+// Decision Table: dosage & dosage_unit conditional validation (required_with)
+// =============================================================================
+//
+// Rule: dosage_unit is `nullable|required_with:dosage|string|max:50`
+//       dosage is `nullable|string|max:50`
+//
+// | Rule | C1: dosage present? | C2: dosage_unit present? | Action                    |
+// |------|:-------------------:|:------------------------:|---------------------------|
+// | R1   | No (null)           | No (null)                | Valid (both absent)        |
+// | R2   | No (null)           | Yes                      | Valid (unit alone is OK)   |
+// | R3   | Yes                 | No (null)                | INVALID (dosage_unit err)  |
+// | R4   | Yes                 | Yes                      | Valid (both present)       |
+//
+
+it('applies decision table rules for dosage/dosage_unit conditional validation', function (
+    string $rule,
+    ?string $dosage,
+    ?string $dosageUnit,
+    bool $isValid,
+    ?string $errorField,
+) {
+    $pakar = User::factory()->create(['role' => 'pakar']);
+    $disease = Disease::where('slug', 'blast')->first();
+
+    $payload = [
+        'disease_id' => $disease->id,
+        'type' => 'chemical',
+        'description' => 'Decision table test',
+        'priority' => 1,
+    ];
+
+    if ($dosage !== null) {
+        $payload['dosage'] = $dosage;
+    }
+
+    if ($dosageUnit !== null) {
+        $payload['dosage_unit'] = $dosageUnit;
+    }
+
+    $response = $this->actingAs($pakar)->post('/admin/knowledge-base/treatments', $payload);
+
+    if ($isValid) {
+        $response->assertSessionDoesntHaveErrors(['dosage', 'dosage_unit']);
+    } else {
+        $response->assertSessionHasErrors([$errorField]);
+    }
+})->with([
+    'R1: dosage=null, dosage_unit=null → valid (both absent)' => [
+        'R1', null, null, true, null,
+    ],
+    'R2: dosage=null, dosage_unit=present → valid (unit alone OK)' => [
+        'R2', null, 'ml/L', true, null,
+    ],
+    'R3: dosage=present, dosage_unit=null → INVALID (dosage_unit required)' => [
+        'R3', '2.5', null, false, 'dosage_unit',
+    ],
+    'R4: dosage=present, dosage_unit=present → valid (both present)' => [
+        'R4', '2.5', 'ml/L', true, null,
+    ],
+]);

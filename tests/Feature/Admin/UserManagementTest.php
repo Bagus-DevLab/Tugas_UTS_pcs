@@ -201,3 +201,52 @@ it('non-super_admin roles cannot access user management', function (string $role
     'pakar' => ['pakar'],
     'user' => ['user'],
 ]);
+
+// =============================================================================
+// Decision Table: User Deletion Logic
+// =============================================================================
+//
+// | Rule | C1: Is Self? | C2: Target is SuperAdmin? | Action                          |
+// |------|:------------:|:-------------------------:|--------------------------------|
+// | R1   | Yes          | — (irrelevant)            | Redirect + user NOT deleted     |
+// | R2   | No           | Yes                       | Redirect + user NOT deleted     |
+// | R3   | No           | No                        | Redirect to index + user DELETED|
+//
+
+it('applies decision table rules for user deletion', function (string $rule, string $targetRole, bool $isSelf, bool $shouldBeDeleted) {
+    $superAdmin = User::factory()->create(['role' => 'super_admin']);
+
+    if ($isSelf) {
+        // Rule 1: Target is the actor themselves
+        $target = $superAdmin;
+    } else {
+        // Rule 2 & 3: Target is another user
+        $target = User::factory()->create(['role' => $targetRole]);
+    }
+
+    $response = $this->actingAs($superAdmin)->delete("/admin/system/users/{$target->id}");
+
+    $response->assertRedirect();
+
+    if ($shouldBeDeleted) {
+        expect(User::find($target->id))->toBeNull();
+    } else {
+        expect(User::find($target->id))->not->toBeNull();
+    }
+})->with([
+    'R1: self-delete (isSelf=Yes) → blocked' => [
+        'R1', 'super_admin', true, false,
+    ],
+    'R2: target is super_admin (isSelf=No, isSuperAdmin=Yes) → blocked' => [
+        'R2', 'super_admin', false, false,
+    ],
+    'R3: target is admin (isSelf=No, isSuperAdmin=No) → deleted' => [
+        'R3', 'admin', false, true,
+    ],
+    'R3: target is pakar (isSelf=No, isSuperAdmin=No) → deleted' => [
+        'R3', 'pakar', false, true,
+    ],
+    'R3: target is user (isSelf=No, isSuperAdmin=No) → deleted' => [
+        'R3', 'user', false, true,
+    ],
+]);
