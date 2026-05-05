@@ -46,6 +46,13 @@ ml/label_progress.json
 /public/models/rice-disease/*.bin
 /public/models/rice-disease/*.onnx
 
+# Ruflo / Swarm
+.swarm/
+.ruflo/
+.claude-flow/
+ruvector.db
+.
+
 # Temporary files
 *.log
 /tmp/
