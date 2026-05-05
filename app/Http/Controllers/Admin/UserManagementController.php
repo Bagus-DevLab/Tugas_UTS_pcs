@@ -58,7 +58,12 @@ class UserManagementController extends Controller
             'role' => ['required', Rule::in(User::ROLES)],
         ]);
 
-        $user->update($validated);
+        $user->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
+        $user->role = $validated['role'];
+        $user->save();
 
         return redirect()->route('admin.system.users.index')
             ->with('success', "User {$user->name} berhasil diperbarui.");

@@ -11,9 +11,12 @@ it('has correct role constants', function () {
 });
 
 it('isSuperAdmin returns true only for super_admin', function () {
-    $superAdmin = new User(['role' => 'super_admin']);
-    $admin = new User(['role' => 'admin']);
-    $user = new User(['role' => 'user']);
+    $superAdmin = new User;
+    $superAdmin->role = 'super_admin';
+    $admin = new User;
+    $admin->role = 'admin';
+    $user = new User;
+    $user->role = 'user';
 
     expect($superAdmin->isSuperAdmin())->toBeTrue()
         ->and($admin->isSuperAdmin())->toBeFalse()
@@ -21,9 +24,12 @@ it('isSuperAdmin returns true only for super_admin', function () {
 });
 
 it('isAdmin returns true only for admin', function () {
-    $superAdmin = new User(['role' => 'super_admin']);
-    $admin = new User(['role' => 'admin']);
-    $user = new User(['role' => 'user']);
+    $superAdmin = new User;
+    $superAdmin->role = 'super_admin';
+    $admin = new User;
+    $admin->role = 'admin';
+    $user = new User;
+    $user->role = 'user';
 
     expect($superAdmin->isAdmin())->toBeFalse()
         ->and($admin->isAdmin())->toBeTrue()
@@ -31,9 +37,12 @@ it('isAdmin returns true only for admin', function () {
 });
 
 it('isUser returns true only for user', function () {
-    $superAdmin = new User(['role' => 'super_admin']);
-    $admin = new User(['role' => 'admin']);
-    $user = new User(['role' => 'user']);
+    $superAdmin = new User;
+    $superAdmin->role = 'super_admin';
+    $admin = new User;
+    $admin->role = 'admin';
+    $user = new User;
+    $user->role = 'user';
 
     expect($superAdmin->isUser())->toBeFalse()
         ->and($admin->isUser())->toBeFalse()
@@ -41,9 +50,12 @@ it('isUser returns true only for user', function () {
 });
 
 it('isAtLeastAdmin returns true for admin and super_admin', function () {
-    $superAdmin = new User(['role' => 'super_admin']);
-    $admin = new User(['role' => 'admin']);
-    $user = new User(['role' => 'user']);
+    $superAdmin = new User;
+    $superAdmin->role = 'super_admin';
+    $admin = new User;
+    $admin->role = 'admin';
+    $user = new User;
+    $user->role = 'user';
 
     expect($superAdmin->isAtLeastAdmin())->toBeTrue()
         ->and($admin->isAtLeastAdmin())->toBeTrue()
@@ -51,7 +63,7 @@ it('isAtLeastAdmin returns true for admin and super_admin', function () {
 });
 
 it('defaults to user role', function () {
-    $user = new User();
+    $user = new User;
 
     // Without explicit role, isUser should handle null gracefully
     expect($user->isSuperAdmin())->toBeFalse()

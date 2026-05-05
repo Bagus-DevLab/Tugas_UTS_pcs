@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Detection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Symfony\Component\Process\Process;
 
 class DetectionApiController extends Controller
 {
     /**
-     * GET /api/v1/detections
+     * GET /public/api/v1/detections
+     * Public endpoint - returns all detections (no auth required)
      */
     public function index(Request $request)
     {
@@ -20,8 +23,7 @@ class DetectionApiController extends Controller
             'per_page' => 'nullable|integer|min:1|max:50',
         ]);
 
-        $query = Detection::where('user_id', Auth::id())
-            ->with('disease:id,name,slug');
+        $query = Detection::with('disease:id,name,slug');
 
         if ($request->filled('method')) {
             $query->where('method', $request->input('method'));
@@ -57,7 +59,7 @@ class DetectionApiController extends Controller
         $imagePath = null;
         if ($request->hasFile('image')) {
             $label = $validated['label'] ?? 'Unknown';
-            $folder = 'detections/' . Str::slug($label);
+            $folder = 'detections/'.Str::slug($label);
             $imagePath = $request->file('image')->store($folder, 'public');
         }
 
@@ -87,14 +89,11 @@ class DetectionApiController extends Controller
     }
 
     /**
-     * GET /api/v1/detections/{detection}
+     * GET /public/api/v1/detections/{detection}
+     * Public endpoint - returns single detection detail (no auth required)
      */
     public function show(Detection $detection)
     {
-        if ($detection->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Forbidden.'], 403);
-        }
-
         return response()->json([
             'detection' => $detection->load(['disease.treatments', 'disease.symptoms']),
         ]);
@@ -117,7 +116,7 @@ class DetectionApiController extends Controller
     }
 
     /**
-     * POST /api/v1/detections/predict
+     * POST /private/api/v1/detections/predict
      * Run ML inference on uploaded image
      */
     public function predict(Request $request)
@@ -126,37 +125,55 @@ class DetectionApiController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:10240',
         ]);
 
-        $image = $request->file('image');
-        $tempPath = $image->store('temp', 'public');
-        $fullPath = storage_path('app/public/' . $tempPath);
+        $tempPath = null;
+        $fullPath = null;
 
-        $pythonPath = base_path('venv/bin/python');
-        $scriptPath = base_path('scripts/predict.py');
+        try {
+            $image = $request->file('image');
+            $tempPath = $image->store('temp', 'public');
+            $fullPath = storage_path('app/public/'.$tempPath);
 
-        $command = escapeshellcmd($pythonPath) . ' ' . escapeshellcmd($scriptPath) . ' ' . escapeshellarg($fullPath);
-        
-        $output = shell_exec($command);
-        
-        @unlink($fullPath);
+            $pythonPath = base_path('venv/bin/python');
+            $scriptPath = base_path('scripts/predict.py');
 
-        if (!$output) {
+            $process = new Process([$pythonPath, $scriptPath, $fullPath]);
+            $process->setTimeout(30);
+            $process->run();
+
+            if (! $process->isSuccessful()) {
+                return response()->json([
+                    'message' => 'Prediction failed: '.$process->getErrorOutput(),
+                ], 500);
+            }
+
+            $output = $process->getOutput();
+
+            if (! $output) {
+                return response()->json([
+                    'message' => 'Prediction failed.',
+                ], 500);
+            }
+
+            $result = json_decode($output, true);
+
+            if (isset($result['error'])) {
+                return response()->json([
+                    'message' => $result['error'],
+                ], 500);
+            }
+
             return response()->json([
-                'message' => 'Prediction failed.',
-            ], 500);
+                'label' => $result['top_label'],
+                'confidence' => $result['top_confidence'],
+                'predictions' => $result['predictions'],
+            ]);
+        } finally {
+            if ($fullPath && file_exists($fullPath)) {
+                @unlink($fullPath);
+            }
+            if ($tempPath) {
+                Storage::disk('public')->delete($tempPath);
+            }
         }
-
-        $result = json_decode($output, true);
-
-        if (isset($result['error'])) {
-            return response()->json([
-                'message' => $result['error'],
-            ], 500);
-        }
-
-        return response()->json([
-            'label' => $result['top_label'],
-            'confidence' => $result['top_confidence'],
-            'predictions' => $result['predictions'],
-        ]);
     }
 }

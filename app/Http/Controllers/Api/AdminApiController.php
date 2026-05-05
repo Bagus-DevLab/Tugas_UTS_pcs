@@ -129,7 +129,7 @@ class AdminApiController extends Controller
     public function updateSymptom(Request $request, Symptom $symptom)
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:10|unique:symptoms,code,' . $symptom->id,
+            'code' => 'required|string|max:10|unique:symptoms,code,'.$symptom->id,
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
@@ -244,11 +244,16 @@ class AdminApiController extends Controller
             'role' => ['required', Rule::in(User::ROLES)],
         ]);
 
-        $user->update($validated);
+        $user->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
+        $user->role = $validated['role'];
+        $user->save();
 
         return response()->json([
             'message' => "User {$user->name} berhasil diperbarui.",
-            'user' => $user,
+            'user' => $user->fresh(),
         ]);
     }
 
