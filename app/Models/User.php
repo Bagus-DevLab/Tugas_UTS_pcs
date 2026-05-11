@@ -114,4 +114,13 @@ class User extends Authenticatable
             self::ROLE_ADMIN,
         ]);
     }
+
+    /**
+     * Check if user can manage users (create, edit, delete users).
+     * Only super_admin can manage users.
+     */
+    public function canManageUsers(): bool
+    {
+        return $this->role === self::ROLE_SUPER_ADMIN;
+    }
 }

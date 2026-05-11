@@ -72,10 +72,18 @@ function AdminNav({ items, label }: { items: NavItem[]; label: string }) {
 
 export function AppSidebar() {
     const { auth } = usePage().props;
-    const user = auth.user as { role: string; permissions: { canManageKnowledgeBase: boolean; canManageSystem: boolean; canViewAllDetections: boolean } } | null;
+    const user = auth.user as unknown as { 
+        role: string; 
+        permissions: { 
+            canManageKnowledgeBase: boolean; 
+            canManageSystem: boolean; 
+            canManageUsers: boolean;
+            canViewAllDetections: boolean;
+        } 
+    } | null;
     
     const canManageKnowledgeBase = user?.permissions?.canManageKnowledgeBase ?? false;
-    const canManageSystem = user?.permissions?.canManageSystem ?? false;
+    const canManageUsers = user?.permissions?.canManageUsers ?? false;
     const canViewAllDetections = user?.permissions?.canViewAllDetections ?? false;
 
     return (
@@ -102,7 +110,7 @@ export function AppSidebar() {
                     </>
                 )}
 
-                {canManageSystem && (
+                {canManageUsers && (
                     <>
                         {!canManageKnowledgeBase && <SidebarSeparator className="mx-3" />}
                         <AdminNav items={systemNavItems} label="Admin Sistem" />
@@ -111,7 +119,7 @@ export function AppSidebar() {
 
                 {canViewAllDetections && (
                     <>
-                        {!canManageKnowledgeBase && !canManageSystem && <SidebarSeparator className="mx-3" />}
+                        {!canManageKnowledgeBase && !canManageUsers && <SidebarSeparator className="mx-3" />}
                         <AdminNav items={sharedAdminNavItems} label="Monitoring" />
                     </>
                 )}

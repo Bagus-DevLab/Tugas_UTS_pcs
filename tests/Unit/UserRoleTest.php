@@ -62,6 +62,22 @@ it('isAtLeastAdmin returns true for admin and super_admin', function () {
         ->and($user->isAtLeastAdmin())->toBeFalse();
 });
 
+it('canManageUsers returns true only for super_admin', function () {
+    $superAdmin = new User;
+    $superAdmin->role = 'super_admin';
+    $admin = new User;
+    $admin->role = 'admin';
+    $pakar = new User;
+    $pakar->role = 'pakar';
+    $user = new User;
+    $user->role = 'user';
+
+    expect($superAdmin->canManageUsers())->toBeTrue()
+        ->and($admin->canManageUsers())->toBeFalse()
+        ->and($pakar->canManageUsers())->toBeFalse()
+        ->and($user->canManageUsers())->toBeFalse();
+});
+
 it('defaults to user role', function () {
     $user = new User;
 

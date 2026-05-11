@@ -52,6 +52,7 @@ class HandleInertiaRequests extends Middleware
                     'permissions' => [
                         'canManageKnowledgeBase' => $request->user()->canManageKnowledgeBase(),
                         'canManageSystem' => $request->user()->canManageSystem(),
+                        'canManageUsers' => $request->user()->canManageUsers(),
                         'canViewAllDetections' => $request->user()->isAtLeastAdmin(),
                     ],
                 ] : null,
