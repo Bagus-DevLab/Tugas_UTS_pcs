@@ -1,10 +1,11 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, FlaskConical, Leaf, Shield, Sprout, Pill } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { MetaHead } from '@/components/meta-head';
 
 // Color palette
 const palette = {
@@ -46,6 +47,7 @@ interface Disease {
 
 interface Props {
     disease: Disease;
+    meta?: any;
 }
 
 const treatmentTypes: Record<string, { label: string; icon: React.ElementType; color: string }> = {
@@ -74,7 +76,7 @@ const treatmentCardVariants = {
     }),
 };
 
-export default function DiseaseShow({ disease }: Props) {
+export default function DiseaseShow({ disease, meta }: Props) {
     const [activeTab, setActiveTab] = useState<string>('all');
 
     const groupedTreatments = useMemo(() => {
@@ -108,7 +110,7 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
 
     return (
         <>
-            <Head title={disease.name} />
+            <MetaHead meta={meta} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
                 {/* Back button */}

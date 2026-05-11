@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
     AlertCircle,
@@ -31,6 +31,7 @@ import type {EnvironmentData} from '@/lib/geo-weather';
 import { getTopPrediction, loadModel, predict  } from '@/lib/ml-model';
 import type {Prediction} from '@/lib/ml-model';
 import { dashboard } from '@/routes';
+import { MetaHead } from '@/components/meta-head';
 
 
 // ---------------------------------------------------------------------------
@@ -101,6 +102,7 @@ const pulseRing = {
 
 interface Props {
     diseases: Array<DiseaseData & { treatments: TreatmentData[] }>;
+    meta?: any;
 }
 
 type Step = 'upload' | 'preview' | 'analyzing' | 'results';
@@ -171,7 +173,7 @@ function PredictionBar({ prediction, index }: { prediction: Prediction; index: n
 // Component
 // ---------------------------------------------------------------------------
 
-export default function DetectionIndex({ diseases }: Props) {
+export default function DetectionIndex({ diseases, meta }: Props) {
     // Step state
     const [step, setStep] = useState<Step>('upload');
 
@@ -450,7 +452,7 @@ return;
 
     return (
         <>
-            <Head title="Deteksi Penyakit Padi" />
+            <MetaHead meta={meta} />
 
             <motion.div
                 className="flex flex-col gap-6 p-4 md:p-6"

@@ -1,4 +1,4 @@
-import { Head, router } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -32,6 +32,7 @@ import {
     
 } from '@/lib/geo-weather';
 import type {EnvironmentData} from '@/lib/geo-weather';
+import { MetaHead } from '@/components/meta-head';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -45,6 +46,7 @@ type DiseaseWithRelations = DiseaseData & {
 interface Props {
     symptoms: SymptomData[];
     diseases: DiseaseWithRelations[];
+    meta?: any;
 }
 
 // ---------------------------------------------------------------------------
@@ -218,7 +220,7 @@ function AnimatedCFBar({
 // Component
 // ---------------------------------------------------------------------------
 
-export default function ExpertSystem({ symptoms, diseases }: Props) {
+export default function ExpertSystem({ symptoms, diseases, meta }: Props) {
     // -- State ---------------------------------------------------------------
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [results, setResults] = useState<DiagnosisResult[] | null>(null);
@@ -389,7 +391,7 @@ return;
     // -- Render --------------------------------------------------------------
     return (
         <>
-            <Head title="Sistem Pakar - Diagnosa Penyakit Padi" />
+            <MetaHead meta={meta} />
 
             <div className="mx-auto flex max-w-5xl flex-col gap-6 p-4 md:p-6">
                 {/* --------------------------------------------------------- */}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Detection;
 use App\Models\Disease;
 use App\Models\Symptom;
+use App\Services\MetaTagService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -19,6 +20,7 @@ class ExpertSystemController extends Controller
         return Inertia::render('expert-system/index', [
             'symptoms' => $symptoms,
             'diseases' => $diseases,
+            'meta' => MetaTagService::forExpertSystem(),
         ]);
     }
 

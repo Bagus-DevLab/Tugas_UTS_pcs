@@ -1,2 +1,16 @@
 User-agent: *
-Disallow:
+# Allow all public pages
+Allow: /
+Allow: /diseases
+Allow: /expert-system
+Allow: /detection
+
+# Disallow admin and private pages
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /detection/history
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://mapan.test/sitemap.xml
+

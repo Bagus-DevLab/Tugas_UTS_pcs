@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Bug, BookOpen } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { cssVars } from '@/lib/utils';
+import { MetaHead } from '@/components/meta-head';
 
 // Color palette
 const palette = {
@@ -29,6 +30,7 @@ interface Disease {
 
 interface Props {
     diseases: Disease[];
+    meta?: any;
 }
 
 const containerVariants = {
@@ -50,7 +52,7 @@ const cardVariants = {
     },
 };
 
-export default function DiseasesIndex({ diseases }: Props) {
+export default function DiseasesIndex({ diseases, meta }: Props) {
     const [search, setSearch] = useState('');
 
     const filtered = useMemo(() => {
@@ -70,7 +72,7 @@ return diseases;
 
     return (
         <>
-            <Head title="Basis Pengetahuan" />
+            <MetaHead meta={meta} />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
                 {/* Header */}

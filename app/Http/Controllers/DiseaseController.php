@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Disease;
+use App\Services\MetaTagService;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -16,6 +17,7 @@ class DiseaseController extends Controller
 
         return Inertia::render('diseases/index', [
             'diseases' => $diseases,
+            'meta' => MetaTagService::forDiseasesList(),
         ]);
     }
 
@@ -25,6 +27,7 @@ class DiseaseController extends Controller
 
         return Inertia::render('diseases/show', [
             'disease' => $disease,
+            'meta' => MetaTagService::forDisease($disease),
         ]);
     }
 }

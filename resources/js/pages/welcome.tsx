@@ -1,8 +1,9 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { motion, useScroll, useTransform, useInView, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 import { Leaf, ScanLine, BrainCircuit, Shield, Zap, Smartphone, ArrowRight, ChevronDown, CheckCircle2, Sparkles, Activity, Eye, Database, Wifi } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
 import { dashboard, login, register } from '@/routes';
+import { MetaHead } from '@/components/meta-head';
 
 // ---------------------------------------------------------------------------
 // Tailwind slate + emerald palette — no custom hex needed
@@ -69,7 +70,7 @@ function FloatingLeaf({ delay, x, size, speed }: { delay: number; x: number; siz
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
-export default function Welcome({ canRegister = true }: { canRegister?: boolean }) {
+export default function Welcome({ canRegister = true, meta }: { canRegister?: boolean; meta?: any }) {
     const { auth } = usePage().props;
     const heroRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll();
@@ -130,10 +131,10 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
     // -----------------------------------------------------------------------
     return (
         <>
-            <Head title="Mapan - Sistem Pakar Deteksi Penyakit Tanaman Padi">
+            <MetaHead meta={meta}>
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
-            </Head>
+            </MetaHead>
 
             <div className="min-h-screen overflow-x-hidden bg-white text-slate-900">
                 {/* Floating leaves background */}

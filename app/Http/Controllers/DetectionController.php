@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Detection;
 use App\Models\Disease;
+use App\Services\MetaTagService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -17,6 +18,7 @@ class DetectionController extends Controller
 
         return Inertia::render('detection/index', [
             'diseases' => $diseases,
+            'meta' => MetaTagService::forDetection(),
         ]);
     }
 
