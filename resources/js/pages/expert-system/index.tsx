@@ -1,6 +1,7 @@
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { LogIn } from 'lucide-react';
 
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -47,6 +48,7 @@ interface Props {
     symptoms: SymptomData[];
     diseases: DiseaseWithRelations[];
     meta?: any;
+    isAuthenticated: boolean; // NEW: Auth status from backend
 }
 
 // ---------------------------------------------------------------------------
@@ -220,7 +222,7 @@ function AnimatedCFBar({
 // Component
 // ---------------------------------------------------------------------------
 
-export default function ExpertSystem({ symptoms, diseases, meta }: Props) {
+export default function ExpertSystem({ symptoms, diseases, meta, isAuthenticated }: Props) {
     // -- State ---------------------------------------------------------------
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [results, setResults] = useState<DiagnosisResult[] | null>(null);
@@ -651,25 +653,42 @@ return;
                                 whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.97 }}
                             >
-                                <Button
-                                    onClick={handleDiagnose}
-                                    disabled={
-                                        selectedIds.length === 0 || diagnosing
-                                    }
-                                    size="lg"
-                                    style={{
-                                        backgroundColor:
-                                            selectedIds.length === 0 ||
-                                            diagnosing
-                                                ? undefined
-                                                : palette.primary,
-                                    }}
-                                >
-                                    {diagnosing && (
-                                        <Spinner className="size-4" />
-                                    )}
-                                    Diagnosa
-                                </Button>
+                                {isAuthenticated ? (
+                                    <Button
+                                        onClick={handleDiagnose}
+                                        disabled={
+                                            selectedIds.length === 0 || diagnosing
+                                        }
+                                        size="lg"
+                                        style={{
+                                            backgroundColor:
+                                                selectedIds.length === 0 ||
+                                                diagnosing
+                                                    ? undefined
+                                                    : palette.primary,
+                                        }}
+                                    >
+                                        {diagnosing && (
+                                            <Spinner className="size-4" />
+                                        )}
+                                        Diagnosa
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        asChild
+                                        variant="outline"
+                                        size="lg"
+                                        style={{
+                                            borderColor: palette.primary,
+                                            color: palette.primary,
+                                        }}
+                                    >
+                                        <Link href="/login">
+                                            <LogIn className="mr-2 size-4" />
+                                            Login untuk Mulai Diagnosa
+                                        </Link>
+                                    </Button>
+                                )}
                             </motion.div>
                         </CardFooter>
                     </Card>

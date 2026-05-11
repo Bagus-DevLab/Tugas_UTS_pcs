@@ -63,8 +63,26 @@ it('returns 404 for non-existent disease', function () {
     $response->assertStatus(404);
 });
 
-it('requires authentication', function () {
+it('allows public access to diseases list', function () {
     $response = $this->get('/diseases');
 
-    $response->assertRedirect('/login');
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('diseases/index')
+        ->has('diseases')
+        ->has('meta')
+        ->where('isAuthenticated', false)
+    );
+});
+
+it('shows detection count for authenticated users', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->get('/diseases');
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('diseases/index')
+        ->where('isAuthenticated', true)
+    );
 });

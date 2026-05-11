@@ -21,6 +21,7 @@ class ExpertSystemController extends Controller
             'symptoms' => $symptoms,
             'diseases' => $diseases,
             'meta' => MetaTagService::forExpertSystem(),
+            'isAuthenticated' => Auth::check(), // Pass auth status to frontend
         ]);
     }
 

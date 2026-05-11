@@ -11,13 +11,21 @@ class DiseaseController extends Controller
 {
     public function index()
     {
-        $diseases = Disease::withCount(['detections' => function ($query) {
-            $query->where('user_id', Auth::id());
-        }])->get();
+        // Conditional query: only load detection count for authenticated users
+        // For guest users (SEO), we hide detection count to keep UI clean
+        $diseases = Disease::query()
+            ->when(Auth::check(), function ($query) {
+                // For authenticated users: show their detection count
+                $query->withCount(['detections' => function ($q) {
+                    $q->where('user_id', Auth::id());
+                }]);
+            })
+            ->get();
 
         return Inertia::render('diseases/index', [
             'diseases' => $diseases,
             'meta' => MetaTagService::forDiseasesList(),
+            'isAuthenticated' => Auth::check(), // Pass auth status to frontend
         ]);
     }
 
@@ -28,6 +36,7 @@ class DiseaseController extends Controller
         return Inertia::render('diseases/show', [
             'disease' => $disease,
             'meta' => MetaTagService::forDisease($disease),
+            'isAuthenticated' => Auth::check(), // Pass auth status to frontend
         ]);
     }
 }

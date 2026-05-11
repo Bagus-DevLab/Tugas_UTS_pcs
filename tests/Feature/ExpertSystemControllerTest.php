@@ -147,8 +147,11 @@ it('can store expert system detection result', function () {
         ->and($detection->user_id)->toBe($user->id);
 });
 
-it('requires authentication', function () {
-    $this->get('/expert-system')->assertRedirect('/login');
+it('allows public access to expert system page but requires auth for actions', function () {
+    // Public access to view page
+    $this->get('/expert-system')->assertOk();
+
+    // But actions require authentication
     $this->postJson('/expert-system/diagnose', [])->assertStatus(401);
 });
 

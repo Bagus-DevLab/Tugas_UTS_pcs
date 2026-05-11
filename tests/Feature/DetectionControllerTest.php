@@ -144,8 +144,11 @@ it('prevents viewing other users detections', function () {
     $response->assertStatus(403);
 });
 
-it('requires authentication for all detection routes', function () {
-    $this->get('/detection')->assertRedirect('/login');
+it('allows public access to detection page but requires auth for actions', function () {
+    // Public access to view page
+    $this->get('/detection')->assertOk();
+
+    // But actions require authentication
     $this->post('/detection')->assertRedirect('/login');
     $this->get('/detection/history')->assertRedirect('/login');
 });

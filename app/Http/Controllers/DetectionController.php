@@ -19,6 +19,7 @@ class DetectionController extends Controller
         return Inertia::render('detection/index', [
             'diseases' => $diseases,
             'meta' => MetaTagService::forDetection(),
+            'isAuthenticated' => Auth::check(), // Pass auth status to frontend
         ]);
     }
 

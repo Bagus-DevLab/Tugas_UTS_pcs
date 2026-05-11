@@ -25,12 +25,13 @@ interface Disease {
     description: string;
     cause: string;
     image: string | null;
-    detections_count: number;
+    detections_count?: number; // Optional - only present for authenticated users
 }
 
 interface Props {
     diseases: Disease[];
     meta?: any;
+    isAuthenticated: boolean; // NEW: Auth status from backend
 }
 
 const containerVariants = {
@@ -52,7 +53,7 @@ const cardVariants = {
     },
 };
 
-export default function DiseasesIndex({ diseases, meta }: Props) {
+export default function DiseasesIndex({ diseases, meta, isAuthenticated }: Props) {
     const [search, setSearch] = useState('');
 
     const filtered = useMemo(() => {
@@ -158,14 +159,17 @@ return diseases;
                                                             </p>
                                                         )}
                                                     </div>
-                                                    <Badge
-                                                        variant="secondary"
-                                                        className="shrink-0 text-white"
-                                                        style={{ backgroundColor: palette.secondary }}
-                                                    >
-                                                        <Bug className="size-3" />
-                                                        {disease.detections_count} deteksi
-                                                    </Badge>
+                                                    {/* Conditional: Only show detection count for authenticated users */}
+                                                    {isAuthenticated && disease.detections_count !== undefined && (
+                                                        <Badge
+                                                            variant="secondary"
+                                                            className="shrink-0 text-white"
+                                                            style={{ backgroundColor: palette.secondary }}
+                                                        >
+                                                            <Bug className="size-3" />
+                                                            {disease.detections_count} deteksi
+                                                        </Badge>
+                                                    )}
                                                 </div>
                                             </CardHeader>
                                             <CardContent>

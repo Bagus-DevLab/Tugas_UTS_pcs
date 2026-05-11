@@ -1,4 +1,4 @@
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
     AlertCircle,
@@ -8,6 +8,7 @@ import {
     CloudOff,
     ImageIcon,
     Leaf,
+    LogIn,
     MapPin,
     Save,
     ScanLine,
@@ -103,6 +104,7 @@ const pulseRing = {
 interface Props {
     diseases: Array<DiseaseData & { treatments: TreatmentData[] }>;
     meta?: any;
+    isAuthenticated: boolean; // NEW: Auth status from backend
 }
 
 type Step = 'upload' | 'preview' | 'analyzing' | 'results';
@@ -173,7 +175,7 @@ function PredictionBar({ prediction, index }: { prediction: Prediction; index: n
 // Component
 // ---------------------------------------------------------------------------
 
-export default function DetectionIndex({ diseases, meta }: Props) {
+export default function DetectionIndex({ diseases, meta, isAuthenticated }: Props) {
     // Step state
     const [step, setStep] = useState<Step>('upload');
 
@@ -570,36 +572,66 @@ return;
                                         Unggah Citra Daun Padi
                                     </CardTitle>
                                     <CardDescription>
-                                        Pilih atau seret foto daun padi ke area di bawah. Format yang didukung: JPG, PNG, WebP.
+                                        {isAuthenticated
+                                            ? 'Pilih atau seret foto daun padi ke area di bawah. Format yang didukung: JPG, PNG, WebP.'
+                                            : 'Login terlebih dahulu untuk menggunakan fitur deteksi penyakit dengan AI.'}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <motion.div
-                                        variants={dropZoneVariants}
-                                        initial="idle"
-                                        animate={isDragging ? 'dragging' : isHovering ? 'hover' : 'idle'}
-                                        whileTap={{ scale: 0.99 }}
-                                        onDrop={handleDrop}
-                                        onDragOver={handleDragOver}
-                                        onDragLeave={handleDragLeave}
-                                        onMouseEnter={() => setIsHovering(true)}
-                                        onMouseLeave={() => setIsHovering(false)}
-                                        onClick={() => fileInputRef.current?.click()}
-                                        className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 transition-shadow hover:shadow-md"
-                                        style={{ borderColor: PALETTE.secondary + '40' }}
-                                    >
+                                    {isAuthenticated ? (
                                         <motion.div
-                                            animate={isDragging ? { scale: 1.15, rotate: 5 } : { scale: 1, rotate: 0 }}
-                                            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                                            variants={dropZoneVariants}
+                                            initial="idle"
+                                            animate={isDragging ? 'dragging' : isHovering ? 'hover' : 'idle'}
+                                            whileTap={{ scale: 0.99 }}
+                                            onDrop={handleDrop}
+                                            onDragOver={handleDragOver}
+                                            onDragLeave={handleDragLeave}
+                                            onMouseEnter={() => setIsHovering(true)}
+                                            onMouseLeave={() => setIsHovering(false)}
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 transition-shadow hover:shadow-md"
+                                            style={{ borderColor: PALETTE.secondary + '40' }}
+                                        >
+                                            <motion.div
+                                                animate={isDragging ? { scale: 1.15, rotate: 5 } : { scale: 1, rotate: 0 }}
+                                                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                                            >
+                                                <div className="relative mb-4">
+                                                    <motion.div
+                                                        className="absolute inset-0 rounded-full"
+                                                        style={{ backgroundColor: PALETTE.secondary + '20' }}
+                                                        variants={pulseRing}
+                                                        initial="initial"
+                                                        animate={isDragging ? 'animate' : 'initial'}
+                                                    />
+                                                    <div
+                                                        className="flex size-16 items-center justify-center rounded-full"
+                                                        style={{ backgroundColor: PALETTE.lightest + '60' }}
+                                                    >
+                                                        <Upload className="size-7" style={{ color: PALETTE.primary }} />
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                            <p className="text-sm font-medium">
+                                                Klik untuk memilih atau seret gambar ke sini
+                                            </p>
+                                            <p className="mt-1 text-xs text-muted-foreground">
+                                                JPG, PNG, atau WebP (maks. 10MB)
+                                            </p>
+                                            <input
+                                                ref={fileInputRef}
+                                                type="file"
+                                                accept="image/jpeg,image/png,image/webp"
+                                                className="hidden"
+                                                onChange={handleInputChange}
+                                            />
+                                        </motion.div>
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-12"
+                                            style={{ borderColor: PALETTE.secondary + '40' }}
                                         >
                                             <div className="relative mb-4">
-                                                <motion.div
-                                                    className="absolute inset-0 rounded-full"
-                                                    style={{ backgroundColor: PALETTE.secondary + '20' }}
-                                                    variants={pulseRing}
-                                                    initial="initial"
-                                                    animate={isDragging ? 'animate' : 'initial'}
-                                                />
                                                 <div
                                                     className="flex size-16 items-center justify-center rounded-full"
                                                     style={{ backgroundColor: PALETTE.lightest + '60' }}
@@ -607,21 +639,25 @@ return;
                                                     <Upload className="size-7" style={{ color: PALETTE.primary }} />
                                                 </div>
                                             </div>
-                                        </motion.div>
-                                        <p className="text-sm font-medium">
-                                            Klik untuk memilih atau seret gambar ke sini
-                                        </p>
-                                        <p className="mt-1 text-xs text-muted-foreground">
-                                            JPG, PNG, atau WebP (maks. 10MB)
-                                        </p>
-                                        <input
-                                            ref={fileInputRef}
-                                            type="file"
-                                            accept="image/jpeg,image/png,image/webp"
-                                            className="hidden"
-                                            onChange={handleInputChange}
-                                        />
-                                    </motion.div>
+                                            <p className="mb-4 text-sm font-medium text-center">
+                                                Fitur deteksi AI memerlukan akun
+                                            </p>
+                                            <Button
+                                                asChild
+                                                variant="outline"
+                                                size="lg"
+                                                style={{
+                                                    borderColor: PALETTE.primary,
+                                                    color: PALETTE.primary,
+                                                }}
+                                            >
+                                                <Link href="/login">
+                                                    <LogIn className="mr-2 size-4" />
+                                                    Masuk untuk Upload Foto
+                                                </Link>
+                                            </Button>
+                                        </div>
+                                    )}
                                 </CardContent>
                             </Card>
                         </motion.div>
