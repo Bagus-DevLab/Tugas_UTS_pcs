@@ -57,6 +57,48 @@ const treatmentTypes: Record<string, { label: string; icon: React.ElementType; c
     cultural: { label: 'Kultur Teknis', icon: Leaf, color: palette.secondary },
 };
 
+// Generate JSON-LD structured data for disease
+function generateDiseaseStructuredData(disease: Disease) {
+    const appUrl = typeof window !== 'undefined' ? window.location.origin : 'https://mapan.test';
+    const imageUrl = disease.image ? `${appUrl}/storage/${disease.image}` : `${appUrl}/images/og-default.jpg`;
+
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: disease.name,
+        alternativeHeadline: disease.latin_name || undefined,
+        image: imageUrl,
+        description: disease.description,
+        articleBody: disease.description,
+        author: {
+            '@type': 'Organization',
+            name: 'MAPAN - Sistem Pakar Penyakit Padi',
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'MAPAN',
+            logo: {
+                '@type': 'ImageObject',
+                url: `${appUrl}/images/og-default.jpg`,
+            },
+        },
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': `${appUrl}/diseases/${disease.slug}`,
+        },
+        about: {
+            '@type': 'Thing',
+            name: disease.name,
+            description: disease.cause,
+        },
+        keywords: [
+            'penyakit padi',
+            disease.name.toLowerCase(),
+            ...disease.symptoms.slice(0, 5).map((s) => s.name.toLowerCase()),
+        ].join(', '),
+    };
+}
+
 // Animation variants
 const sectionVariants = {
     hidden: { opacity: 0, y: 24 },
@@ -110,9 +152,16 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
 
     return (
         <>
-            <MetaHead meta={meta} />
+            <MetaHead meta={meta}>
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(generateDiseaseStructuredData(disease)),
+                    }}
+                />
+            </MetaHead>
 
-            <div className="flex h-full flex-1 flex-col gap-6 p-4">
+            <main className="flex h-full flex-1 flex-col gap-6 p-4">
                 {/* Back button */}
                 <motion.div
                     initial={{ opacity: 0, x: -16 }}
@@ -142,7 +191,7 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
                         >
                             <img
                                 src={disease.image}
-                                alt={disease.name}
+                                alt={`Ilustrasi gejala penyakit ${disease.name} pada tanaman padi`}
                                 className="h-48 w-full object-cover md:h-40 md:w-56"
                             />
                         </div>
@@ -160,59 +209,66 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
                 </motion.div>
 
                 {/* Description & Cause */}
-                <motion.div
-                    custom={1}
-                    variants={sectionVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="grid grid-cols-1 gap-4 lg:grid-cols-2"
-                >
-                    <Card
-                        className="border-t-4"
-                        style={{ borderTopColor: palette.light }}
-                    >
-                        <CardHeader>
-                            <CardTitle className="text-base" style={{ color: palette.primary }}>
-                                Deskripsi
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm leading-relaxed text-muted-foreground">
-                                {disease.description}
-                            </p>
-                        </CardContent>
-                    </Card>
-                    <Card
-                        className="border-t-4"
-                        style={{ borderTopColor: palette.secondary }}
-                    >
-                        <CardHeader>
-                            <CardTitle className="text-base" style={{ color: palette.primary }}>
-                                Penyebab
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-sm leading-relaxed text-muted-foreground">
-                                {disease.cause}
-                            </p>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-
-                {/* Symptoms */}
-                {disease.symptoms.length > 0 && (
+                <article>
                     <motion.div
-                        custom={2}
+                        custom={1}
                         variants={sectionVariants}
                         initial="hidden"
                         animate="visible"
+                        className="grid grid-cols-1 gap-4 lg:grid-cols-2"
                     >
-                        <Card>
+                        <Card
+                            className="border-t-4"
+                            style={{ borderTopColor: palette.light }}
+                        >
                             <CardHeader>
                                 <CardTitle className="text-base" style={{ color: palette.primary }}>
-                                    Gejala
+                                    Deskripsi
                                 </CardTitle>
                             </CardHeader>
+                            <CardContent>
+                                <p className="text-sm leading-relaxed text-muted-foreground">
+                                    {disease.description}
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card
+                            className="border-t-4"
+                            style={{ borderTopColor: palette.secondary }}
+                        >
+                            <CardHeader>
+                                <CardTitle className="text-base" style={{ color: palette.primary }}>
+                                    Penyebab
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-sm leading-relaxed text-muted-foreground">
+                                    {disease.cause}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                </article>
+
+                {/* Symptoms */}
+                {disease.symptoms.length > 0 && (
+                    <section aria-labelledby="symptoms-heading">
+                        <motion.div
+                            custom={2}
+                            variants={sectionVariants}
+                            initial="hidden"
+                            animate="visible"
+                        >
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle
+                                        id="symptoms-heading"
+                                        className="text-base"
+                                        style={{ color: palette.primary }}
+                                    >
+                                        <h2 className="text-base font-semibold">Gejala Penyakit</h2>
+                                    </CardTitle>
+                                </CardHeader>
                             <CardContent>
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-sm">
@@ -300,22 +356,28 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
                             </CardContent>
                         </Card>
                     </motion.div>
+                    </section>
                 )}
 
                 {/* Treatments */}
                 {disease.treatments.length > 0 && (
-                    <motion.div
-                        custom={3}
-                        variants={sectionVariants}
-                        initial="hidden"
-                        animate="visible"
-                    >
-                        <Card>
-                            <CardHeader>
-                                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                                    <CardTitle className="text-base" style={{ color: palette.primary }}>
-                                        Penanganan
-                                    </CardTitle>
+                    <section aria-labelledby="treatments-heading">
+                        <motion.div
+                            custom={3}
+                            variants={sectionVariants}
+                            initial="hidden"
+                            animate="visible"
+                        >
+                            <Card>
+                                <CardHeader>
+                                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                        <CardTitle
+                                            id="treatments-heading"
+                                            className="text-base"
+                                            style={{ color: palette.primary }}
+                                        >
+                                            <h2 className="text-base font-semibold">Penanganan</h2>
+                                        </CardTitle>
                                     <div className="flex flex-wrap gap-1.5">
                                         <button
                                             onClick={() => setActiveTab('all')}
@@ -428,8 +490,9 @@ return null;
                             </CardContent>
                         </Card>
                     </motion.div>
+                    </section>
                 )}
-            </div>
+            </main>
         </>
     );
 }
