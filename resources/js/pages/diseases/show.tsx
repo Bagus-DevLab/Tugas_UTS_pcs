@@ -99,6 +99,36 @@ function generateDiseaseStructuredData(disease: Disease) {
     };
 }
 
+// Generate BreadcrumbList JSON-LD for navigation
+function generateBreadcrumbSchema(disease: Disease) {
+    const appUrl = typeof window !== 'undefined' ? window.location.origin : 'https://mapan.test';
+
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Beranda',
+                item: appUrl,
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Penyakit',
+                item: `${appUrl}/diseases`,
+            },
+            {
+                '@type': 'ListItem',
+                position: 3,
+                name: disease.name,
+                item: `${appUrl}/diseases/${disease.slug}`,
+            },
+        ],
+    };
+}
+
 // Animation variants
 const sectionVariants = {
     hidden: { opacity: 0, y: 24 },
@@ -153,10 +183,18 @@ return disease.treatments.slice().sort((a, b) => a.priority - b.priority);
     return (
         <>
             <MetaHead meta={meta}>
+                {/* Article Structured Data */}
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{
                         __html: JSON.stringify(generateDiseaseStructuredData(disease)),
+                    }}
+                />
+                {/* Breadcrumb Structured Data */}
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(generateBreadcrumbSchema(disease)),
                     }}
                 />
             </MetaHead>
