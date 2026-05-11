@@ -85,12 +85,12 @@ export default function DiseaseShow({ disease }: Props) {
 groups[t.type] = [];
 }
 
-            groups[t.type].push(t);
+            (groups[t.type] ??= []).push(t);
         }
 
         // Sort each group by priority
         for (const key of Object.keys(groups)) {
-            groups[key].sort((a, b) => a.priority - b.priority);
+            groups[key]!.sort((a, b) => a.priority - b.priority);
         }
 
         return groups;

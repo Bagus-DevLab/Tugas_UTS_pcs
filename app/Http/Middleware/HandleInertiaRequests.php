@@ -47,7 +47,7 @@ class HandleInertiaRequests extends Middleware
                     'email_verified_at' => $request->user()->email_verified_at,
                     'two_factor_enabled' => ! is_null($request->user()->two_factor_secret),
                     'two_factor_confirmed' => ! is_null($request->user()->two_factor_confirmed_at),
-                    
+
                     // Permission flags for frontend
                     'permissions' => [
                         'canManageKnowledgeBase' => $request->user()->canManageKnowledgeBase(),

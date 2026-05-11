@@ -2,6 +2,8 @@
 
 use App\Models\Disease;
 use App\Models\Symptom;
+use Illuminate\Database\UniqueConstraintViolationException;
+
 it('can create a symptom', function () {
     $symptom = Symptom::create([
         'code' => 'G01',
@@ -18,7 +20,7 @@ it('has unique code constraint', function () {
     Symptom::create(['code' => 'G01', 'name' => 'Symptom 1']);
 
     Symptom::create(['code' => 'G01', 'name' => 'Symptom 2']);
-})->throws(\Illuminate\Database\UniqueConstraintViolationException::class);
+})->throws(UniqueConstraintViolationException::class);
 
 it('belongs to many diseases through pivot', function () {
     $symptom = Symptom::create(['code' => 'G01', 'name' => 'Test symptom']);

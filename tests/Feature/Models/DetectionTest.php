@@ -116,7 +116,7 @@ it('does not allow mass assignment of user_id', function () {
     $user = User::factory()->create();
 
     // Verify user_id is not in the fillable array
-    $detection = new Detection();
+    $detection = new Detection;
     expect($detection->isFillable('user_id'))->toBeFalse();
 
     // Verify fill() ignores user_id

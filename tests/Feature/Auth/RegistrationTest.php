@@ -139,7 +139,7 @@ test('registration fails with name exceeding max length (256)', function () {
 test('registration accepts email at max length boundary (255)', function () {
     // Build a valid email that is exactly 255 chars
     $localPart = str_repeat('a', 243); // 243 + @ + example.com (11) = 255
-    $email = $localPart . '@example.com';
+    $email = $localPart.'@example.com';
 
     $response = $this->post(route('register.store'), [
         'name' => 'Test',
@@ -153,7 +153,7 @@ test('registration accepts email at max length boundary (255)', function () {
 
 test('registration fails with email exceeding max length (256)', function () {
     $localPart = str_repeat('a', 244); // 244 + @ + example.com (11) = 256
-    $email = $localPart . '@example.com';
+    $email = $localPart.'@example.com';
 
     $response = $this->post(route('register.store'), [
         'name' => 'Test',

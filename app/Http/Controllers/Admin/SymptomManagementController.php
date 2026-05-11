@@ -35,7 +35,7 @@ class SymptomManagementController extends Controller
     public function update(Request $request, Symptom $symptom)
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:10|unique:symptoms,code,' . $symptom->id,
+            'code' => 'required|string|max:10|unique:symptoms,code,'.$symptom->id,
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);

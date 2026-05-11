@@ -22,10 +22,10 @@ Route::prefix('public/api/v1')->group(function () {
     // Diseases
     Route::get('diseases', [DiseaseApiController::class, 'index']);
     Route::get('diseases/{disease:slug}', [DiseaseApiController::class, 'show']);
-    
+
     // Symptoms
     Route::get('symptoms', [ExpertSystemApiController::class, 'symptoms']);
-    
+
     // Detections (Read-only - list all)
     Route::get('detections', [DetectionApiController::class, 'index']);
     Route::get('detections/{detection}', [DetectionApiController::class, 'show']);
@@ -54,7 +54,7 @@ Route::prefix('private/api/v1')->middleware('auth:sanctum')->group(function () {
     // KNOWLEDGE BASE MANAGEMENT (pakar + super_admin roles)
     // Domain: Agricultural/Medical Data
     // ===================================================================
-    
+
     Route::middleware('role:super_admin,pakar')->prefix('admin/knowledge-base')->group(function () {
         // ===== Diseases Management =====
         Route::get('diseases', [AdminApiController::class, 'diseases']);
@@ -79,11 +79,11 @@ Route::prefix('private/api/v1')->middleware('auth:sanctum')->group(function () {
     // SYSTEM MANAGEMENT (admin + super_admin roles)
     // Domain: IT/System Operations
     // ===================================================================
-    
+
     Route::middleware('role:super_admin,admin')->prefix('admin/system')->group(function () {
         // ===== Dashboard Stats =====
         Route::get('dashboard/stats', [DashboardApiController::class, 'stats']);
-        
+
         // ===== Users Management (super_admin only) =====
         Route::middleware('role:super_admin')->group(function () {
             Route::get('users', [AdminApiController::class, 'users']);
@@ -96,7 +96,7 @@ Route::prefix('private/api/v1')->middleware('auth:sanctum')->group(function () {
     // SHARED ADMIN ROUTES (all admin-level roles)
     // Accessible by: super_admin, admin, pakar
     // ===================================================================
-    
+
     Route::middleware('role:super_admin,admin,pakar')->prefix('admin')->group(function () {
         // ===== Detections Management =====
         Route::get('detections', [AdminApiController::class, 'detections']);

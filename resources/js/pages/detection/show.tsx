@@ -151,7 +151,7 @@ export default function DetectionShow({ detection }: Props) {
     const sortedPredictions = detection.predictions
         ? Object.entries(detection.predictions).sort(([, a], [, b]) => b - a)
         : [];
-    const maxPrediction = sortedPredictions.length > 0 ? sortedPredictions[0][1] : 0;
+    const maxPrediction = sortedPredictions.length > 0 ? sortedPredictions[0]?.[1] ?? 0 : 0;
 
     const matchedSymptoms = detection.disease?.symptoms?.filter((s) =>
         detection.selected_symptoms?.includes(s.id),

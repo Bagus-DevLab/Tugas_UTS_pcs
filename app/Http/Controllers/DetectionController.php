@@ -6,7 +6,6 @@ use App\Models\Detection;
 use App\Models\Disease;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -44,7 +43,7 @@ class DetectionController extends Controller
         $imagePath = null;
         if ($request->hasFile('image')) {
             $label = $validated['label'] ?? 'Unknown';
-            $folder = 'detections/' . Str::slug($label);
+            $folder = 'detections/'.Str::slug($label);
             $imagePath = $request->file('image')->store($folder, 'public');
         }
 

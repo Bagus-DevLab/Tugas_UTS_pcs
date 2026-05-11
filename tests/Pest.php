@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Detection;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -48,9 +50,9 @@ expect()->extend('toBeOne', function () {
  * Create a Detection with user_id set explicitly.
  * user_id is not mass-assignable for security (defense-in-depth).
  */
-function makeDetection(\App\Models\User $user, array $attributes = []): \App\Models\Detection
+function makeDetection(User $user, array $attributes = []): Detection
 {
-    $detection = new \App\Models\Detection(array_merge([
+    $detection = new Detection(array_merge([
         'method' => 'image',
     ], $attributes));
     $detection->user_id = $user->id;

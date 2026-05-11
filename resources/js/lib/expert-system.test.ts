@@ -65,8 +65,8 @@ describe('diagnose', () => {
 
         expect(results.length).toBeGreaterThanOrEqual(2);
         // Blast should be first (2 matching symptoms with high weights)
-        expect(results[0].disease.slug).toBe('blast');
-        expect(results[1].disease.slug).toBe('brown-spot');
+        expect(results[0]!.disease.slug).toBe('blast');
+        expect(results[1]!.disease.slug).toBe('brown-spot');
     });
 
     it('calculates CF correctly for single symptom', () => {
@@ -101,8 +101,8 @@ describe('diagnose', () => {
         const blastResult = results.find((r) => r.disease.slug === 'blast');
 
         expect(blastResult!.matchedSymptomDetails).toHaveLength(1);
-        expect(blastResult!.matchedSymptomDetails[0].symptom.code).toBe('G01');
-        expect(blastResult!.matchedSymptomDetails[0].weight).toBe(0.95);
+        expect(blastResult!.matchedSymptomDetails[0]!.symptom.code).toBe('G01');
+        expect(blastResult!.matchedSymptomDetails[0]!.weight).toBe(0.95);
     });
 
     it('handles empty symptom selection', () => {

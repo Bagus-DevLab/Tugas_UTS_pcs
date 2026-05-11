@@ -1,8 +1,8 @@
 <?php
 
+use App\Models\Detection;
 use App\Models\Disease;
 use App\Models\Symptom;
-use App\Models\Detection;
 use App\Models\User;
 
 beforeEach(function () {

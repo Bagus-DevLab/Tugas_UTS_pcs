@@ -118,9 +118,9 @@ function preprocessImage(imageElement: HTMLImageElement | HTMLCanvasElement): Fl
     const float32Data = new Float32Array(1 * 224 * 224 * 3);
 
     for (let i = 0; i < 224 * 224; i++) {
-        const r = data[i * 4];
-        const g = data[i * 4 + 1];
-        const b = data[i * 4 + 2];
+        const r = data[i * 4] ?? 0;
+        const g = data[i * 4 + 1] ?? 0;
+        const b = data[i * 4 + 2] ?? 0;
 
         // Apply training preprocessing: (pixel - 1) / 127.5
         float32Data[i * 3] = (r - 1) / 127.5;
@@ -141,15 +141,21 @@ export async function predict(imageElement: HTMLImageElement | HTMLCanvasElement
     const inputTensor = new ort.Tensor('float32', inputData, [1, 224, 224, 3]);
 
     const inputName = loadedSession.inputNames[0];
+    if (!inputName) {
+        throw new Error('Model has no input names');
+    }
     const feeds: Record<string, ort.Tensor> = { [inputName]: inputTensor };
 
     const results = await loadedSession.run(feeds);
     const outputName = loadedSession.outputNames[0];
-    const probabilities = results[outputName].data as Float32Array;
+    if (!outputName) {
+        throw new Error('Model has no output names');
+    }
+    const probabilities = results[outputName]?.data as Float32Array;
 
     const predictions: Prediction[] = CLASS_LABELS.map((label, index) => ({
         label,
-        confidence: Math.round(probabilities[index] * 10000) / 100,
+        confidence: Math.round((probabilities[index] ?? 0) * 10000) / 100,
     }));
 
     predictions.sort((a, b) => b.confidence - a.confidence);

@@ -117,7 +117,7 @@ test('profile update rejects name exceeding max length (256)', function () {
 test('profile update accepts email at max length boundary (255)', function () {
     $user = User::factory()->create();
     $localPart = str_repeat('a', 243); // 243 + @example.com (12) = 255
-    $email = $localPart . '@example.com';
+    $email = $localPart.'@example.com';
 
     $response = $this->actingAs($user)->patch(route('profile.update'), [
         'name' => $user->name,
@@ -130,7 +130,7 @@ test('profile update accepts email at max length boundary (255)', function () {
 test('profile update rejects email exceeding max length (256)', function () {
     $user = User::factory()->create();
     $localPart = str_repeat('a', 244); // 244 + @example.com (12) = 256
-    $email = $localPart . '@example.com';
+    $email = $localPart.'@example.com';
 
     $response = $this->actingAs($user)->patch(route('profile.update'), [
         'name' => $user->name,

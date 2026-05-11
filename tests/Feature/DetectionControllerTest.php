@@ -419,7 +419,7 @@ it('accepts label at valid string length boundaries', function (string $value) {
     'single char' => ['A'],
     'at max (255 chars)' => [str_repeat('a', 255)],
     'just below max (254 chars)' => [str_repeat('a', 254)],
-    'multibyte at max (255 bytes)' => [str_repeat('x', 252) . 'abc'], // 255 ASCII chars
+    'multibyte at max (255 bytes)' => [str_repeat('x', 252).'abc'], // 255 ASCII chars
 ]);
 
 it('rejects label exceeding max length', function (string $value) {

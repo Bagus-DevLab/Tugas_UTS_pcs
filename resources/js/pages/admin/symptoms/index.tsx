@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { cssVars } from '@/lib/utils';
 import {
     Table,
     TableBody,
@@ -181,10 +182,9 @@ return;
                                                 }
                                                 required
                                                 style={{
-                                                    borderColor: palette.light,
-                                                    // @ts-expect-error CSS custom property
-                                                    '--tw-ring-color': palette.secondary,
-                                                }}
+                                    borderColor: palette.light,
+                                    ...cssVars({ '--tw-ring-color': palette.secondary }),
+                                }}
                                             />
                                         </div>
                                         <div className="space-y-2">
@@ -198,10 +198,9 @@ return;
                                                 }
                                                 required
                                                 style={{
-                                                    borderColor: palette.light,
-                                                    // @ts-expect-error CSS custom property
-                                                    '--tw-ring-color': palette.secondary,
-                                                }}
+                                    borderColor: palette.light,
+                                    ...cssVars({ '--tw-ring-color': palette.secondary }),
+                                }}
                                             />
                                         </div>
                                         <div className="space-y-2">
@@ -214,10 +213,9 @@ return;
                                                     setCreateData({ ...createData, description: e.target.value })
                                                 }
                                                 style={{
-                                                    borderColor: palette.light,
-                                                    // @ts-expect-error CSS custom property
-                                                    '--tw-ring-color': palette.secondary,
-                                                }}
+                                    borderColor: palette.light,
+                                    ...cssVars({ '--tw-ring-color': palette.secondary }),
+                                }}
                                             />
                                         </div>
                                         <div className="flex items-end">
@@ -284,8 +282,7 @@ return;
                                                                     className="h-8 w-20"
                                                                     style={{
                                                                         borderColor: palette.secondary,
-                                                                        // @ts-expect-error CSS custom property
-                                                                        '--tw-ring-color': palette.secondary,
+                                                                        ...cssVars({ '--tw-ring-color': palette.secondary }),
                                                                     }}
                                                                 />
                                                             </TableCell>
@@ -301,8 +298,7 @@ return;
                                                                     className="h-8"
                                                                     style={{
                                                                         borderColor: palette.secondary,
-                                                                        // @ts-expect-error CSS custom property
-                                                                        '--tw-ring-color': palette.secondary,
+                                                                        ...cssVars({ '--tw-ring-color': palette.secondary }),
                                                                     }}
                                                                 />
                                                             </TableCell>
@@ -318,8 +314,7 @@ return;
                                                                     className="h-8"
                                                                     style={{
                                                                         borderColor: palette.secondary,
-                                                                        // @ts-expect-error CSS custom property
-                                                                        '--tw-ring-color': palette.secondary,
+                                                                        ...cssVars({ '--tw-ring-color': palette.secondary }),
                                                                     }}
                                                                 />
                                                             </TableCell>

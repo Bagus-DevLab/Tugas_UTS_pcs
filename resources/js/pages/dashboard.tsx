@@ -11,13 +11,9 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/h
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { dashboard } from '@/routes';
-
-// keep Skeleton import available for future use
-void Skeleton;
 
 interface Props {
     stats: {
@@ -123,7 +119,7 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
         const counts: Record<string, number> = { image: 0, expert_system: 0 };
         recentDetections.forEach((d) => {
             if (d.method in counts) {
-                counts[d.method]++;
+                counts[d.method] = (counts[d.method] ?? 0) + 1;
             }
         });
 
@@ -146,15 +142,15 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                 >
                     {statData.map((stat, i) => {
                         const meta = STAT_CARDS_META[i];
-                        const Icon = meta.icon;
+                        const Icon = meta?.icon;
 
                         return (
                             <motion.div key={stat.label} variants={cardVariants}>
-                                <Card className="relative overflow-hidden border-0 shadow-sm" style={{ background: meta.gradient }}>
+                                <Card className="relative overflow-hidden border-0 shadow-sm" style={{ background: meta?.gradient }}>
                                     {/* Left accent bar */}
                                     <div
                                         className="absolute inset-y-0 left-0 w-1 rounded-l-lg"
-                                        style={{ backgroundColor: meta.color }}
+                                        style={{ backgroundColor: meta?.color }}
                                     />
                                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                                         <CardDescription className="text-xs font-medium uppercase tracking-wide">
@@ -162,9 +158,9 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                                         </CardDescription>
                                         <div
                                             className="flex h-9 w-9 items-center justify-center rounded-xl"
-                                            style={{ backgroundColor: meta.bg }}
+                                            style={{ backgroundColor: meta?.bg }}
                                         >
-                                            <Icon className="h-4 w-4" style={{ color: meta.color }} />
+                                            {Icon && <Icon className="h-4 w-4" style={{ color: meta?.color }} />}
                                         </div>
                                     </CardHeader>
                                     <CardContent className="space-y-2">
@@ -178,7 +174,7 @@ export default function Dashboard({ stats, diseaseDistribution, recentDetections
                                                 style={
                                                     {
                                                         '--tw-bg-opacity': '0.15',
-                                                        backgroundColor: `${meta.color}26`,
+                                                        backgroundColor: `${meta?.color}26`,
                                                     } as React.CSSProperties
                                                 }
                                             />

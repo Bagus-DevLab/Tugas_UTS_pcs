@@ -532,13 +532,13 @@ export default function Welcome({ canRegister = true }: { canRegister?: boolean 
                                             className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-emerald-50"
                                         >
                                             {(() => {
-                                                const Icon = features[activeFeature].icon;
+                                                const Icon = features[activeFeature]!.icon;
 
                                                 return <Icon className="h-10 w-10 text-emerald-600" />;
                                             })()}
                                         </motion.div>
-                                        <h3 className="mb-2 text-xl font-bold text-slate-900">{features[activeFeature].title}</h3>
-                                        <p className="text-center text-sm text-slate-600">{features[activeFeature].desc}</p>
+                                        <h3 className="mb-2 text-xl font-bold text-slate-900">{features[activeFeature]!.title}</h3>
+                                        <p className="text-center text-sm text-slate-600">{features[activeFeature]!.desc}</p>
                                     </motion.div>
                                 </AnimatePresence>
                             </div>

@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { cssVars } from '@/lib/utils';
 
 // Color palette
 const palette = {
@@ -99,8 +100,7 @@ return diseases;
                             className="pl-9 transition-colors focus-visible:ring-1"
                             style={{
                                 borderColor: palette.light,
-                                // @ts-expect-error CSS custom property
-                                '--tw-ring-color': palette.secondary,
+                                ...cssVars({ '--tw-ring-color': palette.secondary }),
                             }}
                         />
                     </div>
@@ -132,12 +132,9 @@ return diseases;
                                         href={`/diseases/${disease.slug}`}
                                         className="group block h-full"
                                     >
-                                        <Card className="h-full overflow-hidden border transition-colors duration-200 hover:border-[var(--card-hover-border)]"
-                                            style={{
-                                                // @ts-expect-error CSS custom property
-                                                '--card-hover-border': palette.light,
-                                            }}
-                                        >
+                                    <Card className="h-full overflow-hidden border transition-colors duration-200 hover:border-[var(--card-hover-border)]"
+                                        style={cssVars({ '--card-hover-border': palette.light })}
+                                    >
                                             {disease.image && (
                                                 <div className="overflow-hidden rounded-t-xl">
                                                     <img

@@ -55,8 +55,8 @@ describe('diagnose - advanced scenarios', () => {
         const result2 = diagnose([2, 1], [disease]);
 
         // CF_combine(0.80, 0.60) = 0.80 + 0.60 * (1 - 0.80) = 0.80 + 0.12 = 0.92
-        expect(result1[0].certaintyFactor).toBe(92);
-        expect(result2[0].certaintyFactor).toBe(92);
+        expect(result1[0]!.certaintyFactor).toBe(92);
+        expect(result2[0]!.certaintyFactor).toBe(92);
     });
 
     it('single symptom with weight 1.0 gives 100% CF', () => {
@@ -66,7 +66,7 @@ describe('diagnose - advanced scenarios', () => {
         ]);
 
         const results = diagnose([1], [disease]);
-        expect(results[0].certaintyFactor).toBe(100);
+        expect(results[0]!.certaintyFactor).toBe(100);
     });
 
     it('single symptom with weight 0.0 gives 0% CF', () => {
@@ -78,7 +78,7 @@ describe('diagnose - advanced scenarios', () => {
         const results = diagnose([1], [disease]);
         // Symptom matches but CF = 0
         expect(results).toHaveLength(1);
-        expect(results[0].certaintyFactor).toBe(0);
+        expect(results[0]!.certaintyFactor).toBe(0);
     });
 
     it('three symptoms combine correctly', () => {
@@ -96,7 +96,7 @@ describe('diagnose - advanced scenarios', () => {
 
         // CF_combine(0.90, 0.80) = 0.90 + 0.80 * 0.10 = 0.98
         // CF_combine(0.98, 0.70) = 0.98 + 0.70 * 0.02 = 0.994
-        expect(results[0].certaintyFactor).toBe(99.4);
+        expect(results[0]!.certaintyFactor).toBe(99.4);
     });
 
     it('selecting unrelated symptoms does not affect other diseases', () => {
@@ -111,8 +111,8 @@ describe('diagnose - advanced scenarios', () => {
         const results = diagnose([1, 99], [blast, brownSpot]);
 
         expect(results).toHaveLength(1);
-        expect(results[0].disease.slug).toBe('blast');
-        expect(results[0].certaintyFactor).toBe(95);
+        expect(results[0]!.disease.slug).toBe('blast');
+        expect(results[0]!.certaintyFactor).toBe(95);
     });
 });
 
