@@ -1,0 +1,68 @@
+<svg width="920" height="520" viewBox="0 0 920 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gabungan CFG manajemen user dan role">
+  <defs>
+    <marker id="arrow-all" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#334155"/>
+    </marker>
+  </defs>
+  <style>
+    .node { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; }
+    .decision { fill: #fff7ed; stroke: #ea580c; stroke-width: 2; }
+    .text { font: 13px Arial, sans-serif; fill: #0f172a; text-anchor: middle; dominant-baseline: middle; }
+    .edge { stroke: #334155; stroke-width: 2; fill: none; marker-end: url(#arrow-all); }
+    .label { font: 12px Arial, sans-serif; fill: #475569; }
+  </style>
+  <rect class="node" x="390" y="20" width="140" height="42" rx="18"/>
+  <text class="text" x="460" y="41">Start test</text>
+  <rect class="node" x="370" y="80" width="180" height="42" rx="8"/>
+  <text class="text" x="460" y="101">Siapkan user + role</text>
+  <polygon class="decision" points="460,145 565,190 460,235 355,190"/>
+  <text class="text" x="460" y="190">Pilih objek uji</text>
+  <rect class="node" x="65" y="270" width="160" height="42" rx="8"/>
+  <text class="text" x="145" y="291">Uji role helper</text>
+  <polygon class="decision" points="145,335 230,375 145,415 60,375"/>
+  <text class="text" x="145" y="375">Permission?</text>
+  <rect class="node" x="70" y="440" width="150" height="42" rx="8"/>
+  <text class="text" x="145" y="461">Assert boolean</text>
+  <rect class="node" x="380" y="270" width="160" height="42" rx="8"/>
+  <text class="text" x="460" y="291">Uji update user</text>
+  <polygon class="decision" points="460,335 545,375 460,415 375,375"/>
+  <text class="text" x="460" y="375">Self-update?</text>
+  <rect class="node" x="275" y="440" width="150" height="42" rx="8"/>
+  <text class="text" x="350" y="461">Error update</text>
+  <rect class="node" x="515" y="440" width="170" height="42" rx="8"/>
+  <text class="text" x="600" y="461">Validasi + success</text>
+  <rect class="node" x="700" y="250" width="160" height="42" rx="8"/>
+  <text class="text" x="780" y="271">Uji delete user</text>
+  <polygon class="decision" points="780,315 865,355 780,395 695,355"/>
+  <text class="text" x="780" y="355">Self-delete?</text>
+  <rect class="node" x="625" y="440" width="145" height="42" rx="8"/>
+  <text class="text" x="697" y="461">Error self</text>
+  <polygon class="decision" points="840,420 915,455 840,490 765,455"/>
+  <text class="text" x="840" y="455">Super admin?</text>
+  <rect class="node" x="750" y="75" width="135" height="42" rx="8"/>
+  <text class="text" x="817" y="96">Error/Success</text>
+  <rect class="node" x="390" y="485" width="140" height="30" rx="15"/>
+  <text class="text" x="460" y="500">End</text>
+  <path class="edge" d="M460 62 L460 79"/>
+  <path class="edge" d="M460 122 L460 144"/>
+  <path class="edge" d="M355 190 C240 190 145 230 145 269"/>
+  <path class="edge" d="M460 235 L460 269"/>
+  <path class="edge" d="M565 190 C690 190 780 210 780 249"/>
+  <path class="edge" d="M145 312 L145 334"/>
+  <path class="edge" d="M145 415 L145 439"/>
+  <path class="edge" d="M220 461 C285 500 335 500 389 500"/>
+  <path class="edge" d="M460 312 L460 334"/>
+  <path class="edge" d="M410 410 L350 439"/>
+  <path class="edge" d="M510 410 L600 439"/>
+  <path class="edge" d="M425 482 C425 490 430 496 389 500"/>
+  <path class="edge" d="M600 482 C560 500 545 500 531 500"/>
+  <path class="edge" d="M780 292 L780 314"/>
+  <path class="edge" d="M735 390 L697 439"/>
+  <path class="edge" d="M823 390 L840 419"/>
+  <path class="edge" d="M765 455 C700 515 580 500 531 500"/>
+  <path class="edge" d="M915 455 C950 180 885 96 886 96"/>
+  <text class="label" x="365" y="435">True</text>
+  <text class="label" x="555" y="435">False</text>
+  <text class="label" x="705" y="425">True</text>
+  <text class="label" x="835" y="410">False</text>
+</svg>

@@ -1,0 +1,47 @@
+<svg width="920" height="170" viewBox="0 0 920 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CFG role helper">
+  <defs>
+    <marker id="arrow-role" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#334155"/>
+    </marker>
+  </defs>
+  <style>
+    .node { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; }
+    .decision { fill: #fff7ed; stroke: #ea580c; stroke-width: 2; }
+    .text { font: 12px Arial, sans-serif; fill: #0f172a; text-anchor: middle; dominant-baseline: middle; }
+    .edge { stroke: #334155; stroke-width: 2; marker-end: url(#arrow-role); }
+  </style>
+  <rect class="node" x="20" y="60" width="70" height="42" rx="18"/>
+  <text class="text" x="55" y="81">R1 Start</text>
+  <polygon class="decision" points="135,40 185,81 135,122 85,81"/>
+  <text class="text" x="135" y="81">R2</text>
+  <polygon class="decision" points="225,40 275,81 225,122 175,81"/>
+  <text class="text" x="225" y="81">R3</text>
+  <polygon class="decision" points="315,40 365,81 315,122 265,81"/>
+  <text class="text" x="315" y="81">R4</text>
+  <polygon class="decision" points="405,40 455,81 405,122 355,81"/>
+  <text class="text" x="405" y="81">R5</text>
+  <polygon class="decision" points="495,40 545,81 495,122 445,81"/>
+  <text class="text" x="495" y="81">R6</text>
+  <polygon class="decision" points="585,40 635,81 585,122 535,81"/>
+  <text class="text" x="585" y="81">R7</text>
+  <polygon class="decision" points="675,40 725,81 675,122 625,81"/>
+  <text class="text" x="675" y="81">R8</text>
+  <polygon class="decision" points="765,40 815,81 765,122 715,81"/>
+  <text class="text" x="765" y="81">R9</text>
+  <rect class="node" x="830" y="60" width="70" height="42" rx="18"/>
+  <text class="text" x="865" y="81">R10 End</text>
+  <line class="edge" x1="90" y1="81" x2="84" y2="81"/>
+  <line class="edge" x1="185" y1="81" x2="174" y2="81"/>
+  <line class="edge" x1="275" y1="81" x2="264" y2="81"/>
+  <line class="edge" x1="365" y1="81" x2="354" y2="81"/>
+  <line class="edge" x1="455" y1="81" x2="444" y2="81"/>
+  <line class="edge" x1="545" y1="81" x2="534" y2="81"/>
+  <line class="edge" x1="635" y1="81" x2="624" y2="81"/>
+  <line class="edge" x1="725" y1="81" x2="714" y2="81"/>
+  <line class="edge" x1="815" y1="81" x2="829" y2="81"/>
+  <text class="text" x="135" y="142">super_admin?</text>
+  <text class="text" x="225" y="142">admin?</text>
+  <text class="text" x="315" y="142">pakar?</text>
+  <text class="text" x="405" y="142">user?</text>
+  <text class="text" x="585" y="142">permission checks</text>
+</svg>

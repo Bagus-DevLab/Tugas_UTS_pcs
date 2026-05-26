@@ -1,0 +1,45 @@
+<svg width="780" height="410" viewBox="0 0 780 410" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CFG delete user">
+  <defs>
+    <marker id="arrow-delete" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#334155"/>
+    </marker>
+  </defs>
+  <style>
+    .node { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; }
+    .decision { fill: #fff7ed; stroke: #ea580c; stroke-width: 2; }
+    .text { font: 13px Arial, sans-serif; fill: #0f172a; text-anchor: middle; dominant-baseline: middle; }
+    .edge { stroke: #334155; stroke-width: 2; fill: none; marker-end: url(#arrow-delete); }
+    .label { font: 12px Arial, sans-serif; fill: #475569; }
+  </style>
+  <rect class="node" x="320" y="20" width="140" height="42" rx="18"/>
+  <text class="text" x="390" y="41">D1 Start destroy</text>
+  <polygon class="decision" points="390,90 515,145 390,200 265,145"/>
+  <text class="text" x="390" y="137">D2 Target user</text>
+  <text class="text" x="390" y="154">sama dengan login?</text>
+  <rect class="node" x="35" y="124" width="200" height="42" rx="8"/>
+  <text class="text" x="135" y="145">D3 Error self-delete</text>
+  <polygon class="decision" points="390,225 515,280 390,335 265,280"/>
+  <text class="text" x="390" y="272">D4 Target adalah</text>
+  <text class="text" x="390" y="289">super_admin?</text>
+  <rect class="node" x="35" y="259" width="200" height="42" rx="8"/>
+  <text class="text" x="135" y="280">D5 Error super_admin</text>
+  <rect class="node" x="560" y="235" width="155" height="42" rx="8"/>
+  <text class="text" x="637" y="256">D6 Hapus user</text>
+  <rect class="node" x="560" y="300" width="155" height="42" rx="8"/>
+  <text class="text" x="637" y="321">D7 Success</text>
+  <rect class="node" x="320" y="350" width="140" height="42" rx="18"/>
+  <text class="text" x="390" y="371">D8 End</text>
+  <path class="edge" d="M390 62 L390 89"/>
+  <path class="edge" d="M265 145 L236 145"/>
+  <path class="edge" d="M390 200 L390 224"/>
+  <path class="edge" d="M135 166 C135 371 260 371 319 371"/>
+  <path class="edge" d="M265 280 L236 280"/>
+  <path class="edge" d="M515 280 C535 280 535 256 559 256"/>
+  <path class="edge" d="M135 301 C135 371 260 371 319 371"/>
+  <path class="edge" d="M637 277 L637 299"/>
+  <path class="edge" d="M560 321 C500 321 500 371 461 371"/>
+  <text class="label" x="238" y="135">True</text>
+  <text class="label" x="405" y="214">False</text>
+  <text class="label" x="238" y="270">True</text>
+  <text class="label" x="522" y="270">False</text>
+</svg>
