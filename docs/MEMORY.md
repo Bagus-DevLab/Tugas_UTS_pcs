@@ -1,3 +1,20 @@
+📋 SESSION SUMMARY - ML Preprocessing Fix ✅ COMPLETED
+---
+✅ YANG SUDAH DIKERJAKAN
+
+## MobileNetV2 Preprocessing Alignment (June 12, 2026)
+
+### 1. Training Preprocessing ✅
+- ✅ Updated `ml/train_model.py` to use `tf.keras.applications.mobilenet_v2.preprocess_input`
+- ✅ Removed ambiguous `rescale=1.0 / 127.5` + `lambda x: x - 1` combination
+- ✅ Training input now follows MobileNetV2 pretrained convention: `pixel / 127.5 - 1`
+
+### 2. Browser Inference Preprocessing ✅
+- ✅ Updated `resources/js/lib/ml-model.ts` to match MobileNetV2 preprocessing exactly
+- ✅ Frontend inference now uses `pixel / 127.5 - 1` for RGB channels
+
+---
+
 📋 SESSION SUMMARY - Documentation Cleanup ✅ COMPLETED
 ---
 ✅ YANG SUDAH DIKERJAKAN

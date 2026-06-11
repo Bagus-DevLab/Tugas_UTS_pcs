@@ -40,6 +40,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True  # Tolerate slightly truncated images
 
 import tensorflow as tf
 from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
@@ -99,8 +100,7 @@ def create_data_generators():
             sys.exit(1)
 
     train_datagen = ImageDataGenerator(
-        rescale=1.0 / 127.5,
-        preprocessing_function=lambda x: x - 1,
+        preprocessing_function=preprocess_input,
         rotation_range=20,
         width_shift_range=0.2,
         height_shift_range=0.2,
@@ -112,8 +112,7 @@ def create_data_generators():
     )
 
     val_datagen = ImageDataGenerator(
-        rescale=1.0 / 127.5,
-        preprocessing_function=lambda x: x - 1,
+        preprocessing_function=preprocess_input,
     )
 
     print(f"\nLoading data from: {DATASET_DIR}")

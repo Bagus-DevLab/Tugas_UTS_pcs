@@ -98,9 +98,9 @@ export function isModelLoaded(): boolean {
 }
 
 /**
- * Preprocess image: resize to 224x224, normalize with training preprocessing
- * Training uses: preprocessing_function(x-1) then rescale(/127.5)
- * So final: (pixel - 1) / 127.5
+ * Preprocess image: resize to 224x224, normalize with MobileNetV2 preprocessing.
+ * Training uses tf.keras.applications.mobilenet_v2.preprocess_input:
+ * pixel / 127.5 - 1, producing values in [-1, 1].
  */
 function preprocessImage(imageElement: HTMLImageElement | HTMLCanvasElement): Float32Array {
     // Draw image to canvas at 224x224
@@ -122,10 +122,10 @@ function preprocessImage(imageElement: HTMLImageElement | HTMLCanvasElement): Fl
         const g = data[i * 4 + 1] ?? 0;
         const b = data[i * 4 + 2] ?? 0;
 
-        // Apply training preprocessing: (pixel - 1) / 127.5
-        float32Data[i * 3] = (r - 1) / 127.5;
-        float32Data[i * 3 + 1] = (g - 1) / 127.5;
-        float32Data[i * 3 + 2] = (b - 1) / 127.5;
+        // Apply MobileNetV2 preprocessing: pixel / 127.5 - 1
+        float32Data[i * 3] = r / 127.5 - 1;
+        float32Data[i * 3 + 1] = g / 127.5 - 1;
+        float32Data[i * 3 + 2] = b / 127.5 - 1;
     }
 
     return float32Data;
@@ -141,16 +141,20 @@ export async function predict(imageElement: HTMLImageElement | HTMLCanvasElement
     const inputTensor = new ort.Tensor('float32', inputData, [1, 224, 224, 3]);
 
     const inputName = loadedSession.inputNames[0];
+
     if (!inputName) {
         throw new Error('Model has no input names');
     }
+
     const feeds: Record<string, ort.Tensor> = { [inputName]: inputTensor };
 
     const results = await loadedSession.run(feeds);
     const outputName = loadedSession.outputNames[0];
+
     if (!outputName) {
         throw new Error('Model has no output names');
     }
+
     const probabilities = results[outputName]?.data as Float32Array;
 
     const predictions: Prediction[] = CLASS_LABELS.map((label, index) => ({
