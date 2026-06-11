@@ -1,3 +1,29 @@
+📋 SESSION SUMMARY - Documentation Cleanup ✅ COMPLETED
+---
+✅ YANG SUDAH DIKERJAKAN
+
+## Documentation Sync: RBAC 4-Role + Final API Domains (June 12, 2026)
+
+### 1. Active Documentation Updated ✅
+- ✅ Updated `README.md` security/API examples from 3-tier/admin-old endpoints to 4-tier RBAC and domain-split admin endpoints
+- ✅ Updated `bruno/README.md` admin endpoint tables and role requirements:
+  - `/admin/knowledge-base/*` → pakar + super_admin
+  - `/admin/system/*` → admin + super_admin, users super_admin only
+  - `/admin/detections` → admin + pakar + super_admin
+- ✅ Updated `docs/MIGRATION_GUIDE.md` admin endpoint migration examples to the final domain split
+- ✅ Updated `docs/FRONTEND_DESIGN.md` Wayfinder route examples and route organization to current `/admin/knowledge-base/*` and `/admin/system/*`
+- ✅ Updated `docs/SEO_STRATEGY.md` from planned/missing SEO items to current Phase 1 + Phase 2 complete status
+
+### 2. Bruno Collection Requests Updated ✅
+- ✅ Updated stale Bruno request URLs for dashboard stats, disease CRUD, and user management to current private admin domains
+- ✅ Updated role notes for disease management requests from admin/super_admin to pakar/super_admin
+
+### 3. Historical Docs Clarified ✅
+- ✅ Added superseded/historical notes to `docs/API_REFACTOR_SUMMARY.md` and `docs/REFACTORING_COMPLETE.md`
+- ✅ Kept old URLs in migration/history tables only where they are explicitly labeled as OLD URLs
+
+---
+
 📋 SESSION SUMMARY - Whitebox Testing Documentation ✅ COMPLETED
 ---
 ✅ YANG SUDAH DIKERJAKAN
@@ -371,7 +397,7 @@ fetch('/public/api/v1/admin/dashboard/stats', ...)  ❌
 // NEW (POST/PUT/DELETE pakai /private)
 fetch('/private/api/v1/detections/predict', ...)  ✅
 fetch('/private/api/v1/detections', { method: 'POST' })  ✅
-fetch('/private/api/v1/admin/dashboard/stats', ...)  ✅
+fetch('/private/api/v1/admin/system/dashboard/stats', ...)  ✅
 
 // Yang TIDAK berubah (GET tetap /public)
 fetch('/public/api/v1/diseases', ...)  ✅

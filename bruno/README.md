@@ -97,48 +97,48 @@ API sekarang dipisah menjadi 2 prefix berbeda:
 
 ---
 
-### 👑 Admin Endpoints - `/private/api/v1/admin/*` (Admin/Super Admin Only)
+### 👑 Admin Endpoints - `/private/api/v1/admin/*` (Role-Based)
 
-#### Dashboard
+#### System Dashboard
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/private/api/v1/admin/dashboard/stats` | Get dashboard statistics | admin/super_admin |
+| GET | `/private/api/v1/admin/system/dashboard/stats` | Get dashboard statistics | admin/super_admin |
 
-#### Diseases Management
+#### Knowledge Base: Diseases Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/private/api/v1/admin/diseases` | Get all diseases (admin) | admin/super_admin |
-| POST | `/private/api/v1/admin/diseases` | Create disease | admin/super_admin |
-| PUT | `/private/api/v1/admin/diseases/{id}` | Update disease | admin/super_admin |
-| DELETE | `/private/api/v1/admin/diseases/{id}` | Delete disease | admin/super_admin |
+| GET | `/private/api/v1/admin/knowledge-base/diseases` | Get all diseases for management | pakar/super_admin |
+| POST | `/private/api/v1/admin/knowledge-base/diseases` | Create disease | pakar/super_admin |
+| PUT | `/private/api/v1/admin/knowledge-base/diseases/{id}` | Update disease | pakar/super_admin |
+| DELETE | `/private/api/v1/admin/knowledge-base/diseases/{id}` | Delete disease | pakar/super_admin |
 
-#### Symptoms Management
+#### Knowledge Base: Symptoms Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/private/api/v1/admin/symptoms` | Get all symptoms (admin) | admin/super_admin |
-| POST | `/private/api/v1/admin/symptoms` | Create symptom | admin/super_admin |
-| PUT | `/private/api/v1/admin/symptoms/{id}` | Update symptom | admin/super_admin |
-| DELETE | `/private/api/v1/admin/symptoms/{id}` | Delete symptom | admin/super_admin |
+| GET | `/private/api/v1/admin/knowledge-base/symptoms` | Get all symptoms for management | pakar/super_admin |
+| POST | `/private/api/v1/admin/knowledge-base/symptoms` | Create symptom | pakar/super_admin |
+| PUT | `/private/api/v1/admin/knowledge-base/symptoms/{id}` | Update symptom | pakar/super_admin |
+| DELETE | `/private/api/v1/admin/knowledge-base/symptoms/{id}` | Delete symptom | pakar/super_admin |
 
-#### Treatments Management
+#### Knowledge Base: Treatments Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/private/api/v1/admin/treatments` | Get all treatments | admin/super_admin |
-| POST | `/private/api/v1/admin/treatments` | Create treatment | admin/super_admin |
-| PUT | `/private/api/v1/admin/treatments/{id}` | Update treatment | admin/super_admin |
-| DELETE | `/private/api/v1/admin/treatments/{id}` | Delete treatment | admin/super_admin |
+| GET | `/private/api/v1/admin/knowledge-base/treatments` | Get all treatments | pakar/super_admin |
+| POST | `/private/api/v1/admin/knowledge-base/treatments` | Create treatment | pakar/super_admin |
+| PUT | `/private/api/v1/admin/knowledge-base/treatments/{id}` | Update treatment | pakar/super_admin |
+| DELETE | `/private/api/v1/admin/knowledge-base/treatments/{id}` | Delete treatment | pakar/super_admin |
 
 #### Detections Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/private/api/v1/admin/detections` | Get all detections (admin view) | admin/super_admin |
+| GET | `/private/api/v1/admin/detections` | Get all detections (admin view) | admin/pakar/super_admin |
 
 #### User Management
 | Method | Endpoint | Description | Required Role |
 |--------|----------|-------------|---------------|
-| GET | `/private/api/v1/admin/users` | Get all users | super_admin |
-| PUT | `/private/api/v1/admin/users/{id}` | Update user | super_admin |
-| DELETE | `/private/api/v1/admin/users/{id}` | Delete user | super_admin |
+| GET | `/private/api/v1/admin/system/users` | Get all users | super_admin |
+| PUT | `/private/api/v1/admin/system/users/{id}` | Update user | super_admin |
+| DELETE | `/private/api/v1/admin/system/users/{id}` | Delete user | super_admin |
 
 ---
 
@@ -152,10 +152,11 @@ API sekarang dipisah menjadi 2 prefix berbeda:
 - **Semua endpoint POST/PUT/DELETE** untuk modifikasi data
 - User info & Logout
 
-### 👑 Admin Only
-- Dashboard stats
-- Management endpoints (CRUD diseases, symptoms, treatments)
-- User management (super admin only)
+### 👑 Role-Based Admin Areas
+- System dashboard: `admin` + `super_admin`
+- Knowledge base CRUD (diseases, symptoms, treatments): `pakar` + `super_admin`
+- User management: `super_admin` only
+- All detections monitoring: `admin` + `pakar` + `super_admin`
 
 ---
 
@@ -231,8 +232,8 @@ curl http://localhost:6000/private/api/v1/user \
 
 ### Admin Access (Admin Token) - `/private/api/v1/admin/*`
 ```bash
-# Get dashboard stats (admin only)
-curl http://localhost:6000/private/api/v1/admin/dashboard/stats \
+# Get dashboard stats (admin or super_admin)
+curl http://localhost:6000/private/api/v1/admin/system/dashboard/stats \
   -H "Authorization: Bearer ADMIN_TOKEN"
 ```
 

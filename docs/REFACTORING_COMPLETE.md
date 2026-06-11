@@ -1,5 +1,7 @@
 # 🎉 API Refactoring - COMPLETED SUCCESSFULLY
 
+> **Historical note:** Dokumen ini adalah laporan refactor API awal sebelum RBAC 4-role. Endpoint admin final sekarang memakai domain split: `/private/api/v1/admin/knowledge-base/*`, `/private/api/v1/admin/system/*`, dan `/private/api/v1/admin/detections`.
+
 **Date:** 2026-04-30  
 **Duration:** ~80 minutes  
 **Status:** ✅ 100% Complete
@@ -78,13 +80,11 @@ Authentication required (Bearer token):
 - `POST /expert-system`
 
 ### Admin Endpoints - `/private/api/v1/admin/*`
-Admin/Super Admin only (17 endpoints):
-- Dashboard stats
-- Diseases CRUD (4 endpoints)
-- Symptoms CRUD (4 endpoints)
-- Treatments CRUD (4 endpoints)
-- Detections management (1 endpoint)
-- Users management (3 endpoints - super admin only)
+Final RBAC 4-role domains:
+- System dashboard: `/admin/system/dashboard/stats` (`admin`, `super_admin`)
+- User management: `/admin/system/users` (`super_admin`)
+- Knowledge base CRUD: `/admin/knowledge-base/diseases`, `/symptoms`, `/treatments` (`pakar`, `super_admin`)
+- Detections management: `/admin/detections` (`admin`, `pakar`, `super_admin`)
 
 ---
 
@@ -128,7 +128,7 @@ fetch('/public/api/v1/admin/dashboard/stats', { ... })
 
 // ✅ NEW
 fetch('/private/api/v1/detections/predict', { method: 'POST', ... })
-fetch('/private/api/v1/admin/dashboard/stats', { ... })
+fetch('/private/api/v1/admin/system/dashboard/stats', { ... })
 
 // ✅ NO CHANGE (GET requests stay public)
 fetch('/public/api/v1/diseases', { method: 'GET', ... })

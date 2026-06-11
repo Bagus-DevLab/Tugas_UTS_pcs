@@ -10,20 +10,18 @@
 ## 📊 Current State Analysis
 
 ### ✅ Existing SEO Assets
-- ✅ `robots.txt` di `public/` (allow all)
-- ✅ Inertia `<Head>` component digunakan di beberapa page (welcome, diseases/show)
+- ✅ `robots.txt` di `public/` sudah membatasi area admin/private dan mengarah ke sitemap
+- ✅ Dynamic meta tags via `MetaTagService` dan Inertia `<Head>` pada public pages
 - ✅ URL structure rapi dengan slug (`/diseases/{slug}`)
-- ✅ Alt text pada gambar penyakit (basic)
+- ✅ Enhanced alt text pada halaman detail penyakit
 - ✅ 11 disease pages yang bisa diindeks
+- ✅ `public/sitemap.xml` generated via `php artisan sitemap:generate`
+- ✅ Canonical tags, OG tags, dan Twitter Card tersedia melalui `MetaHead`
+- ✅ JSON-LD Article + BreadcrumbList pada halaman detail penyakit
 
 ### ❌ Missing SEO Components
-- ❌ **Sitemap.xml** — Google tidak tahu URL mana yang harus di-crawl
-- ❌ **Dynamic meta tags** (description, keywords, OG tags) — hanya title yang di-set
-- ❌ **Structured Data (JSON-LD)** — Google tidak memahami konten sebagai "Medical/Agricultural Knowledge"
-- ❌ **Canonical tags** — risiko duplicate content
-- ❌ **SSR** — Googlebot harus execute JavaScript untuk melihat konten
-- ❌ **Semantic HTML audit** — heading hierarchy belum diverifikasi
-- ❌ **Image optimization** — alt text masih generic
+- ❌ **SSR** — sengaja tidak dipakai untuk saat ini; lihat Phase 3 decision.
+- ❌ **Advanced performance/internal linking** — masih opsional untuk fase berikutnya.
 
 ---
 
@@ -41,7 +39,7 @@
 
 ## 📋 Implementation Phases
 
-### **PHASE 1: Foundation — Meta Tags & Crawlability** ✅ IN PROGRESS
+### **PHASE 1: Foundation — Meta Tags & Crawlability** ✅ COMPLETE
 **Effort:** 2-3 hours | **Impact:** 🔴 HIGH
 
 #### 1.1 Dynamic Meta Tags
@@ -88,7 +86,7 @@ Sitemap: https://mapan.test/sitemap.xml
 
 ---
 
-### **PHASE 2: Content Optimization — Semantic HTML & Structured Data**
+### **PHASE 2: Content Optimization — Semantic HTML & Structured Data** ✅ COMPLETE
 **Effort:** 3-4 hours | **Impact:** 🟡 MEDIUM
 
 #### 2.1 Semantic HTML Audit
@@ -102,9 +100,9 @@ Sitemap: https://mapan.test/sitemap.xml
 - Strategy: Add `alt_text` column to `diseases` table or generate in controller
 
 #### 2.3 Structured Data (JSON-LD)
-- **Schema.org Type:** `MedicalCondition` for diseases
-- **Fields:** name, alternateName (latin_name), description, cause, signOrSymptom, possibleTreatment
-- **Implementation:** JSON-LD script in `<Head>` component
+- **Schema.org Types:** `Article` and `BreadcrumbList` for disease detail pages
+- **Fields:** headline, alternativeHeadline, image, description, articleBody, publisher, about, keywords, breadcrumb items
+- **Implementation:** JSON-LD script through `MetaHead` children
 - **Validation:** Google Rich Results Test
 
 ---
@@ -197,18 +195,21 @@ $sitemap->writeToFile(public_path('sitemap.xml'));
 ```json
 {
   "@context": "https://schema.org",
-  "@type": "MedicalCondition",
-  "name": "Blast",
-  "alternateName": "Pyricularia oryzae",
+  "@type": "Article",
+  "headline": "Blast",
+  "alternativeHeadline": "Pyricularia oryzae",
+  "image": "https://mapan.test/images/og-default.png",
   "description": "Penyakit blast adalah...",
-  "cause": "Jamur Pyricularia oryzae",
-  "signOrSymptom": [
-    {"@type": "MedicalSymptom", "name": "Bercak coklat pada daun"},
-    {"@type": "MedicalSymptom", "name": "Daun menguning"}
-  ],
-  "possibleTreatment": [
-    {"@type": "MedicalTherapy", "name": "Fungisida berbahan aktif..."}
-  ]
+  "articleBody": "Penyakit blast adalah...",
+  "author": { "@type": "Organization", "name": "MAPAN" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "MAPAN",
+    "logo": { "@type": "ImageObject", "url": "https://mapan.test/images/og-default.png" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://mapan.test/diseases/blast" },
+  "about": { "@type": "Thing", "name": "Blast", "description": "Jamur Pyricularia oryzae" },
+  "keywords": "penyakit padi, blast, gejala blast, penanganan blast"
 }
 ```
 
@@ -290,7 +291,8 @@ APP_URL=https://mapan.test  # Change to production domain when deployed
 ## 📚 References
 
 - [Google Search Central - JavaScript SEO](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics)
-- [Schema.org - MedicalCondition](https://schema.org/MedicalCondition)
+- [Schema.org - Article](https://schema.org/Article)
+- [Schema.org - BreadcrumbList](https://schema.org/BreadcrumbList)
 - [Inertia.js - Title & Meta](https://inertiajs.com/title-and-meta)
 - [Spatie Laravel Sitemap](https://github.com/spatie/laravel-sitemap)
 

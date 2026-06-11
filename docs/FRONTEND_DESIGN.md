@@ -31,7 +31,7 @@ The Mapan frontend is a comprehensive React/TypeScript application integrating:
 - **Detection Module** - Image upload and ML-based disease detection with history tracking
 - **Expert System** - Rule-based diagnosis using Certainty Factor (CF) algorithm
 - **Knowledge Management** - Admin interface for diseases, symptoms, and treatments (pakar role)
-- **User Management** - System-level user administration (admin role)
+- **User Management** - System-level user administration (super_admin role)
 - **Authentication** - Laravel Sanctum + Fortify integration with 2FA support
 - **Real-time Analytics** - Dashboard with charts and detection statistics
 
@@ -547,16 +547,20 @@ export const dashboard = (options?: RouteQueryOptions) => ({
 })
 
 export const admin = {
-    diseases: { index: () => ({ url: '/admin/diseases' }) },
-    users: { show: (id: number) => ({ url: `/admin/users/${id}` }) }
+    knowledgeBase: {
+        diseases: { index: () => ({ url: '/admin/knowledge-base/diseases' }) }
+    },
+    system: {
+        users: { edit: (id: number) => ({ url: `/admin/system/users/${id}/edit` }) }
+    }
 }
 
 // Usage in components
 import { dashboard, admin } from '@/routes'
 
 <Link href={dashboard.url}>Dashboard</Link>
-<Link href={admin.diseases.index.url}>Diseases</Link>
-<Link href={admin.users.show(5).url}>User 5</Link>
+<Link href={admin.knowledgeBase.diseases.index.url}>Diseases</Link>
+<Link href={admin.system.users.edit(5).url}>Edit User 5</Link>
 ```
 
 **Route Organization:**
@@ -572,13 +576,12 @@ import { dashboard, admin } from '@/routes'
 /settings/security
 /settings/account
 /admin/detections
-/admin/diseases
-/admin/diseases/{id}
-/admin/symptoms
-/admin/treatments
-/admin/users
-/admin/users/{id}
-/admin/system (dashboard)
+/admin/knowledge-base/diseases
+/admin/knowledge-base/diseases/{id}/edit
+/admin/knowledge-base/symptoms
+/admin/knowledge-base/treatments
+/admin/system/users
+/admin/system/users/{id}/edit
 ```
 
 ### Inertia Navigation

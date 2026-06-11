@@ -1,5 +1,7 @@
 # 🔄 API Refactoring Summary
 
+> **Historical note:** Dokumen ini mencatat refactor API awal pada 2026-04-30. Struktur final saat ini sudah diperluas oleh RBAC 4-role: knowledge base berada di `/private/api/v1/admin/knowledge-base/*`, system management di `/private/api/v1/admin/system/*`, dan monitoring deteksi tetap di `/private/api/v1/admin/detections`. Untuk panduan aktif, lihat `AGENTS.md`, `routes/api.php`, dan `docs/MIGRATION_GUIDE.md`.
+
 ## ✅ Completed Changes (Sesuai Instruksi Dosen)
 
 ### 1. **Public Routes (GET - No Auth Required)**
@@ -39,7 +41,7 @@ Semua endpoint modifikasi data sekarang **PROTECTED**:
 Dashboard stats dipindahkan ke **ADMIN ONLY**:
 
 ```
-👑 GET /public/api/v1/admin/dashboard/stats
+👑 GET /private/api/v1/admin/system/dashboard/stats
 ```
 
 **Benefit**: Stats hanya accessible oleh admin/super_admin.
@@ -99,22 +101,23 @@ POST   /expert-system
 DELETE /detections/{id}
 ```
 
-### Admin Only (Admin + Auth)
+### Admin Areas (Final RBAC 4-Role Structure)
 ```
-GET    /admin/dashboard/stats
-GET    /admin/diseases
-POST   /admin/diseases
-PUT    /admin/diseases/{id}
-DELETE /admin/diseases/{id}
-... (all admin CRUD endpoints)
+GET    /admin/system/dashboard/stats
+GET    /admin/system/users
+PUT    /admin/system/users/{id}
+DELETE /admin/system/users/{id}
+
+GET    /admin/knowledge-base/diseases
+POST   /admin/knowledge-base/diseases
+PUT    /admin/knowledge-base/diseases/{id}
+DELETE /admin/knowledge-base/diseases/{id}
+... (symptoms and treatments use the same knowledge-base prefix)
+
+GET    /admin/detections
 ```
 
-### Super Admin Only
-```
-GET    /admin/users
-PUT    /admin/users/{id}
-DELETE /admin/users/{id}
-```
+System dashboard requires `admin` or `super_admin`; user management requires `super_admin`; knowledge-base CRUD requires `pakar` or `super_admin`; all-detections monitoring requires `admin`, `pakar`, or `super_admin`.
 
 ---
 
@@ -169,7 +172,7 @@ php -S localhost:6000 -t public
 curl http://localhost:6000/public/api/v1/diseases
 
 # Test protected endpoint (should fail)
-curl -X POST http://localhost:6000/public/api/v1/detections/predict
+curl -X POST http://localhost:6000/private/api/v1/detections/predict
 
 # Login and get token
 curl -X POST http://localhost:6000/public/api/v1/login \
@@ -177,7 +180,7 @@ curl -X POST http://localhost:6000/public/api/v1/login \
   -d '{"email":"user@mapan.test","password":"password"}'
 
 # Test with token (should work)
-curl -X POST http://localhost:6000/public/api/v1/detections/predict \
+curl -X POST http://localhost:6000/private/api/v1/detections/predict \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -F "image=@image.jpg"
 ```
@@ -192,4 +195,3 @@ curl -X POST http://localhost:6000/public/api/v1/detections/predict \
 4. **Maintainable**: Easier to add tests and modify logic
 5. **Consistent**: All endpoints follow same pattern
 6. **Compliant**: Follows dosen's instructions exactly
-

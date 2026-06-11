@@ -95,7 +95,7 @@ Sistem memiliki 4 role dengan hak akses bertingkat dan pemisahan domain:
 | Aspek | Implementasi |
 |-------|-------------|
 | Authentication | Laravel Fortify + 2FA, semua route dilindungi `auth` + `verified` middleware |
-| Authorization | 3-tier role system (super_admin, admin, user) + isolasi data per user |
+| Authorization | 4-tier role system (super_admin, admin, pakar, user) + isolasi data per user |
 | CSRF | Otomatis via Laravel `web` middleware + Inertia.js |
 | Rate Limiting | `throttle` middleware pada semua POST routes (10-30 req/menit) |
 | Input Validation | Validasi server-side pada semua controller (type, range, format) |
@@ -129,7 +129,7 @@ POST /public/api/v1/register
 - 🔒 **Authentication required** (Bearer token)
 - Semua endpoint POST/PUT/DELETE (write operations)
 - User info & Logout
-- Admin endpoints (`/private/api/v1/admin/*`)
+- Admin endpoints (`/private/api/v1/admin/*`) dengan pemisahan domain knowledge-base, system, dan monitoring
 
 **Contoh:**
 ```bash
@@ -140,12 +140,18 @@ POST   /private/api/v1/detections/predict
 DELETE /private/api/v1/detections/{id}
 POST   /private/api/v1/expert-system/diagnose
 
-# Admin endpoints (admin/super_admin only)
-GET    /private/api/v1/admin/dashboard/stats
-GET    /private/api/v1/admin/diseases
-POST   /private/api/v1/admin/diseases
-PUT    /private/api/v1/admin/diseases/{id}
-DELETE /private/api/v1/admin/diseases/{id}
+# Knowledge base endpoints (pakar/super_admin)
+GET    /private/api/v1/admin/knowledge-base/diseases
+POST   /private/api/v1/admin/knowledge-base/diseases
+PUT    /private/api/v1/admin/knowledge-base/diseases/{id}
+DELETE /private/api/v1/admin/knowledge-base/diseases/{id}
+
+# System endpoints (admin/super_admin; users super_admin only)
+GET    /private/api/v1/admin/system/dashboard/stats
+GET    /private/api/v1/admin/system/users
+
+# Shared monitoring endpoints (admin/pakar/super_admin)
+GET    /private/api/v1/admin/detections
 ```
 
 ### Testing API

@@ -46,7 +46,7 @@ fetch('/public/api/v1/admin/dashboard/stats', { ... })
 // POST/PUT/DELETE menggunakan /private
 fetch('/private/api/v1/detections', { method: 'POST', ... })
 fetch('/private/api/v1/detections/predict', { method: 'POST', ... })
-fetch('/private/api/v1/admin/dashboard/stats', { ... })
+fetch('/private/api/v1/admin/system/dashboard/stats', { ... })
 
 // GET tetap menggunakan /public (tidak berubah)
 fetch('/public/api/v1/diseases', { method: 'GET', ... })
@@ -73,7 +73,10 @@ grep -r "axios" resources/js/
 #### Rule of Thumb:
 - **GET requests** → Keep `/public/api/v1/*` (no change)
 - **POST/PUT/DELETE requests** → Change to `/private/api/v1/*`
-- **Admin endpoints** → Change to `/private/api/v1/admin/*`
+- **Admin endpoints** → Change to `/private/api/v1/admin/*`, then use the current domain split:
+  - Knowledge base: `/private/api/v1/admin/knowledge-base/*`
+  - System: `/private/api/v1/admin/system/*`
+  - Shared monitoring: `/private/api/v1/admin/detections`
 
 ### Step 3: Endpoint-by-Endpoint Migration
 
@@ -176,26 +179,26 @@ fetch('/private/api/v1/expert-system/diagnose', {
 
 #### 👑 Admin Endpoints
 
-**All admin endpoints** now use `/private/api/v1/admin/*`
+Admin endpoints use `/private/api/v1/admin/*` and are split by domain after the 4-role RBAC update.
 
 | Endpoint | Old URL | New URL | Method |
 |----------|---------|---------|--------|
-| Dashboard Stats | `/public/api/v1/admin/dashboard/stats` | `/private/api/v1/admin/dashboard/stats` | GET |
-| Get Diseases | `/public/api/v1/admin/diseases` | `/private/api/v1/admin/diseases` | GET |
-| Create Disease | `/public/api/v1/admin/diseases` | `/private/api/v1/admin/diseases` | POST |
-| Update Disease | `/public/api/v1/admin/diseases/{id}` | `/private/api/v1/admin/diseases/{id}` | PUT |
-| Delete Disease | `/public/api/v1/admin/diseases/{id}` | `/private/api/v1/admin/diseases/{id}` | DELETE |
-| Get Symptoms | `/public/api/v1/admin/symptoms` | `/private/api/v1/admin/symptoms` | GET |
-| Create Symptom | `/public/api/v1/admin/symptoms` | `/private/api/v1/admin/symptoms` | POST |
-| Update Symptom | `/public/api/v1/admin/symptoms/{id}` | `/private/api/v1/admin/symptoms/{id}` | PUT |
-| Delete Symptom | `/public/api/v1/admin/symptoms/{id}` | `/private/api/v1/admin/symptoms/{id}` | DELETE |
-| Get Treatments | `/public/api/v1/admin/treatments` | `/private/api/v1/admin/treatments` | GET |
-| Create Treatment | `/public/api/v1/admin/treatments` | `/private/api/v1/admin/treatments` | POST |
-| Update Treatment | `/public/api/v1/admin/treatments/{id}` | `/private/api/v1/admin/treatments/{id}` | PUT |
-| Delete Treatment | `/public/api/v1/admin/treatments/{id}` | `/private/api/v1/admin/treatments/{id}` | DELETE |
-| Get Users | `/public/api/v1/admin/users` | `/private/api/v1/admin/users` | GET |
-| Update User | `/public/api/v1/admin/users/{id}` | `/private/api/v1/admin/users/{id}` | PUT |
-| Delete User | `/public/api/v1/admin/users/{id}` | `/private/api/v1/admin/users/{id}` | DELETE |
+| Dashboard Stats | `/public/api/v1/admin/dashboard/stats` | `/private/api/v1/admin/system/dashboard/stats` | GET |
+| Get Diseases | `/public/api/v1/admin/diseases` | `/private/api/v1/admin/knowledge-base/diseases` | GET |
+| Create Disease | `/public/api/v1/admin/diseases` | `/private/api/v1/admin/knowledge-base/diseases` | POST |
+| Update Disease | `/public/api/v1/admin/diseases/{id}` | `/private/api/v1/admin/knowledge-base/diseases/{id}` | PUT |
+| Delete Disease | `/public/api/v1/admin/diseases/{id}` | `/private/api/v1/admin/knowledge-base/diseases/{id}` | DELETE |
+| Get Symptoms | `/public/api/v1/admin/symptoms` | `/private/api/v1/admin/knowledge-base/symptoms` | GET |
+| Create Symptom | `/public/api/v1/admin/symptoms` | `/private/api/v1/admin/knowledge-base/symptoms` | POST |
+| Update Symptom | `/public/api/v1/admin/symptoms/{id}` | `/private/api/v1/admin/knowledge-base/symptoms/{id}` | PUT |
+| Delete Symptom | `/public/api/v1/admin/symptoms/{id}` | `/private/api/v1/admin/knowledge-base/symptoms/{id}` | DELETE |
+| Get Treatments | `/public/api/v1/admin/treatments` | `/private/api/v1/admin/knowledge-base/treatments` | GET |
+| Create Treatment | `/public/api/v1/admin/treatments` | `/private/api/v1/admin/knowledge-base/treatments` | POST |
+| Update Treatment | `/public/api/v1/admin/treatments/{id}` | `/private/api/v1/admin/knowledge-base/treatments/{id}` | PUT |
+| Delete Treatment | `/public/api/v1/admin/treatments/{id}` | `/private/api/v1/admin/knowledge-base/treatments/{id}` | DELETE |
+| Get Users | `/public/api/v1/admin/users` | `/private/api/v1/admin/system/users` | GET |
+| Update User | `/public/api/v1/admin/users/{id}` | `/private/api/v1/admin/system/users/{id}` | PUT |
+| Delete User | `/public/api/v1/admin/users/{id}` | `/private/api/v1/admin/system/users/{id}` | DELETE |
 
 **Example:**
 ```javascript
@@ -205,7 +208,7 @@ fetch('/public/api/v1/admin/dashboard/stats', {
 })
 
 // ✅ NEW
-fetch('/private/api/v1/admin/dashboard/stats', {
+fetch('/private/api/v1/admin/system/dashboard/stats', {
   headers: { 'Authorization': `Bearer ${adminToken}` }
 })
 ```
@@ -224,16 +227,19 @@ Use your IDE's search & replace feature:
 2. **Search for:** `/public/api/v1/detections` (POST/DELETE only)
    **Replace with:** `/private/api/v1/detections`
 
-3. **Search for:** `/public/api/v1/admin/`
-   **Replace with:** `/private/api/v1/admin/`
+3. **Search for:** `/public/api/v1/admin/diseases`, `/public/api/v1/admin/symptoms`, `/public/api/v1/admin/treatments`
+   **Replace with:** `/private/api/v1/admin/knowledge-base/diseases`, `/private/api/v1/admin/knowledge-base/symptoms`, `/private/api/v1/admin/knowledge-base/treatments`
 
-4. **Search for:** `/public/api/v1/expert-system`
+4. **Search for:** `/public/api/v1/admin/dashboard/stats`, `/public/api/v1/admin/users`
+   **Replace with:** `/private/api/v1/admin/system/dashboard/stats`, `/private/api/v1/admin/system/users`
+
+5. **Search for:** `/public/api/v1/expert-system`
    **Replace with:** `/private/api/v1/expert-system`
 
-5. **Search for:** `/public/api/v1/user`
+6. **Search for:** `/public/api/v1/user`
    **Replace with:** `/private/api/v1/user`
 
-6. **Search for:** `/public/api/v1/logout`
+7. **Search for:** `/public/api/v1/logout`
    **Replace with:** `/private/api/v1/logout`
 
 ### Strategy 2: Create API Helper Function
@@ -329,11 +335,11 @@ curl http://localhost:6000/private/api/v1/user \
 ### 3. Test Admin Endpoints
 ```bash
 # Should fail with user token (403)
-curl http://localhost:6000/private/api/v1/admin/dashboard/stats \
+curl http://localhost:6000/private/api/v1/admin/system/dashboard/stats \
   -H "Authorization: Bearer USER_TOKEN"
 
 # Should work with admin token
-curl http://localhost:6000/private/api/v1/admin/dashboard/stats \
+curl http://localhost:6000/private/api/v1/admin/system/dashboard/stats \
   -H "Authorization: Bearer ADMIN_TOKEN"
 ```
 
@@ -351,7 +357,7 @@ curl http://localhost:6000/private/api/v1/admin/dashboard/stats \
 
 ### Issue 3: 403 Forbidden
 **Cause:** User doesn't have required role  
-**Solution:** Check user role (admin endpoints require admin/super_admin role)
+**Solution:** Check user role. Knowledge base endpoints require `pakar`/`super_admin`, system dashboard requires `admin`/`super_admin`, user management requires `super_admin`, and all detections monitoring allows `admin`/`pakar`/`super_admin`.
 
 ### Issue 4: CORS Errors
 **Cause:** Frontend and backend on different ports  
@@ -414,7 +420,7 @@ Role system expanded from 3-tier to 4-tier with domain separation:
 
 **Old Roles (3-tier):**
 - `super_admin` - Full access
-- `admin` - IT + Medical management
+- `admin` - IT + knowledge-base management
 - `user` - End user
 
 **New Roles (4-tier):**
