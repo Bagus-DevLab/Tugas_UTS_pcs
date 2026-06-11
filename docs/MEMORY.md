@@ -1,3 +1,19 @@
+📋 SESSION SUMMARY - ML Class Weighting ✅ COMPLETED
+---
+✅ YANG SUDAH DIKERJAKAN
+
+## Training Imbalance Handling (June 12, 2026)
+
+### 1. Balanced Class Weights ✅
+- ✅ Updated `ml/train_model.py` to calculate class weights from `train_gen.classes`
+- ✅ Uses `sklearn.utils.class_weight.compute_class_weight(class_weight='balanced')`
+- ✅ Applies `class_weight` to both training phases:
+  - Phase 1 classification head training
+  - Phase 2 fine-tuning top MobileNetV2 layers
+- ✅ Prints per-class weights before training for auditability
+
+---
+
 📋 SESSION SUMMARY - Dataset Split Regeneration ✅ COMPLETED
 ---
 ✅ YANG SUDAH DIKERJAKAN

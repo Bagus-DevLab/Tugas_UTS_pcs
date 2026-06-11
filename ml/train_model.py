@@ -47,6 +47,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.utils.class_weight import compute_class_weight
 import seaborn as sns
 
 # ============================================================
@@ -55,8 +56,8 @@ import seaborn as sns
 
 IMG_SIZE = 224
 BATCH_SIZE = 32
-EPOCHS_PHASE1 = 10
-EPOCHS_PHASE2 = 20
+EPOCHS_PHASE1 = 20
+EPOCHS_PHASE2 = 80
 LEARNING_RATE_PHASE1 = 1e-3
 LEARNING_RATE_PHASE2 = 1e-5
 RANDOM_SEED = 42
@@ -187,10 +188,31 @@ def build_model():
 # Training
 # ============================================================
 
+def calculate_class_weights(train_gen):
+    """Calculate balanced class weights from the training split."""
+
+    class_ids = np.arange(NUM_CLASSES)
+    weights = compute_class_weight(
+        class_weight='balanced',
+        classes=class_ids,
+        y=train_gen.classes,
+    )
+    class_weights = {class_id: float(weight) for class_id, weight in zip(class_ids, weights)}
+    index_to_class = {idx: name for name, idx in train_gen.class_indices.items()}
+
+    print("\nClass weights (balanced):")
+    for class_id in class_ids:
+        class_name = index_to_class.get(class_id, f'Class {class_id}')
+        print(f"  {class_id:2d} - {class_name:30s}: {class_weights[class_id]:.4f}")
+
+    return class_weights
+
+
 def train_model(model, base_model, train_gen, val_gen):
     """Train in two phases: head only, then fine-tune."""
 
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
+    class_weights = calculate_class_weights(train_gen)
 
     callbacks = [
         EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True, verbose=1),
@@ -209,7 +231,14 @@ def train_model(model, base_model, train_gen, val_gen):
         metrics=['accuracy'],
     )
 
-    history1 = model.fit(train_gen, epochs=EPOCHS_PHASE1, validation_data=val_gen, callbacks=callbacks, verbose=1)
+    history1 = model.fit(
+        train_gen,
+        epochs=EPOCHS_PHASE1,
+        validation_data=val_gen,
+        callbacks=callbacks,
+        class_weight=class_weights,
+        verbose=1,
+    )
 
     # Phase 2
     print("\n" + "=" * 60)
@@ -226,7 +255,14 @@ def train_model(model, base_model, train_gen, val_gen):
         metrics=['accuracy'],
     )
 
-    history2 = model.fit(train_gen, epochs=EPOCHS_PHASE2, validation_data=val_gen, callbacks=callbacks, verbose=1)
+    history2 = model.fit(
+        train_gen,
+        epochs=EPOCHS_PHASE2,
+        validation_data=val_gen,
+        callbacks=callbacks,
+        class_weight=class_weights,
+        verbose=1,
+    )
 
     history = {}
     for key in history1.history:
