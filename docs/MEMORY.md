@@ -1,3 +1,32 @@
+📋 SESSION SUMMARY - Dataset Split Regeneration ✅ COMPLETED
+---
+✅ YANG SUDAH DIKERJAKAN
+
+## ML Dataset Split Refresh (June 12, 2026)
+
+### 1. Regenerated Dataset Split ✅
+- ✅ Ran `python3 split_dataset.py` from `ml/`
+- ✅ Rebuilt `ml/dataset_split` from `ml/dataset`
+- ✅ Initial split: 24,259 images total
+  - Train: 19,404
+  - Validation: 2,422
+  - Test: 2,433
+
+### 2. Cleaned Corrupt Images ✅
+- ✅ Ran `python3 clean_dataset.py` from `ml/`
+- ✅ Removed 303 corrupt/truncated images from `ml/dataset_split`
+- ✅ Final valid images: 23,956
+  - Train: 19,163
+  - Validation: 2,386
+  - Test: 2,407
+
+### 3. Final Class Distribution ✅
+- Train: Bacterial Leaf Blight 1,759; Bacterial Leaf Streak 608; Bacterial Panicle Blight 539; Blast 3,305; Brown Spot 2,779; Dead Heart 1,488; Downy Mildew 800; Healthy 3,347; Hispa 2,396; Leaf Smut 610; Tungro 1,532
+- Validation: Bacterial Leaf Blight 220; Bacterial Leaf Streak 76; Bacterial Panicle Blight 67; Blast 408; Brown Spot 346; Dead Heart 186; Downy Mildew 100; Healthy 417; Hispa 299; Leaf Smut 76; Tungro 191
+- Test: Bacterial Leaf Blight 221; Bacterial Leaf Streak 76; Bacterial Panicle Blight 68; Blast 418; Brown Spot 349; Dead Heart 187; Downy Mildew 100; Healthy 419; Hispa 300; Leaf Smut 77; Tungro 192
+
+---
+
 📋 SESSION SUMMARY - ML Preprocessing Fix ✅ COMPLETED
 ---
 ✅ YANG SUDAH DIKERJAKAN
