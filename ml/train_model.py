@@ -208,17 +208,26 @@ def calculate_class_weights(train_gen):
     return class_weights
 
 
+def create_callbacks(patience=5, lr_patience=3, initial_best_accuracy=None):
+    """Create fresh callbacks so phase state does not leak between fits."""
+    return [
+        EarlyStopping(monitor='val_loss', patience=patience, restore_best_weights=True, verbose=1),
+        ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=lr_patience, min_lr=1e-7, verbose=1),
+        ModelCheckpoint(
+            str(OUTPUT_MODEL_PATH),
+            monitor='val_accuracy',
+            save_best_only=True,
+            verbose=1,
+            initial_value_threshold=initial_best_accuracy,
+        ),
+    ]
+
+
 def train_model(model, base_model, train_gen, val_gen):
     """Train in two phases: head only, then fine-tune."""
 
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
     class_weights = calculate_class_weights(train_gen)
-
-    callbacks = [
-        EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True, verbose=1),
-        ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, min_lr=1e-7, verbose=1),
-        ModelCheckpoint(str(OUTPUT_MODEL_PATH), monitor='val_accuracy', save_best_only=True, verbose=1),
-    ]
 
     # Phase 1
     print("\n" + "=" * 60)
@@ -235,10 +244,12 @@ def train_model(model, base_model, train_gen, val_gen):
         train_gen,
         epochs=EPOCHS_PHASE1,
         validation_data=val_gen,
-        callbacks=callbacks,
+        callbacks=create_callbacks(),
         class_weight=class_weights,
         verbose=1,
     )
+
+    phase1_best_accuracy = max(history1.history.get('val_accuracy', [0.0]))
 
     # Phase 2
     print("\n" + "=" * 60)
@@ -259,7 +270,11 @@ def train_model(model, base_model, train_gen, val_gen):
         train_gen,
         epochs=EPOCHS_PHASE2,
         validation_data=val_gen,
-        callbacks=callbacks,
+        callbacks=create_callbacks(
+            patience=8,
+            lr_patience=4,
+            initial_best_accuracy=phase1_best_accuracy,
+        ),
         class_weight=class_weights,
         verbose=1,
     )
