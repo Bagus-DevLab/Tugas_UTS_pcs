@@ -50,7 +50,8 @@ FOLDER_MAP = {
     "Leaf smut": "Leaf Smut",
 }
 
-SKIP_FOLDERS = {"_skipped"}
+SKIP_FOLDERS = {"_skipped", "_quarantine", "dataset"}
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 
 
 def main():
@@ -92,8 +93,11 @@ def main():
             print(f"  ⚠ Folder tidak dikenali, skip: {raw_folder.name}")
             continue
 
-        # Get all images
-        images = sorted(list(raw_folder.glob("*.jpg")) + list(raw_folder.glob("*.png")))
+        # Get all images. Use suffix matching so .JPG/.PNG are included too.
+        images = sorted(
+            p for p in raw_folder.iterdir()
+            if p.is_file() and p.suffix.lower() in IMAGE_EXTENSIONS
+        )
         if not images:
             print(f"  ⚠ Folder kosong, skip: {raw_folder.name}")
             continue
